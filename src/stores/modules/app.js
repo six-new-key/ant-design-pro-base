@@ -9,6 +9,7 @@ export const useAppStore = defineStore('app', () => {
   const layout = ref('sidebar') // 默认布局
   const sidebarCollapsed = ref(false)
   const loading = ref(false)
+  const currentTopMenu = ref('') // 当前选中的顶部菜单
   
   // Getters
   const isLoading = computed(() => loading.value)
@@ -43,6 +44,10 @@ export const useAppStore = defineStore('app', () => {
     loading.value = isLoading
   }
   
+  const setCurrentTopMenu = (menuKey) => {
+    currentTopMenu.value = menuKey
+  }
+  
   return {
     // State
     themeMode,
@@ -51,9 +56,12 @@ export const useAppStore = defineStore('app', () => {
     layout,
     sidebarCollapsed,
     loading,
+    currentTopMenu,
+    
     // Getters
     isLoading,
     currentLayout,
+    
     // Actions
     setThemeMode,
     setSidebarTheme,
@@ -61,11 +69,12 @@ export const useAppStore = defineStore('app', () => {
     setLayout,
     toggleSidebar,
     setSidebarCollapsed,
-    setLoading
+    setLoading,
+    setCurrentTopMenu
   }
 }, {
   persist: {
     storage: localStorage,
-    paths: ['themeMode', 'sidebarTheme', 'language', 'layout', 'sidebarCollapsed']
+    paths: ['themeMode', 'sidebarTheme', 'language', 'layout', 'sidebarCollapsed', 'currentTopMenu']
   }
 })

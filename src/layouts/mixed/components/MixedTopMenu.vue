@@ -1,95 +1,121 @@
 <template>
-  <a-layout-header class="mixed-top-header">
-    <div class="header-left">
-      <div class="logo">
-        <img src="/vite.svg" alt="logo" class="logo-img" />
-        <span class="logo-text">Ant Design Pro</span>
-      </div>
-      
-      <!-- 水平导航菜单 -->
-      <a-menu
-        v-model:selectedKeys="selectedKeys"
-        mode="horizontal"
-        class="top-menu"
-        :items="topMenuItems"
-      />
+  <div class="header-left">
+    <div class="logo">
+      <img src="/vite.svg" alt="logo" class="logo-img" />
+      <span class="logo-text">Ant Design Pro</span>
     </div>
-    
-    <div class="header-right">
-      <!-- 搜索框 -->
-      <a-input-search
-        placeholder="站内搜索"
-        style="width: 200px; margin-right: 16px"
-        @search="onSearch"
-      />
-      
-      <!-- 通知图标 -->
-      <a-badge :count="5" style="margin-right: 16px">
-        <bell-outlined class="header-icon" />
-      </a-badge>
-      
-      <!-- 用户头像下拉菜单 -->
-      <a-dropdown>
-        <template #overlay>
-          <a-menu>
-            <a-menu-item key="profile">
-              <user-outlined />
-              个人中心
-            </a-menu-item>
-            <a-menu-item key="settings">
-              <setting-outlined />
-              个人设置
-            </a-menu-item>
-            <a-menu-divider />
-            <a-menu-item key="logout">
-              <logout-outlined />
-              退出登录
-            </a-menu-item>
-          </a-menu>
+
+    <!-- 水平导航菜单 -->
+    <a-menu 
+      v-model:selectedKeys="selectedKeys" 
+      mode="horizontal" 
+      class="top-menu" 
+      @click="handleTopMenuClick"
+    >
+      <a-menu-item v-for="item in topMenuItems" :key="item.key">
+        <template #icon>
+          <component :is="item.icon" v-if="item.icon" />
         </template>
-        <a-avatar class="user-avatar">
-          <template #icon><user-outlined /></template>
-        </a-avatar>
-      </a-dropdown>
-    </div>
-  </a-layout-header>
+        {{ item.label }}
+      </a-menu-item>
+    </a-menu>
+  </div>
+
+  <div class="header-right">
+    <!-- 搜索框 -->
+    <a-input-search placeholder="站内搜索" style="width: 200px; margin-right: 16px" @search="onSearch" />
+
+    <!-- 通知图标 -->
+    <a-badge :count="5" style="margin-right: 16px">
+      <bell-outlined class="header-icon" />
+    </a-badge>
+
+    <!-- 用户头像下拉菜单 -->
+    <a-dropdown>
+      <template #overlay>
+        <a-menu>
+          <a-menu-item key="profile">
+            <user-outlined />
+            个人中心
+          </a-menu-item>
+          <a-menu-item key="settings">
+            <setting-outlined />
+            个人设置
+          </a-menu-item>
+          <a-menu-divider />
+          <a-menu-item key="logout">
+            <logout-outlined />
+            退出登录
+          </a-menu-item>
+        </a-menu>
+      </template>
+      <a-avatar class="user-avatar">
+        <template #icon><user-outlined /></template>
+      </a-avatar>
+    </a-dropdown>
+  </div>
 </template>
 
 <script setup>
-import { ref, computed,watch } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import {
   BellOutlined,
   UserOutlined,
   SettingOutlined,
-  LogoutOutlined
+  LogoutOutlined,
+  DashboardOutlined,
+  FormOutlined,
+  TableOutlined,
+  ProfileOutlined,
+  CheckCircleOutlined,
+  CloseCircleOutlined,
+  ExclamationCircleOutlined,
+  EditOutlined,
+  MenuOutlined
 } from '@ant-design/icons-vue'
 import { routes as allRoutes } from '@/router/routes'
+import { useAppStore } from '@/stores'
 
 const route = useRoute()
 const router = useRouter()
+const appStore = useAppStore()
 
-const selectedKeys = ref([route.path])
+const selectedKeys = ref([])
+
+// 图标映射
+const iconMap = {
+  DashboardOutlined,
+  FormOutlined,
+  TableOutlined,
+  ProfileOutlined,
+  CheckCircleOutlined,
+  CloseCircleOutlined,
+  ExclamationCircleOutlined,
+  UserOutlined,
+  SettingOutlined,
+  EditOutlined,
+  MenuOutlined
+}
 
 // 获取用户登录状态
 const getUserLoginStatus = () => {
   return !!(localStorage.getItem('isLoggedIn') || sessionStorage.getItem('isLoggedIn'))
 }
 
-// 顶部菜单项（只显示一级菜单）
+// 顶部菜单项（显示一级菜单和有子菜单的父级菜单）
 const topMenuItems = computed(() => {
   return allRoutes
     .filter(r => {
       // 基础过滤条件
       const hasTitle = r.meta?.title
       const notHidden = !r.meta?.hidden
-      const hasChildren = r.children?.length > 0
       const notRoot = r.path !== '/'
-      
+
       // 权限检查：如果路由需要认证，检查用户是否已登录
       const hasPermission = !r.meta?.requiresAuth || getUserLoginStatus()
-      
-      return hasTitle && notHidden && hasChildren && notRoot && hasPermission
+
+      return hasTitle && notHidden && notRoot && hasPermission
     })
     .sort((a, b) => {
       // 根据order属性排序，没有order的路由排在最后
@@ -100,31 +126,79 @@ const topMenuItems = computed(() => {
     .map(r => ({
       key: r.path,
       label: r.meta.title,
-      icon: r.meta.icon
+      icon: iconMap[r.meta.icon],
+      route: r,
+      hasChildren: r.children && r.children.length > 0
     }))
 })
+
+// 处理顶部菜单点击事件
+const handleTopMenuClick = ({ key }) => {
+  const menuItem = topMenuItems.value.find(item => item.key === key)
+  if (menuItem) {
+    // 如果是一级路由（没有子菜单），直接跳转
+    if (!menuItem.hasChildren) {
+      router.push(key)
+    } else {
+      // 如果有子菜单，跳转到第一个可访问的子路由
+      const firstChild = findFirstAccessibleChild(menuItem.route)
+      if (firstChild) {
+        router.push(firstChild.path)
+      }
+    }
+    
+    // 通知侧边栏菜单更新
+    appStore.setCurrentTopMenu(key)
+  }
+}
+
+// 查找第一个可访问的子路由
+const findFirstAccessibleChild = (route) => {
+  if (!route.children || route.children.length === 0) {
+    return route
+  }
+  
+  for (const child of route.children) {
+    if (!child.meta?.hidden && (!child.meta?.requiresAuth || getUserLoginStatus())) {
+      if (child.children && child.children.length > 0) {
+        return findFirstAccessibleChild(child)
+      } else {
+        return child
+      }
+    }
+  }
+  
+  return null
+}
 
 // 搜索功能
 const onSearch = (value) => {
   console.log('搜索:', value)
 }
 
-// 监听路由变化
+// 监听路由变化，更新选中的顶部菜单
 watch(() => route.path, (newPath) => {
-  selectedKeys.value = [newPath]
-})
+  // 根据当前路由找到对应的顶部菜单项
+  const topMenuItem = topMenuItems.value.find(item => {
+    if (item.key === newPath) {
+      return true
+    }
+    // 检查是否是该菜单项的子路由
+    if (item.hasChildren) {
+      return newPath.startsWith(item.key)
+    }
+    return false
+  })
+  
+  if (topMenuItem) {
+    selectedKeys.value = [topMenuItem.key]
+    appStore.setCurrentTopMenu(topMenuItem.key)
+  }
+}, { immediate: true })
 </script>
 
-<style scoped>
-.mixed-top-header {
-  background: #fff;
-  padding: 0 24px;
-  box-shadow: 0 1px 4px rgba(0,21,41,.08);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 64px;
-}
+<style scoped lang="scss">
+
 
 .header-left {
   display: flex;
