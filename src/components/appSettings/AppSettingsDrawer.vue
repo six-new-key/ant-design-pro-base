@@ -2,7 +2,7 @@
   <a-drawer
     :open="visible"
     @update:open="$emit('update:visible', $event)"
-    title="全局配置"
+    title="系统配置"
     placement="right"
     :width="360"
     class="layout-drawer"
@@ -121,7 +121,7 @@
               <div class="content-preview"></div>
             </div>
             <div class="sidebar-theme-info">
-              <h4 class="sidebar-theme-name">浅色侧边栏</h4>
+              <h4 class="sidebar-theme-name">浅色侧边栏/顶部</h4>
               <p class="sidebar-theme-desc">明亮的侧边栏主题</p>
             </div>
             <div v-if="currentSidebarTheme === 'light'" class="active-badge">
@@ -139,7 +139,7 @@
               <div class="content-preview"></div>
             </div>
             <div class="sidebar-theme-info">
-              <h4 class="sidebar-theme-name">深色侧边栏</h4>
+              <h4 class="sidebar-theme-name">深色侧边栏/顶部</h4>
               <p class="sidebar-theme-desc">深色的侧边栏主题</p>
             </div>
             <div v-if="currentSidebarTheme === 'dark'" class="active-badge">

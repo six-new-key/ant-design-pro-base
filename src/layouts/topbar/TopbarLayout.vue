@@ -1,116 +1,121 @@
 <template>
-  <a-layout style="min-height: 100vh">
+  <a-layout style="height: 100vh;width: 100%;">
     <!-- 顶部导航栏 -->
-    <a-layout-header class="topbar-header">
+    <a-layout-header class="topbar-header" :class="{'theme-mode-header': appStore.sidebarTheme === 'dark'}">
       <div class="header-left">
         <!-- Logo -->
         <div class="logo">
           <img src="/vite.svg" alt="logo" class="logo-img" />
-          <span class="logo-text">Ant Design Pro</span>
+          <span class="logo-text" :class="{'theme-mode-logo-text': appStore.sidebarTheme === 'dark'}">Ant Design Pro</span>
         </div>
-        
+
         <!-- 顶部菜单 -->
-        <TopbarMenu />
+        <div class="topbar-menu">
+          <TopbarMenu />
+        </div>
       </div>
-      
+
       <div class="header-right">
         <!-- 头部操作区 -->
         <HeaderActions />
       </div>
     </a-layout-header>
-    
+
     <!-- 主内容区域 -->
-    <a-layout>
-      <a-layout-content class="topbar-content">
-        <router-view />
-      </a-layout-content>
-      
-      <!-- 页脚 -->
-      <a-layout-footer class="topbar-footer">
-        Ant Design Pro ©2024 Created by Ant UED
-      </a-layout-footer>
-    </a-layout>
+    <a-layout-content class="topbar-content">
+      <router-view />
+    </a-layout-content>
+
+    <!-- 页脚 -->
+    <!-- <a-layout-footer class="topbar-footer">
+      Ant Design Pro ©2024 Created by Ant UED
+    </a-layout-footer> -->
   </a-layout>
 </template>
 
 <script setup>
 import TopbarMenu from './components/TopbarMenu.vue'
 import HeaderActions from './components/HeaderActions.vue'
+import { theme } from 'ant-design-vue'
+import { useAppStore } from '@/stores'
+
+const appStore = useAppStore()
+const { token } = theme.useToken()
+
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+:where(.css-dev-only-do-not-override-1p3hq3p).ant-layout .ant-layout-header {
+  padding: 0 $content-padding;
+}
+
+:where(.css-dev-only-do-not-override-13gz7x).ant-layout .ant-layout-header {
+  padding: 0 $content-padding;
+}
+
+:where(.css-dev-only-do-not-override-13gz7x).ant-menu-horizontal{
+  border: none;
+}
+
 .topbar-header {
-  background: #fff;
-  padding: 0 24px;
-  box-shadow: 0 1px 4px rgba(0,21,41,.08);
+  width: 100%;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  height: 64px;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 100;
-}
+  height: $top-height-horizontal;
+  background: v-bind('token.colorBgContainer');
 
-.header-left {
-  display: flex;
-  align-items: center;
-  flex: 1;
-}
+  &.theme-mode-header {
+    background-color: #001529;
+  }
 
-.logo {
-  display: flex;
-  align-items: center;
-  margin-right: 40px;
-  min-width: 200px;
-}
+  .header-left {
+    width: 70%;
 
-.logo-img {
-  width: 32px;
-  height: 32px;
-  margin-right: 12px;
-}
+    .logo {
+      float: left;
+      display: flex;
+      align-items: center;
+      width: 200px;
 
-.logo-text {
-  font-size: 18px;
-  font-weight: 600;
-  color: #1890ff;
-  white-space: nowrap;
-}
+      .logo-img {
+        width: 32px;
+        height: 32px;
+        margin-right: 10px;
+      }
 
-.header-right {
-  display: flex;
-  align-items: center;
+      .logo-text {
+        font-size: 18px;
+        font-weight: 600;
+        color: v-bind('token.colorText');
+        white-space: nowrap;
+
+        &.theme-mode-logo-text {
+          color: #fff;
+        }
+      }
+    }
+
+    .topbar-menu {
+      flex: 1;
+    }
+  }
+
+  .header-right {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
 }
 
 .topbar-content {
-  margin-top: 64px;
-  padding: 24px;
-  background: #f0f2f5;
-  min-height: calc(100vh - 64px - 70px);
+  padding: $content-padding;
+  height: calc(100vh - $top-height-horizontal);
+  overflow-y: scroll;
 }
 
 .topbar-footer {
   text-align: center;
   background: #f0f2f5;
-  border-top: 1px solid #e8e8e8;
-}
-
-/* 响应式布局 */
-@media (max-width: 768px) {
-  .logo {
-    min-width: auto;
-    margin-right: 16px;
-  }
-  
-  .logo-text {
-    display: none;
-  }
-  
-  .topbar-content {
-    padding: 16px;
-  }
 }
 </style>

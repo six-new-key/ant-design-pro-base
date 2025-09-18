@@ -4,7 +4,7 @@ import { ref, computed } from 'vue'
 export const useAppStore = defineStore('app', () => {
   // State
   const themeMode = ref('light') // 主题模式：light/dark
-  const sidebarTheme = ref('dark') // 侧边栏主题：light/dark
+  const sidebarTheme = ref('dark') // 侧边栏/顶部主题：light/dark
   const language = ref('zh-CN')
   const layout = ref('sidebar') // 默认布局
   const sidebarCollapsed = ref(false)

@@ -98,7 +98,7 @@ watch(() => appStore.sidebarCollapsed, (newVal) => {
   height: calc(100vh - $top-height);
   overflow-y: scroll;
   width: 100%;
-  padding: 20px;
+  padding: $content-padding;
 }
 
 .logo-container {
