@@ -1,15 +1,5 @@
 <template>
   <div class="header-left">
-    <!-- 折叠按钮 -->
-    <div class="collapse-trigger" @click="handleToggle">
-      <a-button type="text">
-        <template #icon>
-          <DoubleLeftOutlined style="font-size: 11px;" v-if="!collapsed" />
-          <DoubleRightOutlined style="font-size: 11px;" v-else />
-        </template>
-      </a-button>
-    </div>
-
     <!-- 面包屑导航 -->
     <a-breadcrumb class="breadcrumb">
       <a-breadcrumb-item v-for="item in breadcrumbItems" :key="item.path">
@@ -76,8 +66,6 @@
 import { ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import {
-  DoubleLeftOutlined,
-  DoubleRightOutlined,
   BellOutlined,
   UserOutlined,
   SettingOutlined,
@@ -88,22 +76,8 @@ import {
 import { message } from 'ant-design-vue'
 import { routes as allRoutes } from '@/router/routes'
 
-const props = defineProps({
-  collapsed: {
-    type: Boolean,
-    default: false
-  }
-})
-
-const emit = defineEmits(['toggle'])
-
 const route = useRoute()
 const router = useRouter()
-
-// 处理折叠按钮点击
-const handleToggle = () => {
-  emit('toggle')
-}
 
 // 生成面包屑导航
 const breadcrumbItems = computed(() => {
@@ -164,23 +138,6 @@ const handleMenuClick = ({ key }) => {
   display: flex;
   align-items: center;
   flex: 1;
-}
-
-.collapse-trigger {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 48px;
-  height: 48px;
-  cursor: pointer;
-  font-size: 16px;
-  color: var(--ant-color-text-secondary);
-  transition: color 0.3s;
-  margin-right: 16px;
-}
-
-.collapse-trigger:hover {
-  color: var(--ant-color-primary);
 }
 
 .breadcrumb {

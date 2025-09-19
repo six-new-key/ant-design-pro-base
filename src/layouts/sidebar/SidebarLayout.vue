@@ -1,8 +1,9 @@
 <template>
   <a-layout style="height: 100vh;width: 100%;">
     <!-- 侧边栏 -->
-    <a-layout-sider v-model:collapsed="collapsed" :trigger="null" collapsible :width="sidebarWidth"
-      :collapsedWidth="sidebarWidthCollapsed" class="sidebar-sider" :theme="appStore.sidebarTheme">
+    <a-layout-sider v-model:collapsed="collapsed" collapsible :width="sidebarWidth"
+      :collapsedWidth="sidebarWidthCollapsed" class="sidebar-sider" :theme="appStore.sidebarTheme"
+      @mouseenter="handleSidebarMouseEnter" @mouseleave="handleSidebarMouseLeave">
       <!-- Logo区域 -->
       <div class="logo-container">
         <div class="logo">
@@ -17,14 +18,36 @@
       </div>
 
       <!-- 侧边菜单 -->
-      <Sidebar />
+      <div class="sidebar-menu">
+        <Sidebar />
+      </div>
+
+      <template #trigger>
+        <div class="custom-trigger" @click.stop
+          :class="{ 'collapsed': collapsed, 'theme-mode-trigger': appStore.sidebarTheme === 'dark' }">
+          <a-button type="text" @click="handleToggleCollapse">
+            <template #icon>
+              <DoubleLeftOutlined style="font-size: 10px;" v-if="!collapsed" />
+              <DoubleRightOutlined style="font-size: 10px;" v-else />
+            </template>
+          </a-button>
+          <a-tooltip :title="appStore.sidebarFixed ? '取消' : '固定'">
+            <a-button v-if="!collapsed" type="text" @click="handlePinClick">
+              <template #icon>
+                <StopOutlined style="font-size: 10px;" v-if="appStore.sidebarFixed" />
+                <PushpinOutlined style="font-size: 10px;" v-else />
+              </template>
+            </a-button>
+          </a-tooltip>
+        </div>
+      </template>
     </a-layout-sider>
 
     <!-- 主内容区域 -->
     <a-layout class="sidebar-layout" :class="{ 'right-collapsed': collapsed }">
       <!-- 头部 -->
       <a-layout-header class="sidebar-header">
-        <Header :collapsed="collapsed" @toggle="toggleCollapse" />
+        <Header />
       </a-layout-header>
 
       <!-- 内容区域 -->
@@ -42,6 +65,7 @@ import Header from './components/Header.vue'
 import Sidebar from './components/Sidebar.vue'
 import { settings } from '@/settings'
 import { theme } from 'ant-design-vue'
+import { DoubleLeftOutlined, DoubleRightOutlined, PushpinOutlined, StopOutlined } from '@ant-design/icons-vue'
 
 const sidebarWidth = ref(settings.sidebarWidth)
 const sidebarWidthCollapsed = ref(settings.sidebarWidthCollapsed)
@@ -49,10 +73,29 @@ const appStore = useAppStore()
 const collapsed = ref(appStore.sidebarCollapsed)
 const { token } = theme.useToken()
 
-// 切换侧边栏折叠状态
-const toggleCollapse = () => {
+// 切换折叠按钮点击事件
+const handleToggleCollapse = () => {
   collapsed.value = !collapsed.value
   appStore.setSidebarCollapsed(collapsed.value)
+}
+
+// 固定按钮点击事件
+const handlePinClick = () => {
+  appStore.setSidebarFixed(!appStore.sidebarFixed)
+}
+
+// 鼠标进入侧边栏事件处理
+const handleSidebarMouseEnter = () => {
+  if (!appStore.sidebarFixed) {
+    appStore.setSidebarCollapsed(false)
+  }
+}
+
+// 鼠标离开侧边栏事件处理
+const handleSidebarMouseLeave = () => {
+  if (!appStore.sidebarFixed) {
+    appStore.setSidebarCollapsed(true)
+  }
 }
 
 // 监听store中的状态变化
@@ -63,12 +106,79 @@ watch(() => appStore.sidebarCollapsed, (newVal) => {
 
 <style scoped lang="scss">
 .sidebar-sider {
+  height: 100vh;
   position: fixed;
   left: 0;
   top: 0;
   bottom: 0;
   z-index: 1;
-  border-right: 1px solid v-bind('token.colorFill');
+  border-right: 1px solid v-bind('token.colorFillSecondary');
+
+  .logo-container {
+    height: $logo-height;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+
+    .logo {
+      display: flex;
+      align-items: center;
+
+      .logo-img {
+        width: 32px;
+        height: 32px;
+      }
+
+      .logo-text {
+        font-size: 21px;
+        font-weight: 600;
+        color: v-bind('token.colorText');
+        white-space: nowrap;
+        margin-left: 12px;
+
+        &.text-white {
+          color: #fff;
+        }
+      }
+    }
+  }
+
+  .sidebar-menu {
+    height: calc(100vh - $top-height - 50px);
+    overflow-y: auto;
+  }
+
+  .custom-trigger {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 10px;
+    border-right: 1px solid v-bind('token.colorFillSecondary');
+
+    &.collapsed {
+      padding: 0;
+      justify-content: center;
+    }
+
+    &.theme-mode-trigger {
+      background-color: #001529;
+
+
+      :where(.css-dev-only-do-not-override-1p3hq3p).ant-btn {
+        background: #002342;
+      }
+
+      :where(.css-dev-only-do-not-override-1p3hq3p).ant-btn:hover {
+        background: #002f59;
+      }
+
+      :where(.css-dev-only-do-not-override-1p3hq3p).ant-btn>span {
+        color: #fff;
+      }
+    }
+  }
 }
 
 .sidebar-layout {
@@ -93,36 +203,6 @@ watch(() => appStore.sidebarCollapsed, (newVal) => {
   overflow-y: scroll;
   width: 100%;
   padding: $content-padding;
-}
-
-.logo-container {
-  height: $logo-height;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-
-  .logo {
-    display: flex;
-    align-items: center;
-
-    .logo-img {
-      width: 32px;
-      height: 32px;
-    }
-
-    .logo-text {
-      font-size: 21px;
-      font-weight: 600;
-      color: v-bind('token.colorText');
-      white-space: nowrap;
-      margin-left: 12px;
-
-      &.text-white {
-        color: #fff;
-      }
-    }
-  }
 }
 
 /* 从左至右滑入动画 */

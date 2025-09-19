@@ -1,58 +1,56 @@
 <template>
-  <div class="sidebar-menu">
-    <a-menu v-model:selectedKeys="selectedKeys" v-model:openKeys="openKeys" mode="inline" :theme="appStore.sidebarTheme"
-      :inline-collapsed="appStore.sidebarCollapsed">
-      <template v-for="route in visibleRoutes" :key="route.path">
-        <!-- 有子菜单的情况 -->
-        <a-sub-menu v-if="route.children && route.children.length > 0" :key="'sub-' + route.path">
-          <template #icon>
-            <component :is="route.meta?.icon" v-if="route.meta?.icon" />
-          </template>
-          <template #title>{{ route.meta?.title || route.name }}</template>
+  <a-menu v-model:selectedKeys="selectedKeys" v-model:openKeys="openKeys"
+    mode="inline" :theme="appStore.sidebarTheme"
+    :inline-collapsed="appStore.sidebarCollapsed">
+    <template v-for="route in visibleRoutes" :key="route.path">
+      <!-- 有子菜单的情况 -->
+      <a-sub-menu v-if="route.children && route.children.length > 0" :key="'sub-' + route.path">
+        <template #icon>
+          <component :is="route.meta?.icon" v-if="route.meta?.icon" />
+        </template>
+        <template #title>{{ route.meta?.title || route.name }}</template>
 
-          <template v-for="child in route.children" :key="child.path">
-            <!-- 二级子菜单 -->
-            <a-sub-menu v-if="child.children && child.children.length > 0" :key="'sub-' + child.path">
+        <template v-for="child in route.children" :key="child.path">
+          <!-- 二级子菜单 -->
+          <a-sub-menu v-if="child.children && child.children.length > 0" :key="'sub-' + child.path">
+            <template #icon>
+              <component :is="child.meta?.icon" v-if="child.meta?.icon" />
+            </template>
+            <template #title>{{ child.meta?.title || child.name }}</template>
+
+            <a-menu-item v-for="grandChild in child.children" :key="grandChild.path" v-show="!grandChild.meta?.hidden">
               <template #icon>
-                <component :is="child.meta?.icon" v-if="child.meta?.icon" />
+                <component :is="grandChild.meta?.icon" v-if="grandChild.meta?.icon" />
               </template>
-              <template #title>{{ child.meta?.title || child.name }}</template>
-
-              <a-menu-item v-for="grandChild in child.children" :key="grandChild.path"
-                v-show="!grandChild.meta?.hidden">
-                <template #icon>
-                  <component :is="grandChild.meta?.icon" v-if="grandChild.meta?.icon" />
-                </template>
-                <router-link :to="grandChild.path">
-                  {{ grandChild.meta?.title || grandChild.name }}
-                </router-link>
-              </a-menu-item>
-            </a-sub-menu>
-
-            <!-- 一级子菜单项 -->
-            <a-menu-item v-else-if="!child.meta?.hidden" :key="child.path">
-              <template #icon>
-                <component :is="child.meta?.icon" v-if="child.meta?.icon" />
-              </template>
-              <router-link :to="child.path">
-                {{ child.meta?.title || child.name }}
+              <router-link :to="grandChild.path">
+                {{ grandChild.meta?.title || grandChild.name }}
               </router-link>
             </a-menu-item>
-          </template>
-        </a-sub-menu>
+          </a-sub-menu>
 
-        <!-- 没有子菜单的情况 -->
-        <a-menu-item v-else-if="!route.meta?.hidden" :key="route.path">
-          <template #icon>
-            <component :is="route.meta?.icon" v-if="route.meta?.icon" />
-          </template>
-          <router-link :to="route.path">
-            {{ route.meta?.title || route.name }}
-          </router-link>
-        </a-menu-item>
-      </template>
-    </a-menu>
-  </div>
+          <!-- 一级子菜单项 -->
+          <a-menu-item v-else-if="!child.meta?.hidden" :key="child.path">
+            <template #icon>
+              <component :is="child.meta?.icon" v-if="child.meta?.icon" />
+            </template>
+            <router-link :to="child.path">
+              {{ child.meta?.title || child.name }}
+            </router-link>
+          </a-menu-item>
+        </template>
+      </a-sub-menu>
+
+      <!-- 没有子菜单的情况 -->
+      <a-menu-item v-else-if="!route.meta?.hidden" :key="route.path">
+        <template #icon>
+          <component :is="route.meta?.icon" v-if="route.meta?.icon" />
+        </template>
+        <router-link :to="route.path">
+          {{ route.meta?.title || route.name }}
+        </router-link>
+      </a-menu-item>
+    </template>
+  </a-menu>
 </template>
 
 <script setup>
@@ -184,10 +182,3 @@ watch(() => appStore.sidebarCollapsed, (collapsed) => {
   }
 })
 </script>
-
-<style scoped lang="scss">
-.sidebar-menu {
-  height: calc(100vh - $top-height);
-  overflow-y: auto;
-}
-</style>
