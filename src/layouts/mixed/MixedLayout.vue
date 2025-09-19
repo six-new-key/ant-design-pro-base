@@ -9,16 +9,18 @@
       <!-- 侧边栏 -->
       <transition name="slide-fade">
         <a-layout-sider v-if="shouldShowSidebar" v-model:collapsed="collapsed" collapsible :width="sidebarWidth"
-          :collapsedWidth="sidebarWidthCollapsed" :theme="appStore.sidebarTheme" class="mixed-sider">
+          :collapsedWidth="sidebarWidthCollapsed" :theme="appStore.sidebarTheme" class="mixed-sider"
+          :class="{ 'mixed-sider-dark': appStore.sidebarTheme === 'dark' }">
 
           <MixedSideMenu />
 
           <template #trigger>
-            <div class="custom-trigger" :class="{ 'collapsed': collapsed }">
+            <div class="custom-trigger"
+              :class="{ 'collapsed': collapsed, 'theme-mode-trigger': appStore.sidebarTheme === 'dark' }">
               <a-button type="text">
                 <template #icon>
-                  <DoubleLeftOutlined style="font-size: 10px;" v-if="!collapsed" />
-                  <DoubleRightOutlined style="font-size: 10px;" v-else />
+                  <DoubleLeftOutlined style="font-size: 11px;" v-if="!collapsed" />
+                  <DoubleRightOutlined style="font-size: 11px;" v-else />
                 </template>
               </a-button>
             </div>
@@ -78,6 +80,7 @@ watch(() => collapsed.value, (newVal) => {
   display: flex;
   align-items: center;
   height: $top-height-horizontal;
+  border-bottom: 1px solid v-bind('token.colorFillSecondary');
 
   &.theme-mode-header {
     background-color: #001529;
@@ -85,6 +88,10 @@ watch(() => collapsed.value, (newVal) => {
 }
 
 .mixed-sider {
+
+  &.mixed-sider-dark {
+    border-top: 1px solid #414141;
+  }
 
   .custom-trigger {
     height: 100%;
@@ -96,6 +103,22 @@ watch(() => collapsed.value, (newVal) => {
     &.collapsed {
       padding-left: 0;
       justify-content: center;
+    }
+
+    &.theme-mode-trigger {
+      background-color: #001529;
+
+      :where(.css-dev-only-do-not-override-1p3hq3p).ant-btn {
+        background: #002342;
+      }
+
+      :where(.css-dev-only-do-not-override-1p3hq3p).ant-btn:hover {
+        background: #002f59;
+      }
+
+      :where(.css-dev-only-do-not-override-1p3hq3p).ant-btn>span {
+        color: #fff;
+      }
     }
   }
 }

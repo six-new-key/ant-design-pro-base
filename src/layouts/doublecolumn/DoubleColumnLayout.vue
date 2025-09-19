@@ -15,11 +15,23 @@
 
         <!-- 第二列：子菜单栏 -->
         <transition name="slide-fade">
-            <a-layout-sider v-if="showSecondColumn" :width="secondColumnWidth" v-model:collapsed="collapsed"
-                :trigger="null" collapsible :collapsed-width="secondColumnWidthCollapsed" class="second-column-sider"
-                :theme="appStore.sidebarTheme">
+            <a-layout-sider v-if="showSecondColumn" :width="secondColumnWidth" v-model:collapsed="collapsed" collapsible
+                :collapsed-width="secondColumnWidthCollapsed" class="second-column-sider" :theme="appStore.sidebarTheme"
+                @collapse="handleCollapse">
                 <!-- 第二列菜单 -->
                 <SecondColumnMenu :parent-route="selectedParentRoute" />
+
+                <template #trigger>
+                    <div class="custom-trigger"
+                        :class="{ 'collapsed': collapsed, 'theme-mode-trigger': appStore.sidebarTheme === 'dark' }">
+                        <a-button type="text">
+                            <template #icon>
+                                <DoubleLeftOutlined style="font-size: 11px;" v-if="!collapsed" />
+                                <DoubleRightOutlined style="font-size: 11px;" v-else />
+                            </template>
+                        </a-button>
+                    </div>
+                </template>
             </a-layout-sider>
         </transition>
 
@@ -48,6 +60,7 @@ import FirstColumnMenu from './components/FirstColumnMenu.vue'
 import SecondColumnMenu from './components/SecondColumnMenu.vue'
 import { theme } from 'ant-design-vue'
 import { settings } from '@/settings'
+import { DoubleLeftOutlined, DoubleRightOutlined } from '@ant-design/icons-vue'
 
 const appStore = useAppStore()
 const { token } = theme.useToken()
@@ -56,6 +69,12 @@ const collapsed = ref(appStore.sidebarCollapsed)
 watch(() => appStore.sidebarCollapsed, (newValue) => {
     collapsed.value = newValue
 })
+
+// 处理折叠状态变化
+const handleCollapse = (newCollapsed) => {
+    appStore.setSidebarCollapsed(newCollapsed)
+}
+
 // 列宽设置
 const firstColumnWidth = ref(settings.firstColumnWidth)
 const secondColumnWidth = ref(settings.secondColumnWidth)
@@ -92,7 +111,7 @@ const handleFirstColumnSelect = (route) => {
     top: 0;
     bottom: 0;
     z-index: 1;
-    border-right: 1px solid v-bind('token.colorFill');
+    border-right: 1px solid v-bind('token.colorFillSecondary');
 
     &.first-column-sider-light {
         border-right: 1px solid #414141;
@@ -105,26 +124,56 @@ const handleFirstColumnSelect = (route) => {
     top: 0;
     bottom: 0;
     z-index: 1;
-    border-right: 1px solid v-bind('token.colorFill');
+    border-right: 1px solid v-bind('token.colorFillSecondary');
+
+    .custom-trigger {
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        padding-left: 10px;
+        border-right: 1px solid v-bind('token.colorFillSecondary');
+
+        &.collapsed {
+            padding-left: 0;
+            justify-content: center;
+        }
+
+        &.theme-mode-trigger {
+            background-color: #001529;
+
+            :where(.css-dev-only-do-not-override-1p3hq3p).ant-btn {
+                background: #002342;
+            }
+
+            :where(.css-dev-only-do-not-override-1p3hq3p).ant-btn:hover {
+                background: #002f59;
+            }
+
+            :where(.css-dev-only-do-not-override-1p3hq3p).ant-btn>span {
+                color: #fff;
+            }
+        }
+    }
 }
 
 /* 从左至右滑入动画 */
 .slide-fade-enter-active {
-  transition: all 0.2s ease-out;
+    transition: all 0.2s ease-out;
 }
 
 .slide-fade-leave-active {
-  transition: all 0.1s ease-in;
+    transition: all 0.1s ease-in;
 }
 
 .slide-fade-enter-from {
-  transform: translateX(-20px);
-  opacity: 0;
+    transform: translateX(-20px);
+    opacity: 0;
 }
 
 .slide-fade-leave-to {
-  transform: translateX(-20px);
-  opacity: 0;
+    transform: translateX(-20px);
+    opacity: 0;
 }
 
 .double-column-layout {

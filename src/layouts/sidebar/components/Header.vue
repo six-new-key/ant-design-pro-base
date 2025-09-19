@@ -2,8 +2,12 @@
   <div class="header-left">
     <!-- 折叠按钮 -->
     <div class="collapse-trigger" @click="handleToggle">
-      <menu-unfold-outlined v-if="collapsed" />
-      <menu-fold-outlined v-else />
+      <a-button type="text">
+        <template #icon>
+          <DoubleLeftOutlined style="font-size: 11px;" v-if="!collapsed" />
+          <DoubleRightOutlined style="font-size: 11px;" v-else />
+        </template>
+      </a-button>
     </div>
 
     <!-- 面包屑导航 -->
@@ -72,8 +76,8 @@
 import { ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import {
-  MenuUnfoldOutlined,
-  MenuFoldOutlined,
+  DoubleLeftOutlined,
+  DoubleRightOutlined,
   BellOutlined,
   UserOutlined,
   SettingOutlined,

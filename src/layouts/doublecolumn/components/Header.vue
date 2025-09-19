@@ -3,14 +3,14 @@
     <!-- 左侧区域 -->
     <div class="header-left">
       <!-- 收缩 -->
-      <div class="toggle-collapse">
+      <!-- <div class="toggle-collapse">
         <a-button type="text" @click="toggleCollapse">
           <template #icon>
             <MenuUnfoldOutlined v-if="!collapsed" />
             <MenuFoldOutlined v-else />
           </template>
         </a-button>
-      </div>
+      </div> -->
 
       <!-- 面包屑导航 -->
       <a-breadcrumb class="breadcrumb">

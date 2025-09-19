@@ -187,7 +187,7 @@ watch(() => props.parentRoute, () => {
 .project-title {
   height: $top-height;
   display: flex;
-  justify-content: center;
+  padding-left: 26px;
   align-items: center;
   font-weight: bold;
   font-size: 18px;
@@ -200,7 +200,7 @@ watch(() => props.parentRoute, () => {
 
 /* 从左至右滑入动画 */
 .slide-fade-enter-active {
-  transition: all 0.3s ease-out;
+  transition: all 0.4s ease-out;
 }
 
 .slide-fade-enter-from {

@@ -74,7 +74,6 @@ watch(() => appStore.sidebarCollapsed, (newVal) => {
 .sidebar-layout {
   height: 100vh;
   margin-left: $sidebar-width;
-  width: 100%;
 
   &.right-collapsed {
     margin-left: $sidebar-width-collapsed;
