@@ -105,46 +105,31 @@
         </div>
       </div>
       
-      <!-- 侧边栏主题切换 -->
+      <!-- 侧边栏/顶栏主题切换 -->
       <div class="section">
-        <h3 class="section-title">侧边栏主题</h3>
-        <p class="section-desc">选择侧边栏和菜单的主题风格</p>
+        <h3 class="section-title">侧边栏/顶栏主题</h3>
         
-        <div class="sidebar-theme-grid">
-          <div 
-            class="sidebar-theme-card"
-            :class="{ active: currentSidebarTheme === 'light' }"
-            @click="handleSidebarThemeSwitch('light')"
-          >
-            <div class="sidebar-theme-preview light-sidebar">
-              <div class="sidebar-preview"></div>
-              <div class="content-preview"></div>
+        <div class="theme-switch-list">
+          <div class="theme-switch-item">
+            <div class="theme-switch-info">
+              <h4 class="theme-switch-name">深色侧边栏</h4>
+              <p class="theme-switch-desc">使用深色的侧边栏主题</p>
             </div>
-            <div class="sidebar-theme-info">
-              <h4 class="sidebar-theme-name">浅色侧边栏/顶部</h4>
-              <p class="sidebar-theme-desc">明亮的侧边栏主题</p>
-            </div>
-            <div v-if="currentSidebarTheme === 'light'" class="active-badge">
-              <CheckOutlined />
-            </div>
+            <a-switch 
+              :checked="currentSidebarTheme === 'dark'"
+              @change="(checked) => handleSidebarThemeSwitch(checked ? 'dark' : 'light')"
+            />
           </div>
           
-          <div 
-            class="sidebar-theme-card"
-            :class="{ active: currentSidebarTheme === 'dark' }"
-            @click="handleSidebarThemeSwitch('dark')"
-          >
-            <div class="sidebar-theme-preview dark-sidebar">
-              <div class="sidebar-preview"></div>
-              <div class="content-preview"></div>
+          <div class="theme-switch-item">
+            <div class="theme-switch-info">
+              <h4 class="theme-switch-name">深色顶栏</h4>
+              <p class="theme-switch-desc">使用深色的顶栏主题</p>
             </div>
-            <div class="sidebar-theme-info">
-              <h4 class="sidebar-theme-name">深色侧边栏/顶部</h4>
-              <p class="sidebar-theme-desc">深色的侧边栏主题</p>
-            </div>
-            <div v-if="currentSidebarTheme === 'dark'" class="active-badge">
-              <CheckOutlined />
-            </div>
+            <a-switch 
+              :checked="currentHeaderTheme === 'dark'"
+              @change="(checked) => handleHeaderThemeSwitch(checked ? 'dark' : 'light')"
+            />
           </div>
         </div>
       </div>
@@ -190,6 +175,9 @@ const currentThemeMode = computed(() => appStore.themeMode || 'light')
 // 当前侧边栏主题
 const currentSidebarTheme = computed(() => appStore.sidebarTheme || 'light')
 
+// 当前顶部主题
+const currentHeaderTheme = computed(() => appStore.headerTheme || 'light')
+
 // 处理抽屉关闭
 const handleClose = () => {
   emit('update:visible', false)
@@ -214,6 +202,11 @@ const handleThemeModeSwitch = (mode) => {
 // 处理侧边栏主题切换
 const handleSidebarThemeSwitch = (theme) => {
   appStore.setSidebarTheme(theme)
+}
+
+// 处理顶部主题切换
+const handleHeaderThemeSwitch = (theme) => {
+  appStore.setHeaderTheme(theme)
 }
 </script>
 
@@ -501,80 +494,37 @@ const handleSidebarThemeSwitch = (theme) => {
   line-height: 1.3;
 }
 
-/* 侧边栏主题切换样式 */
-.sidebar-theme-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-}
-
-.sidebar-theme-card {
-  border: 1px solid #e8e8e8;
-  border-radius: 8px;
-  padding: 12px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  position: relative;
-  background: #fff;
-}
-
-.sidebar-theme-card:hover {
-  border-color: #1890ff;
-  box-shadow: 0 2px 8px rgba(24, 144, 255, 0.1);
-}
-
-.sidebar-theme-card.active {
-  border-color: #1890ff;
-  background: #f6ffed;
-}
-
-.sidebar-theme-preview {
-  width: 100%;
-  height: 60px;
-  border: 1px solid #f0f0f0;
-  border-radius: 4px;
-  overflow: hidden;
-  margin-bottom: 8px;
+/* 主题切换列表样式 */
+.theme-switch-list {
   display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
-.light-sidebar .sidebar-preview {
-  width: 20px;
-  background: #ffffff;
-  border-right: 1px solid #e8e8e8;
+.theme-switch-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f0f0;
 }
 
-.light-sidebar .content-preview {
+.theme-switch-item:last-child {
+  border-bottom: none;
+}
+
+.theme-switch-info {
   flex: 1;
-  background: #fafafa;
-  margin: 4px;
-  border-radius: 2px;
 }
 
-.dark-sidebar .sidebar-preview {
-  width: 20px;
-  background: #001529;
-}
-
-.dark-sidebar .content-preview {
-  flex: 1;
-  background: #f0f2f5;
-  margin: 4px;
-  border-radius: 2px;
-}
-
-.sidebar-theme-info {
-  text-align: center;
-}
-
-.sidebar-theme-name {
+.theme-switch-name {
   font-size: 14px;
   font-weight: 500;
   color: #262626;
   margin: 0 0 4px 0;
 }
 
-.sidebar-theme-desc {
+.theme-switch-desc {
   font-size: 12px;
   color: #8c8c8c;
   margin: 0;

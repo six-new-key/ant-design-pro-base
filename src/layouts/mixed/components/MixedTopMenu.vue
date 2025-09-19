@@ -2,16 +2,13 @@
   <div class="header-left">
     <div class="logo">
       <img src="/vite.svg" alt="logo" class="logo-img" />
-      <span class="logo-text">Ant Design Pro</span>
+      <span class="logo-text" :class="{ 'theme-mode-logo-text': appStore.headerTheme === 'dark' }">Ant Design
+        Pro</span>
     </div>
 
     <!-- 水平导航菜单 -->
-    <a-menu 
-      v-model:selectedKeys="selectedKeys" 
-      mode="horizontal" 
-      class="top-menu" 
-      @click="handleTopMenuClick"
-    >
+    <a-menu v-model:selectedKeys="selectedKeys" mode="horizontal" class="top-menu" @click="handleTopMenuClick"
+      :theme="appStore.headerTheme">
       <a-menu-item v-for="item in topMenuItems" :key="item.key">
         <template #icon>
           <component :is="item.icon" v-if="item.icon" />
@@ -22,9 +19,6 @@
   </div>
 
   <div class="header-right">
-    <!-- 搜索框 -->
-    <a-input-search placeholder="站内搜索" style="width: 200px; margin-right: 16px" @search="onSearch" />
-
     <!-- 通知图标 -->
     <a-badge :count="5" style="margin-right: 16px">
       <bell-outlined class="header-icon" />
@@ -76,7 +70,9 @@ import {
 } from '@ant-design/icons-vue'
 import { routes as allRoutes } from '@/router/routes'
 import { useAppStore } from '@/stores'
+import { theme } from 'ant-design-vue'
 
+const { token } = theme.useToken()
 const route = useRoute()
 const router = useRouter()
 const appStore = useAppStore()
@@ -146,7 +142,7 @@ const handleTopMenuClick = ({ key }) => {
         router.push(firstChild.path)
       }
     }
-    
+
     // 通知侧边栏菜单更新
     appStore.setCurrentTopMenu(key)
   }
@@ -157,7 +153,7 @@ const findFirstAccessibleChild = (route) => {
   if (!route.children || route.children.length === 0) {
     return route
   }
-  
+
   for (const child of route.children) {
     if (!child.meta?.hidden && (!child.meta?.requiresAuth || getUserLoginStatus())) {
       if (child.children && child.children.length > 0) {
@@ -167,7 +163,7 @@ const findFirstAccessibleChild = (route) => {
       }
     }
   }
-  
+
   return null
 }
 
@@ -189,7 +185,7 @@ watch(() => route.path, (newPath) => {
     }
     return false
   })
-  
+
   if (topMenuItem) {
     selectedKeys.value = [topMenuItem.key]
     appStore.setCurrentTopMenu(topMenuItem.key)
@@ -198,54 +194,59 @@ watch(() => route.path, (newPath) => {
 </script>
 
 <style scoped lang="scss">
-
-
 .header-left {
   display: flex;
   align-items: center;
   flex: 1;
-}
 
-.logo {
-  display: flex;
-  align-items: center;
-  margin-right: 40px;
-}
+  .logo {
+    min-width: 200px;
+    display: flex;
+    align-items: center;
 
-.logo-img {
-  width: 32px;
-  height: 32px;
-  margin-right: 12px;
-}
+    .logo-img {
+      width: 32px;
+      height: 32px;
+      margin-right: 12px;
+    }
 
-.logo-text {
-  font-size: 18px;
-  font-weight: 600;
-  color: #1890ff;
-}
+    .logo-text {
+      font-size: 20px;
+      font-weight: 600;
+      color: v-bind('token.colorText');
 
-.top-menu {
-  flex: 1;
-  border-bottom: none;
+      &.theme-mode-logo-text {
+        color: #fff;
+      }
+    }
+  }
+
+  .top-menu {
+    flex: 1;
+    border-bottom: none;
+  }
 }
 
 .header-right {
+  height: 100%;
   display: flex;
   align-items: center;
-}
+  justify-content: flex-end;
+  min-width: 300px;
 
-.header-icon {
-  font-size: 16px;
-  cursor: pointer;
-  color: #666;
-  transition: color 0.3s;
-}
+  .header-icon {
+    font-size: 16px;
+    cursor: pointer;
+    color: #666;
+    transition: color 0.3s;
+  }
 
-.header-icon:hover {
-  color: #1890ff;
-}
+  .header-icon:hover {
+    color: #1890ff;
+  }
 
-.user-avatar {
-  cursor: pointer;
+  .user-avatar {
+    cursor: pointer;
+  }
 }
 </style>

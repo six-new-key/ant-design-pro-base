@@ -5,15 +5,10 @@
       <menu-unfold-outlined v-if="collapsed" />
       <menu-fold-outlined v-else />
     </div> -->
-    
+
     <!-- 侧边菜单 -->
-    <a-menu
-      v-model:selectedKeys="selectedKeys"
-      v-model:openKeys="openKeys"
-      mode="inline"
-      theme="dark"
-      class="side-menu"
-    >
+    <a-menu v-model:selectedKeys="selectedKeys" v-model:openKeys="openKeys" mode="inline" :theme="appStore.sidebarTheme"
+      class="side-menu">
       <template v-for="route in visibleRoutes" :key="route.path">
         <!-- 有子菜单的情况 -->
         <a-sub-menu v-if="route.children && route.children.length > 0" :key="'sub-' + route.path">
@@ -21,15 +16,16 @@
             <component :is="route.meta?.icon" v-if="route.meta?.icon && route.meta.icon !== ''" />
           </template>
           <template #title>{{ route.meta?.title || route.name }}</template>
-          
+
           <template v-for="child in route.children" :key="child.path">
             <a-sub-menu v-if="child.children && child.children.length > 0" :key="'sub-' + child.path">
               <template #icon>
                 <component :is="child.meta?.icon" v-if="child.meta?.icon && child.meta.icon !== ''" />
               </template>
               <template #title>{{ child.meta?.title || child.name }}</template>
-              
-              <a-menu-item v-for="grandChild in child.children" :key="grandChild.path" v-show="!grandChild.meta?.hidden">
+
+              <a-menu-item v-for="grandChild in child.children" :key="grandChild.path"
+                v-show="!grandChild.meta?.hidden">
                 <template #icon>
                   <component :is="grandChild.meta?.icon" v-if="grandChild.meta?.icon && grandChild.meta.icon !== ''" />
                 </template>
@@ -38,7 +34,7 @@
                 </router-link>
               </a-menu-item>
             </a-sub-menu>
-            
+
             <a-menu-item v-else-if="!child.meta?.hidden" :key="child.path">
               <template #icon>
                 <component :is="child.meta?.icon" v-if="child.meta?.icon && child.meta.icon !== ''" />
@@ -49,7 +45,7 @@
             </a-menu-item>
           </template>
         </a-sub-menu>
-        
+
         <!-- 没有子菜单的情况 -->
         <a-menu-item v-else-if="!route.meta?.hidden" :key="route.path">
           <template #icon>
@@ -125,13 +121,13 @@ const visibleRoutes = computed(() => {
   if (!currentTopMenuKey) {
     return []
   }
-  
+
   // 找到对应的顶部菜单路由
   const topMenuRoute = allRoutes.find(route => route.path === currentTopMenuKey)
   if (!topMenuRoute || !topMenuRoute.children) {
     return []
   }
-  
+
   // 处理子路由，添加图标组件并过滤权限
   const processRoute = (r) => {
     const processed = { ...r }
@@ -153,7 +149,7 @@ const visibleRoutes = computed(() => {
     }
     return processed
   }
-  
+
   return topMenuRoute.children
     .filter(route => {
       const hasPermission = !route.meta?.requiresAuth || getUserLoginStatus()
@@ -175,7 +171,7 @@ const toggleCollapse = () => {
 // 监听路由变化
 watch(() => route.path, (newPath) => {
   selectedKeys.value = [newPath]
-  
+
   // 自动展开包含当前路由的菜单
   const findParentKeys = (routes, targetPath, parentKey = '') => {
     for (const r of routes) {
@@ -192,7 +188,7 @@ watch(() => route.path, (newPath) => {
     }
     return []
   }
-  
+
   const parentKeys = findParentKeys(visibleRoutes.value, newPath)
   if (parentKeys.length > 0) {
     openKeys.value = parentKeys
@@ -210,41 +206,16 @@ watch(() => appStore.currentTopMenu, () => {
 })
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+:where(.css-dev-only-do-not-override-13gz7x).ant-menu-light.ant-menu-root.ant-menu-inline, :where(.css-dev-only-do-not-override-13gz7x).ant-menu-light.ant-menu-root.ant-menu-vertical{
+  border: none;
+}
 .mixed-side-menu {
   height: 100%;
-  display: flex;
-  flex-direction: column;
-}
+  padding-top: 10px;
 
-.collapse-trigger {
-  height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: #fff;
-  border-bottom: 1px solid #001529;
-  transition: background-color 0.3s;
-}
-
-.collapse-trigger:hover {
-  background-color: #1890ff;
-}
-
-.side-menu {
-  flex: 1;
-  border-right: none;
-}
-
-.side-menu :deep(.ant-menu-item a),
-.side-menu :deep(.ant-menu-submenu-title a) {
-  color: inherit;
-  text-decoration: none;
-}
-
-.side-menu :deep(.ant-menu-item a:hover),
-.side-menu :deep(.ant-menu-submenu-title a:hover) {
-  color: inherit;
+  .side-menu {
+    height: 100%;
+  }
 }
 </style>

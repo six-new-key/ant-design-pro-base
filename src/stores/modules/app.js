@@ -4,10 +4,11 @@ import { ref, computed } from 'vue'
 export const useAppStore = defineStore('app', () => {
   // State
   const themeMode = ref('light') // 主题模式：light/dark
-  const sidebarTheme = ref('dark') // 侧边栏/顶部主题：light/dark
+  const sidebarTheme = ref('dark') // 侧边栏：light/dark
+  const headerTheme = ref('dark') // 顶部主题：light/dark
   const language = ref('zh-CN')
   const layout = ref('sidebar') // 默认布局
-  const sidebarCollapsed = ref(false)
+  const sidebarCollapsed = ref(false) 
   const loading = ref(false)
   const currentTopMenu = ref('') // 当前选中的顶部菜单
   
@@ -22,6 +23,10 @@ export const useAppStore = defineStore('app', () => {
   
   const setSidebarTheme = (newSidebarTheme) => {
     sidebarTheme.value = newSidebarTheme
+  }
+
+  const setHeaderTheme = (newHeaderTheme) => {
+    headerTheme.value = newHeaderTheme
   }
   
   const setLanguage = (newLanguage) => {
@@ -52,6 +57,7 @@ export const useAppStore = defineStore('app', () => {
     // State
     themeMode,
     sidebarTheme,
+    headerTheme,
     language,
     layout,
     sidebarCollapsed,
@@ -65,6 +71,7 @@ export const useAppStore = defineStore('app', () => {
     // Actions
     setThemeMode,
     setSidebarTheme,
+    setHeaderTheme,
     setLanguage,
     setLayout,
     toggleSidebar,
@@ -75,6 +82,6 @@ export const useAppStore = defineStore('app', () => {
 }, {
   persist: {
     storage: localStorage,
-    paths: ['themeMode', 'sidebarTheme', 'language', 'layout', 'sidebarCollapsed', 'currentTopMenu']
+    paths: ['themeMode', 'sidebarTheme', 'headerTheme', 'language', 'layout', 'sidebarCollapsed', 'currentTopMenu']
   }
 })

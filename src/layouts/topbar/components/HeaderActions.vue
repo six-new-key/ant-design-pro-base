@@ -139,6 +139,6 @@ const handleUserMenuClick = ({ key }) => {
 
 <style scoped lang="scss">
 .anticon {
-  color: v-bind('appStore.sidebarTheme === "dark" ? "#fff" : ""');
+  color: v-bind('appStore.headerTheme === "dark" ? "#fff" : ""');
 }
 </style>

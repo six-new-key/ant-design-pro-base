@@ -44,6 +44,6 @@ const onFinish = (values) => {
 
 <style scoped>
 .basic-form {
-  padding: 24px;
+  height: 200vh;
 }
 </style>

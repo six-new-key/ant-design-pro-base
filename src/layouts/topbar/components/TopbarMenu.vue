@@ -1,5 +1,5 @@
 <template>
-  <a-menu v-model:selectedKeys="selectedKeys" mode="horizontal" :theme="appStore.sidebarTheme">
+  <a-menu v-model:selectedKeys="selectedKeys" mode="horizontal" :theme="appStore.headerTheme">
     <template v-for="route in visibleRoutes" :key="route.path">
       <!-- 有子菜单的情况 -->
       <a-sub-menu v-if="route.children && route.children.length > 0" :key="'sub-' + route.path">
@@ -178,7 +178,3 @@ watch(() => route.path, (newPath) => {
   selectedKeys.value = [topLevelRoute]
 }, { immediate: true })
 </script>
-
-<style scoped>
-
-</style>

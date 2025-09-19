@@ -1,12 +1,12 @@
 <template>
   <a-layout style="height: 100vh;width: 100%;">
     <!-- 顶部导航栏 -->
-    <a-layout-header class="topbar-header" :class="{'theme-mode-header': appStore.sidebarTheme === 'dark'}">
+    <a-layout-header class="topbar-header" :class="{'theme-mode-header': appStore.headerTheme === 'dark'}">
       <div class="header-left">
         <!-- Logo -->
         <div class="logo">
           <img src="/vite.svg" alt="logo" class="logo-img" />
-          <span class="logo-text" :class="{'theme-mode-logo-text': appStore.sidebarTheme === 'dark'}">Ant Design Pro</span>
+          <span class="logo-text" :class="{'theme-mode-logo-text': appStore.headerTheme === 'dark'}">Ant Design Pro</span>
         </div>
 
         <!-- 顶部菜单 -->
