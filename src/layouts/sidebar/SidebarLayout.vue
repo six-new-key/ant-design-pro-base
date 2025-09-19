@@ -105,10 +105,12 @@ watch(() => appStore.sidebarCollapsed, (newVal) => {
   height: $logo-height;
   display: flex;
   justify-content: center;
+  align-items: center;
   width: 100%;
 
   .logo {
-    padding: 10px 0;
+    display: flex;
+    align-items: center;
 
     .logo-img {
       width: 32px;
@@ -116,7 +118,7 @@ watch(() => appStore.sidebarCollapsed, (newVal) => {
     }
 
     .logo-text {
-      font-size: 18px;
+      font-size: 21px;
       font-weight: 600;
       color: v-bind('token.colorText');
       white-space: nowrap;
