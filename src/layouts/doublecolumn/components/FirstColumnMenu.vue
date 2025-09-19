@@ -1,0 +1,185 @@
+<template>
+  <div class="first-column-menu">
+    <a-menu v-model:selectedKeys="selectedKeys" mode="vertical" :theme="appStore.sidebarTheme"
+      class="vertical-menu" @select="handleMenuSelect">
+      <a-menu-item v-for="route in firstLevelRoutes" :key="route.path">
+        <template #icon>
+          <component :is="route.meta?.icon" v-if="route.meta?.icon" />
+        </template>
+        <div class="menu-title">{{ route.meta?.title || route.name }}</div>
+      </a-menu-item>
+    </a-menu>
+  </div>
+</template>
+
+<script setup>
+import { ref, computed, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { useAppStore } from '@/stores'
+import {
+  DashboardOutlined,
+  FormOutlined,
+  TableOutlined,
+  ProfileOutlined,
+  CheckCircleOutlined,
+  CloseCircleOutlined,
+  ExclamationCircleOutlined,
+  UserOutlined,
+  SettingOutlined,
+  EditOutlined,
+  MenuOutlined,
+  FileTextOutlined,
+  AppstoreOutlined,
+  BarsOutlined,
+  SearchOutlined,
+  ProjectOutlined,
+  StopOutlined,
+  FileUnknownOutlined,
+  DisconnectOutlined,
+  NodeIndexOutlined,
+  ShareAltOutlined
+} from '@ant-design/icons-vue'
+import { routes as allRoutes } from '@/router/routes'
+
+const emit = defineEmits(['menu-select'])
+const appStore = useAppStore()
+const route = useRoute()
+const router = useRouter()
+const selectedKeys = ref([])
+
+// 图标映射
+const iconMap = {
+  DashboardOutlined,
+  FormOutlined,
+  TableOutlined,
+  ProfileOutlined,
+  CheckCircleOutlined,
+  CloseCircleOutlined,
+  ExclamationCircleOutlined,
+  UserOutlined,
+  SettingOutlined,
+  EditOutlined,
+  MenuOutlined,
+  FileTextOutlined,
+  AppstoreOutlined,
+  BarsOutlined,
+  SearchOutlined,
+  ProjectOutlined,
+  StopOutlined,
+  FileUnknownOutlined,
+  DisconnectOutlined,
+  NodeIndexOutlined,
+  ShareAltOutlined
+}
+
+// 获取用户登录状态
+const getUserLoginStatus = () => {
+  return !!(localStorage.getItem('isLoggedIn') || sessionStorage.getItem('isLoggedIn'))
+}
+
+// 第一级路由（一级路由或多级路由的父路由）
+const firstLevelRoutes = computed(() => {
+  return allRoutes
+    .filter(route => {
+      const hasTitle = route.meta?.title
+      const notHidden = !route.meta?.hidden
+      const notRoot = route.path !== '/'
+      const hasPermission = !route.meta?.requiresAuth || getUserLoginStatus()
+      return hasTitle && notHidden && notRoot && hasPermission
+    })
+    .sort((a, b) => {
+      const orderA = a.meta?.order || 999
+      const orderB = b.meta?.order || 999
+      return orderA - orderB
+    })
+    .map(route => {
+      const processed = { ...route }
+      if (processed.meta?.icon && iconMap[processed.meta.icon]) {
+        processed.meta.icon = iconMap[processed.meta.icon]
+      }
+      return processed
+    })
+})
+
+// 处理菜单选择
+const handleMenuSelect = ({ key }) => {
+  const clickedRoute = firstLevelRoutes.value.find(route => route.path === key)
+  if (!clickedRoute) return
+
+  // 如果是一级路由（没有子路由），直接跳转
+  if (!clickedRoute.children || clickedRoute.children.length === 0) {
+    router.push(clickedRoute.path)
+    emit('menu-select', null) // 不显示第二列
+  } else {
+    // 如果是多级路由，显示第二列菜单
+    emit('menu-select', clickedRoute)
+  }
+}
+
+// 根据当前路由设置选中状态
+const updateSelectedKey = (currentPath) => {
+  // 查找当前路由对应的第一级菜单
+  for (const firstRoute of firstLevelRoutes.value) {
+    if (currentPath === firstRoute.path) {
+      selectedKeys.value = [firstRoute.path]
+      emit('menu-select', firstRoute.children && firstRoute.children.length > 0 ? firstRoute : null)
+      return
+    }
+
+    // 检查是否是子路由
+    if (firstRoute.children) {
+      const isChildRoute = firstRoute.children.some(child => {
+        if (currentPath === child.path) return true
+        if (child.children) {
+          return child.children.some(grandChild => currentPath === grandChild.path)
+        }
+        return false
+      })
+
+      if (isChildRoute) {
+        selectedKeys.value = [firstRoute.path]
+        emit('menu-select', firstRoute)
+        return
+      }
+    }
+  }
+}
+
+// 监听路由变化
+watch(() => route.path, (newPath) => {
+  updateSelectedKey(newPath)
+}, { immediate: true })
+</script>
+
+<style scoped lang="scss">
+.first-column-menu {
+  height: calc(100vh - $top-height);
+  overflow-y: auto;
+}
+
+.vertical-menu {
+  border: none;
+  width: 100%;
+
+  :deep(.ant-menu-item) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: auto;
+    padding: 12px 0;
+    margin: 6px;
+    line-height: 1.2;
+
+    .ant-menu-item-icon {
+      font-size: 20px;
+      margin-bottom: 8px;
+    }
+
+    .menu-title {
+      font-size: 12px;
+      line-height: 1.2;
+      padding-right: 8px;
+    }
+  }
+}
+</style>

@@ -7,10 +7,24 @@
 
     <a-layout>
       <!-- 侧边栏 -->
-      <a-layout-sider v-if="shouldShowSidebar" v-model:collapsed="collapsed" collapsible :width="sidebarWidth"
-        :collapsedWidth="sidebarWidthCollapsed" :theme="appStore.sidebarTheme" class="mixed-sider">
-        <MixedSideMenu :collapsed="collapsed" />
-      </a-layout-sider>
+      <transition name="slide-fade">
+        <a-layout-sider v-if="shouldShowSidebar" v-model:collapsed="collapsed" collapsible :width="sidebarWidth"
+          :collapsedWidth="sidebarWidthCollapsed" :theme="appStore.sidebarTheme" class="mixed-sider">
+
+          <MixedSideMenu />
+
+          <template #trigger>
+            <div class="custom-trigger" :class="{ 'collapsed': collapsed }">
+              <a-button type="text">
+                <template #icon>
+                  <DoubleLeftOutlined style="font-size: 10px;" v-if="!collapsed" />
+                  <DoubleRightOutlined style="font-size: 10px;" v-else />
+                </template>
+              </a-button>
+            </div>
+          </template>
+        </a-layout-sider>
+      </transition>
 
       <!-- 主内容区域 -->
       <a-layout>
@@ -30,6 +44,7 @@ import MixedTopMenu from './components/MixedTopMenu.vue'
 import MixedSideMenu from './components/MixedSideMenu.vue'
 import { theme } from 'ant-design-vue'
 import { settings } from '@/settings'
+import { DoubleLeftOutlined, DoubleRightOutlined } from '@ant-design/icons-vue'
 
 const sidebarWidth = ref(settings.sidebarWidth)
 const sidebarWidthCollapsed = ref(settings.sidebarWidthCollapsed)
@@ -54,21 +69,10 @@ const shouldShowSidebar = computed(() => {
 watch(() => collapsed.value, (newVal) => {
   appStore.setSidebarCollapsed(newVal)
 })
+
 </script>
 
 <style scoped lang="scss">
-:where(.css-dev-only-do-not-override-1p3hq3p).ant-layout .ant-layout-header {
-  padding: 0 $content-padding;
-}
-
-:where(.css-dev-only-do-not-override-13gz7x).ant-layout .ant-layout-header {
-  padding: 0 $content-padding;
-}
-
-:where(.css-dev-only-do-not-override-13gz7x).ant-menu-horizontal {
-  border: none;
-}
-
 .mixed-top-header {
   background: v-bind('token.colorBgContainer');
   display: flex;
@@ -81,10 +85,38 @@ watch(() => collapsed.value, (newVal) => {
 }
 
 .mixed-sider {
-  // background: #001529;
-  // margin: 20px 0 20px 10px;
-  // border-top-right-radius: 20px;
-  // border-bottom-right-radius: 20px;
+
+  .custom-trigger {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding-left: 10px;
+
+    &.collapsed {
+      padding-left: 0;
+      justify-content: center;
+    }
+  }
+}
+
+/* 从左至右滑入动画 */
+.slide-fade-enter-active {
+  transition: all 0.2s ease-out;
+}
+
+.slide-fade-leave-active {
+  transition: all 0s ease-in;
+}
+
+.slide-fade-enter-from {
+  transform: translateX(-20px);
+  opacity: 0;
+}
+
+.slide-fade-leave-to {
+  transform: translateX(-20px);
+  opacity: 0;
 }
 
 .mixed-content {

@@ -35,6 +35,14 @@ export const layoutConfigs = [
     description: '顶部导航 + 左侧边栏的混合布局，适合复杂的管理系统',
     enabled: true,
     order: 3
+  },
+  {
+    name: '双列布局',
+    key: 'doublecolumn',
+    component: () => import('@/layouts/doublecolumn/DoubleColumnLayout.vue'),
+    description: '左侧双列导航布局，第一列显示主菜单，第二列显示子菜单',
+    enabled: true,
+    order: 4
   }
   // 新增布局只需在此数组中添加配置即可
   // {

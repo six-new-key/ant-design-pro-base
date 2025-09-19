@@ -16,4 +16,10 @@ $logo-height: 54px;
 //内容区内边距
 $content-padding: 20px;
 
+//双列布局中的首列宽度，需要同步修改settings.js中的firstColumnWidth
+$first-column-width: 80px;
+
+//双列布局中的第二列宽度，需要同步修改settings.js中的secondColumnWidth
+$second-column-width: 220px;
+
 

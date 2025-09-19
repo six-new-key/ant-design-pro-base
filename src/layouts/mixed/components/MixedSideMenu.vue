@@ -1,11 +1,5 @@
 <template>
   <div class="mixed-side-menu">
-    <!-- 折叠按钮 -->
-    <!-- <div class="collapse-trigger" @click="toggleCollapse">
-      <menu-unfold-outlined v-if="collapsed" />
-      <menu-fold-outlined v-else />
-    </div> -->
-
     <!-- 侧边菜单 -->
     <a-menu v-model:selectedKeys="selectedKeys" v-model:openKeys="openKeys" mode="inline" :theme="appStore.sidebarTheme"
       class="side-menu">
@@ -80,13 +74,6 @@ import {
 } from '@ant-design/icons-vue'
 import { routes as allRoutes } from '@/router/routes'
 import { useAppStore } from '@/stores'
-
-const props = defineProps({
-  collapsed: {
-    type: Boolean,
-    default: false
-  }
-})
 
 const route = useRoute()
 const router = useRouter()
@@ -163,11 +150,6 @@ const visibleRoutes = computed(() => {
     })
 })
 
-// 切换折叠状态
-const toggleCollapse = () => {
-  appStore.toggleSidebar()
-}
-
 // 监听路由变化
 watch(() => route.path, (newPath) => {
   selectedKeys.value = [newPath]
@@ -207,9 +189,6 @@ watch(() => appStore.currentTopMenu, () => {
 </script>
 
 <style scoped lang="scss">
-:where(.css-dev-only-do-not-override-13gz7x).ant-menu-light.ant-menu-root.ant-menu-inline, :where(.css-dev-only-do-not-override-13gz7x).ant-menu-light.ant-menu-root.ant-menu-vertical{
-  border: none;
-}
 .mixed-side-menu {
   height: 100%;
   padding-top: 10px;

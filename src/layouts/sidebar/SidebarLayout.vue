@@ -7,9 +7,12 @@
       <div class="logo-container">
         <div class="logo">
           <img src="/vite.svg" alt="logo" class="logo-img" />
-          <span v-if="!collapsed" class="logo-text" :class="{ 'text-white': appStore.sidebarTheme === 'dark' }">Ant
-            Design
-            Pro</span>
+          <transition name="slide-fade">
+            <span v-if="!collapsed" class="logo-text" :class="{ 'text-white': appStore.sidebarTheme === 'dark' }">Ant
+              Design
+              Pro</span>
+          </transition>
+
         </div>
       </div>
 
@@ -65,7 +68,7 @@ watch(() => appStore.sidebarCollapsed, (newVal) => {
   top: 0;
   bottom: 0;
   z-index: 1;
-  border-right: 1px solid v-bind('token.colorBorderSecondary');
+  border-right: 1px solid v-bind('token.colorFill');
 }
 
 .sidebar-layout {
@@ -84,14 +87,6 @@ watch(() => appStore.sidebarCollapsed, (newVal) => {
   align-items: center;
   justify-content: space-between;
   height: $top-height;
-}
-
-:where(.css-dev-only-do-not-override-1p3hq3p).ant-layout .ant-layout-header {
-  padding: 0 10px;
-}
-
-:where(.css-dev-only-do-not-override-13gz7x).ant-layout .ant-layout-header {
-  padding: 0 10px;
 }
 
 .sidebar-content {
@@ -129,5 +124,20 @@ watch(() => appStore.sidebarCollapsed, (newVal) => {
       }
     }
   }
+}
+
+/* 从左至右滑入动画 */
+.slide-fade-enter-active {
+  transition: all 0.3s ease-out;
+}
+
+.slide-fade-enter-from {
+  transform: translateX(-20px);
+  opacity: 0;
+}
+
+.slide-fade-leave-to {
+  transform: translateX(-20px);
+  opacity: 0;
 }
 </style>

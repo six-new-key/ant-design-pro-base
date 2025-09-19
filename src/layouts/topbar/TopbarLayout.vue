@@ -45,18 +45,6 @@ const { token } = theme.useToken()
 </script>
 
 <style scoped lang="scss">
-:where(.css-dev-only-do-not-override-1p3hq3p).ant-layout .ant-layout-header {
-  padding: 0 $content-padding;
-}
-
-:where(.css-dev-only-do-not-override-13gz7x).ant-layout .ant-layout-header {
-  padding: 0 $content-padding;
-}
-
-:where(.css-dev-only-do-not-override-13gz7x).ant-menu-horizontal{
-  border: none;
-}
-
 .topbar-header {
   width: 100%;
   display: flex;
