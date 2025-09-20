@@ -10,19 +10,28 @@
       <transition name="slide-fade">
         <a-layout-sider v-if="shouldShowSidebar" v-model:collapsed="collapsed" collapsible :width="sidebarWidth"
           :collapsedWidth="sidebarWidthCollapsed" :theme="appStore.sidebarTheme" class="mixed-sider"
-          :class="{ 'mixed-sider-dark': appStore.sidebarTheme === 'dark' }">
+          :class="{ 'mixed-sider-dark': appStore.sidebarTheme === 'dark' }" @mouseenter="handleSidebarMouseEnter"
+          @mouseleave="handleSidebarMouseLeave">
 
           <MixedSideMenu />
 
           <template #trigger>
-            <div class="custom-trigger"
+            <div class="custom-trigger" @click.stop
               :class="{ 'collapsed': collapsed, 'theme-mode-trigger': appStore.sidebarTheme === 'dark' }">
-              <a-button type="text">
+              <a-button type="text" @click="handleToggleCollapse">
                 <template #icon>
-                  <DoubleLeftOutlined style="font-size: 11px;" v-if="!collapsed" />
-                  <DoubleRightOutlined style="font-size: 11px;" v-else />
+                  <DoubleLeftOutlined style="font-size: 10px;" v-if="!collapsed" />
+                  <DoubleRightOutlined style="font-size: 10px;" v-else />
                 </template>
               </a-button>
+              <a-tooltip :title="appStore.sidebarFixed ? '取消' : '固定'">
+                <a-button v-if="!collapsed" type="text" @click="handlePinClick">
+                  <template #icon>
+                    <StopOutlined style="font-size: 10px;" v-if="appStore.sidebarFixed" />
+                    <PushpinOutlined style="font-size: 10px;" v-else />
+                  </template>
+                </a-button>
+              </a-tooltip>
             </div>
           </template>
         </a-layout-sider>
@@ -46,7 +55,7 @@ import MixedTopMenu from './components/MixedTopMenu.vue'
 import MixedSideMenu from './components/MixedSideMenu.vue'
 import { theme } from 'ant-design-vue'
 import { settings } from '@/settings'
-import { DoubleLeftOutlined, DoubleRightOutlined } from '@ant-design/icons-vue'
+import { DoubleLeftOutlined, DoubleRightOutlined, PushpinOutlined, StopOutlined } from '@ant-design/icons-vue'
 
 const sidebarWidth = ref(settings.sidebarWidth)
 const sidebarWidthCollapsed = ref(settings.sidebarWidthCollapsed)
@@ -68,10 +77,36 @@ const shouldShowSidebar = computed(() => {
 })
 
 // 监听侧边栏状态变化
-watch(() => collapsed.value, (newVal) => {
-  appStore.setSidebarCollapsed(newVal)
+watch(() => appStore.sidebarCollapsed, (newVal) => {
+  collapsed.value = newVal
 })
 
+// 切换折叠按钮点击事件
+const handleToggleCollapse = () => {
+  collapsed.value = !collapsed.value
+  appStore.setSidebarCollapsed(collapsed.value)
+}
+
+// 固定按钮点击事件
+const handlePinClick = () => {
+  appStore.setSidebarFixed(!appStore.sidebarFixed)
+}
+
+// 鼠标进入侧边栏事件处理
+const handleSidebarMouseEnter = () => {
+  console.log('handleSidebarMouseEnter')
+  if (!appStore.sidebarFixed) {
+    appStore.setSidebarCollapsed(false)
+  }
+}
+
+// 鼠标离开侧边栏事件处理
+const handleSidebarMouseLeave = () => {
+  console.log('handleSidebarMouseLeave')
+  if (!appStore.sidebarFixed) {
+    appStore.setSidebarCollapsed(true)
+  }
+}
 </script>
 
 <style scoped lang="scss">
@@ -97,11 +132,11 @@ watch(() => collapsed.value, (newVal) => {
     height: 100%;
     display: flex;
     align-items: center;
-    justify-content: flex-start;
-    padding-left: 10px;
+    justify-content: space-between;
+    padding: 0 10px;
 
     &.collapsed {
-      padding-left: 0;
+      padding: 0;
       justify-content: center;
     }
 

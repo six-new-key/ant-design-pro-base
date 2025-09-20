@@ -17,19 +17,27 @@
         <transition name="slide-fade">
             <a-layout-sider v-if="showSecondColumn" :width="secondColumnWidth" v-model:collapsed="collapsed" collapsible
                 :collapsed-width="secondColumnWidthCollapsed" class="second-column-sider" :theme="appStore.sidebarTheme"
-                @collapse="handleCollapse">
+                @mouseenter="handleSidebarMouseEnter" @mouseleave="handleSidebarMouseLeave">
                 <!-- 第二列菜单 -->
                 <SecondColumnMenu :parent-route="selectedParentRoute" />
 
                 <template #trigger>
-                    <div class="custom-trigger"
+                    <div class="custom-trigger" @click.stop
                         :class="{ 'collapsed': collapsed, 'theme-mode-trigger': appStore.sidebarTheme === 'dark' }">
-                        <a-button type="text">
+                        <a-button type="text" @click="handleToggleCollapse">
                             <template #icon>
-                                <DoubleLeftOutlined style="font-size: 11px;" v-if="!collapsed" />
-                                <DoubleRightOutlined style="font-size: 11px;" v-else />
+                                <DoubleLeftOutlined style="font-size: 10px;" v-if="!collapsed" />
+                                <DoubleRightOutlined style="font-size: 10px;" v-else />
                             </template>
                         </a-button>
+                        <a-tooltip :title="appStore.sidebarFixed ? '取消' : '固定'">
+                            <a-button v-if="!collapsed" type="text" @click="handlePinClick">
+                                <template #icon>
+                                    <StopOutlined style="font-size: 10px;" v-if="appStore.sidebarFixed" />
+                                    <PushpinOutlined style="font-size: 10px;" v-else />
+                                </template>
+                            </a-button>
+                        </a-tooltip>
                     </div>
                 </template>
             </a-layout-sider>
@@ -60,7 +68,7 @@ import FirstColumnMenu from './components/FirstColumnMenu.vue'
 import SecondColumnMenu from './components/SecondColumnMenu.vue'
 import { theme } from 'ant-design-vue'
 import { settings } from '@/settings'
-import { DoubleLeftOutlined, DoubleRightOutlined } from '@ant-design/icons-vue'
+import { DoubleLeftOutlined, DoubleRightOutlined, StopOutlined, PushpinOutlined } from '@ant-design/icons-vue'
 
 const appStore = useAppStore()
 const { token } = theme.useToken()
@@ -70,9 +78,29 @@ watch(() => appStore.sidebarCollapsed, (newValue) => {
     collapsed.value = newValue
 })
 
-// 处理折叠状态变化
-const handleCollapse = (newCollapsed) => {
-    appStore.setSidebarCollapsed(newCollapsed)
+// 切换折叠按钮点击事件
+const handleToggleCollapse = () => {
+    collapsed.value = !collapsed.value
+    appStore.setSidebarCollapsed(collapsed.value)
+}
+
+// 固定按钮点击事件
+const handlePinClick = () => {
+    appStore.setSidebarFixed(!appStore.sidebarFixed)
+}
+
+// 鼠标进入侧边栏事件处理
+const handleSidebarMouseEnter = () => {
+    if (!appStore.sidebarFixed) {
+        appStore.setSidebarCollapsed(false)
+    }
+}
+
+// 鼠标离开侧边栏事件处理
+const handleSidebarMouseLeave = () => {
+    if (!appStore.sidebarFixed) {
+        appStore.setSidebarCollapsed(true)
+    }
 }
 
 // 列宽设置
@@ -130,12 +158,12 @@ const handleFirstColumnSelect = (route) => {
         height: 100%;
         display: flex;
         align-items: center;
-        justify-content: flex-start;
-        padding-left: 10px;
+        justify-content: space-between;
+        padding: 0 10px;
         border-right: 1px solid v-bind('token.colorFillSecondary');
 
         &.collapsed {
-            padding-left: 0;
+            padding: 0;
             justify-content: center;
         }
 

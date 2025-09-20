@@ -93,6 +93,7 @@ const handleSidebarMouseEnter = () => {
 
 // 鼠标离开侧边栏事件处理
 const handleSidebarMouseLeave = () => {
+  console.log('handleSidebarMouseLeave')
   if (!appStore.sidebarFixed) {
     appStore.setSidebarCollapsed(true)
   }
