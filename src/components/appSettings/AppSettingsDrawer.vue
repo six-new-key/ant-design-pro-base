@@ -128,9 +128,9 @@
           </div>
 
           <!-- 自定义颜色选择器 -->
-          <div class="color-item custom-color" :class="{ active: themeStore.colorMode === 'custom' }">
-            <input type="color" :value="themeStore.primaryColorHex" @change="handleCustomColorChange"
-              class="color-picker" title="自定义颜色" />
+          <div @click="handleCustomColorClick">
+            <color-picker v-model:pureColor="customColor" @pureColorChange="handleCustomColorChange"
+              :theme="appStore.themeMode === 'dark' ? 'black' : 'white'" />
             <CheckOutlined v-if="themeStore.colorMode === 'custom'" class="check-icon" />
           </div>
         </div>
@@ -140,7 +140,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { CheckOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 import { useAppStore, useThemeStore } from '@/stores'
@@ -163,6 +163,9 @@ const emit = defineEmits(['update:visible', 'layout-switch'])
 
 const appStore = useAppStore()
 const themeStore = useThemeStore()
+
+// 自定义颜色响应式变量
+const customColor = ref(themeStore.primaryColorHex)
 
 // 当前布局
 const currentLayout = computed(() => appStore.layout)
@@ -218,9 +221,17 @@ const handlePresetColorSelect = (index) => {
   message.success(`已切换到${themeStore.colorPresets[index].name}`)
 }
 
+// 处理自定义颜色点击
+const handleCustomColorClick = () => {
+  // 点击时设置为自定义模式
+  if (themeStore.colorMode !== 'custom') {
+    themeStore.setPrimaryColor(customColor.value, 'custom')
+  }
+}
+
 // 处理自定义颜色变化
-const handleCustomColorChange = (event) => {
-  const color = event.target.value
+const handleCustomColorChange = (color) => {
+  customColor.value = color
   themeStore.setCustomColor(color)
 }
 
@@ -597,47 +608,6 @@ const handleCustomColorChange = (event) => {
   border-color: #fff;
   box-shadow: 0 0 0 2px #1890ff;
 }
-
-.color-picker {
-  width: 100%;
-  height: 100%;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  opacity: 1;
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 3;
-}
-
-.custom-color {
-  position: relative;
-  background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%),
-    linear-gradient(-45deg, #f0f0f0 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, #f0f0f0 75%),
-    linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
-  background-size: 8px 8px;
-  background-position: 0 0, 0 4px, 4px -4px, -4px 0px;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: var(--primary-color, #1890ff);
-    border-radius: 6px;
-    z-index: 1;
-  }
-
-  .check-icon {
-    z-index: 2;
-  }
-}
-
-
 
 .check-icon {
   color: #fff;
