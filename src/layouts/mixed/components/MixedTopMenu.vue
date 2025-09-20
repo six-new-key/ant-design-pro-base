@@ -53,21 +53,6 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import {
-  BellOutlined,
-  UserOutlined,
-  SettingOutlined,
-  LogoutOutlined,
-  DashboardOutlined,
-  FormOutlined,
-  TableOutlined,
-  ProfileOutlined,
-  CheckCircleOutlined,
-  CloseCircleOutlined,
-  ExclamationCircleOutlined,
-  EditOutlined,
-  MenuOutlined
-} from '@ant-design/icons-vue'
 import { routes as allRoutes } from '@/router/routes'
 import { useAppStore } from '@/stores'
 import { theme } from 'ant-design-vue'
@@ -78,21 +63,6 @@ const router = useRouter()
 const appStore = useAppStore()
 
 const selectedKeys = ref([])
-
-// 图标映射
-const iconMap = {
-  DashboardOutlined,
-  FormOutlined,
-  TableOutlined,
-  ProfileOutlined,
-  CheckCircleOutlined,
-  CloseCircleOutlined,
-  ExclamationCircleOutlined,
-  UserOutlined,
-  SettingOutlined,
-  EditOutlined,
-  MenuOutlined
-}
 
 // 获取用户登录状态
 const getUserLoginStatus = () => {
@@ -122,7 +92,7 @@ const topMenuItems = computed(() => {
     .map(r => ({
       key: r.path,
       label: r.meta.title,
-      icon: iconMap[r.meta.icon],
+      icon: r.meta.icon || null,
       route: r,
       hasChildren: r.children && r.children.length > 0
     }))
@@ -233,6 +203,7 @@ watch(() => route.path, (newPath) => {
   align-items: center;
   justify-content: flex-end;
   min-width: 300px;
+  background-color: yellow;
 
   .header-icon {
     font-size: 16px;

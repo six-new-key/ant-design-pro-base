@@ -56,22 +56,7 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import {
-  DashboardOutlined,
-  FormOutlined,
-  TableOutlined,
-  ProfileOutlined,
-  CheckCircleOutlined,
-  CloseCircleOutlined,
-  ExclamationCircleOutlined,
-  UserOutlined,
-  SettingOutlined,
-  EditOutlined,
-  MenuOutlined,
-  FileTextOutlined,
-  AppstoreOutlined,
-  BarsOutlined
-} from '@ant-design/icons-vue'
+// 图标组件已在main.js中全局注册，无需单独导入
 import { routes as allRoutes } from '@/router/routes'
 import { useAppStore } from '@/stores'
 
@@ -80,23 +65,7 @@ const route = useRoute()
 const selectedKeys = ref([route.path])
 const openKeys = ref([])
 
-// 图标映射
-const iconMap = {
-  DashboardOutlined,
-  FormOutlined,
-  TableOutlined,
-  ProfileOutlined,
-  CheckCircleOutlined,
-  CloseCircleOutlined,
-  ExclamationCircleOutlined,
-  UserOutlined,
-  SettingOutlined,
-  EditOutlined,
-  MenuOutlined,
-  FileTextOutlined,
-  AppstoreOutlined,
-  BarsOutlined
-}
+// 图标映射已移除，直接使用meta.icon
 
 // 获取用户登录状态
 const getUserLoginStatus = () => {
@@ -126,10 +95,7 @@ const visibleRoutes = computed(() => {
     .map(route => {
       const processRoute = (r) => {
         const processed = { ...r }
-        // 处理图标
-        if (processed.meta?.icon && iconMap[processed.meta.icon]) {
-          processed.meta.icon = iconMap[processed.meta.icon]
-        }
+        // 直接使用meta.icon，无需映射
         // 递归处理子路由
         if (processed.children) {
           processed.children = processed.children

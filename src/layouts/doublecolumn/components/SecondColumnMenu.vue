@@ -47,29 +47,7 @@
 import { ref, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAppStore } from '@/stores'
-import {
-  DashboardOutlined,
-  FormOutlined,
-  TableOutlined,
-  ProfileOutlined,
-  CheckCircleOutlined,
-  CloseCircleOutlined,
-  ExclamationCircleOutlined,
-  UserOutlined,
-  SettingOutlined,
-  EditOutlined,
-  MenuOutlined,
-  FileTextOutlined,
-  AppstoreOutlined,
-  BarsOutlined,
-  SearchOutlined,
-  ProjectOutlined,
-  StopOutlined,
-  FileUnknownOutlined,
-  DisconnectOutlined,
-  NodeIndexOutlined,
-  ShareAltOutlined
-} from '@ant-design/icons-vue'
+// 图标组件已在main.js中全局注册，无需单独导入
 import { theme } from 'ant-design-vue'
 
 const props = defineProps({
@@ -85,30 +63,7 @@ const route = useRoute()
 const selectedKeys = ref([route.path])
 const openKeys = ref([])
 
-// 图标映射
-const iconMap = {
-  DashboardOutlined,
-  FormOutlined,
-  TableOutlined,
-  ProfileOutlined,
-  CheckCircleOutlined,
-  CloseCircleOutlined,
-  ExclamationCircleOutlined,
-  UserOutlined,
-  SettingOutlined,
-  EditOutlined,
-  MenuOutlined,
-  FileTextOutlined,
-  AppstoreOutlined,
-  BarsOutlined,
-  SearchOutlined,
-  ProjectOutlined,
-  StopOutlined,
-  FileUnknownOutlined,
-  DisconnectOutlined,
-  NodeIndexOutlined,
-  ShareAltOutlined
-}
+// 图标映射已移除，直接使用meta.icon
 
 // 处理可见的子路由
 const visibleChildren = computed(() => {
@@ -118,10 +73,7 @@ const visibleChildren = computed(() => {
 
   const processRoute = (r) => {
     const processed = { ...r }
-    // 处理图标
-    if (processed.meta?.icon && iconMap[processed.meta.icon]) {
-      processed.meta.icon = iconMap[processed.meta.icon]
-    }
+    // 直接使用meta.icon，无需映射
     // 递归处理子路由
     if (processed.children) {
       processed.children = processed.children

@@ -1,6 +1,6 @@
-*{
-    margin: 0;
-    padding: 0;
+* {
+  margin: 0;
+  padding: 0;
 }
 
 /*滚动条*/
@@ -37,22 +37,32 @@
 //   width: 0;
 // }
 
-:where(.css-dev-only-do-not-override-13gz7x).ant-menu-horizontal {
-  border: none;
+:where(.ant-menu-horizontal) {
+  border: none !important;
 }
 
-:where(.css-dev-only-do-not-override-1p3hq3p).ant-menu-light.ant-menu-root.ant-menu-inline, :where(.css-dev-only-do-not-override-1p3hq3p).ant-menu-light.ant-menu-root.ant-menu-vertical{
-  border: none;
+:where(.ant-menu.ant-menu-root.ant-menu-inline),
+:where(.ant-menu.ant-menu-root.ant-menu-vertical) {
+  border: none !important;
 }
 
-:where(.css-dev-only-do-not-override-13gz7x).ant-menu-light.ant-menu-root.ant-menu-inline, :where(.css-dev-only-do-not-override-13gz7x).ant-menu-light.ant-menu-root.ant-menu-vertical{
-  border: none;
+:where(.ant-layout .ant-layout-header) {
+  padding: 0 $top-padding !important;
 }
 
-:where(.css-dev-only-do-not-override-1p3hq3p).ant-layout .ant-layout-header {
-    padding: 0 $top-padding;
+:where(.ant-layout .ant-layout-header .ant-menu) {
+  line-height: 46px !important;
 }
 
-:where(.css-dev-only-do-not-override-13gz7x).ant-layout .ant-layout-header {
-    padding: 0 $top-padding;
+//后续可能需要修改，不能固定死
+:where(.ant-menu.ant-menu-horizontal > .ant-menu-item),
+:where(.ant-menu.ant-menu-horizontal > .ant-menu-submenu) {
+  border-radius: 8px !important;
+}
+
+:where(.ant-menu.ant-menu-horizontal > .ant-menu-item-selected),
+:where(.ant-menu.ant-menu-horizontal > .ant-menu-submenu-selected) {
+  &::after {
+    display: none !important;
+  }
 }

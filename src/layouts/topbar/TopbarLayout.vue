@@ -1,18 +1,17 @@
 <template>
   <a-layout style="height: 100vh;width: 100%;">
     <!-- 顶部导航栏 -->
-    <a-layout-header class="topbar-header" :class="{'theme-mode-header': appStore.headerTheme === 'dark'}">
+    <a-layout-header class="topbar-header" :class="{ 'theme-mode-header': appStore.headerTheme === 'dark' }">
       <div class="header-left">
-        <!-- Logo -->
         <div class="logo">
           <img src="/vite.svg" alt="logo" class="logo-img" />
-          <span class="logo-text" :class="{'theme-mode-logo-text': appStore.headerTheme === 'dark'}">Ant Design Pro</span>
+          <span class="logo-text" :class="{ 'theme-mode-logo-text': appStore.headerTheme === 'dark' }">Ant Design
+            Pro</span>
         </div>
+      </div>
 
-        <!-- 顶部菜单 -->
-        <div class="topbar-menu">
-          <TopbarMenu />
-        </div>
+      <div class="topbar-menu">
+        <TopbarMenu />
       </div>
 
       <div class="header-right">
@@ -25,11 +24,6 @@
     <a-layout-content class="topbar-content">
       <router-view />
     </a-layout-content>
-
-    <!-- 页脚 -->
-    <!-- <a-layout-footer class="topbar-footer">
-      Ant Design Pro ©2024 Created by Ant UED
-    </a-layout-footer> -->
   </a-layout>
 </template>
 
@@ -46,7 +40,6 @@ const { token } = theme.useToken()
 
 <style scoped lang="scss">
 .topbar-header {
-  width: 100%;
   display: flex;
   align-items: center;
   height: $top-height-horizontal;
@@ -57,13 +50,14 @@ const { token } = theme.useToken()
   }
 
   .header-left {
-    width: 70%;
+    height: 100%;
+    width: 15%;
+    display: flex;
+    align-items: center;
 
     .logo {
-      float: left;
       display: flex;
       align-items: center;
-      width: 200px;
 
       .logo-img {
         width: 32px;
@@ -72,8 +66,9 @@ const { token } = theme.useToken()
       }
 
       .logo-text {
-        font-size: 18px;
+        font-size: 20px;
         font-weight: 600;
+        font-weight: bold;
         color: v-bind('token.colorText');
         white-space: nowrap;
 
@@ -82,17 +77,19 @@ const { token } = theme.useToken()
         }
       }
     }
+  }
 
-    .topbar-menu {
-      flex: 1;
-    }
+  .topbar-menu {
+    width: 60%;
   }
 
   .header-right {
-    flex: 1;
+    height: 100%;
+    width: 25%;
     display: flex;
     align-items: center;
     justify-content: flex-end;
+    background-color: red;
   }
 }
 
