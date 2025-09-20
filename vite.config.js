@@ -1,9 +1,11 @@
 import { defineConfig, loadEnv } from "vite";
 import vue from "@vitejs/plugin-vue";
+import Components from "unplugin-vue-components/vite";
+import { AntDesignVueResolver } from "unplugin-vue-components/resolvers";
 //引入path路径，用于路径别名
 import path from "path";
-import { resolve } from 'path';
-import VueDevTools from 'vite-plugin-vue-devtools'
+import { resolve } from "path";
+import VueDevTools from "vite-plugin-vue-devtools";
 
 // 导出 Vite 配置
 export default defineConfig(({ command, mode }) => {
@@ -32,6 +34,13 @@ export default defineConfig(({ command, mode }) => {
       },
     },
     plugins: [
+      Components({
+        resolvers: [
+          AntDesignVueResolver({
+            importStyle: false,
+          }),
+        ],
+      }),
       vue(),
       // createSvgIconsPlugin({
       //   // 配置svg图标所在位置
@@ -51,11 +60,11 @@ export default defineConfig(({ command, mode }) => {
     //scss样式配置：global.scss中的变量可以全局使用
     css: {
       preprocessorOptions: {
-          scss: {
-            javascriptEnabled: true,
-            additionalData: '@use "@/style/global.scss" as *;'
-          },
+        scss: {
+          javascriptEnabled: true,
+          additionalData: '@use "@/style/global.scss" as *;',
         },
+      },
     },
   };
 });

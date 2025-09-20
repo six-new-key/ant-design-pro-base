@@ -1,25 +1,14 @@
 <template>
-  <a-drawer
-    :open="visible"
-    @update:open="$emit('update:visible', $event)"
-    title="系统配置"
-    placement="right"
-    :width="360"
-    class="layout-drawer"
-  >
+  <a-drawer :open="visible" @update:open="$emit('update:visible', $event)" title="系统配置" placement="right" :width="360"
+    class="layout-drawer">
     <div class="settings-content">
       <div class="section">
         <h3 class="section-title">布局风格</h3>
         <p class="section-desc">选择适合您的布局风格</p>
-        
+
         <div class="layout-grid">
-          <div 
-            v-for="config in availableLayoutConfigs" 
-            :key="config.key"
-            class="layout-card"
-            :class="{ active: currentLayout === config.key }"
-            @click="handleLayoutSwitch(config.key)"
-          >
+          <div v-for="config in availableLayoutConfigs" :key="config.key" class="layout-card"
+            :class="{ active: currentLayout === config.key }" @click="handleLayoutSwitch(config.key)">
             <div class="layout-preview">
               <div class="preview-container">
                 <!-- 根据布局类型显示不同的预览图 -->
@@ -48,30 +37,27 @@
                 </div>
               </div>
             </div>
-            
+
             <div class="layout-info">
               <h4 class="layout-name">{{ config.name }}</h4>
               <p class="layout-desc">{{ config.description }}</p>
             </div>
-            
+
             <div v-if="currentLayout === config.key" class="active-badge">
               <CheckOutlined />
             </div>
           </div>
         </div>
       </div>
-      
+
       <!-- 主题模式切换 -->
       <div class="section">
         <h3 class="section-title">主题模式</h3>
         <p class="section-desc">选择明亮或暗黑主题模式</p>
-        
+
         <div class="theme-mode-grid">
-          <div 
-            class="theme-mode-card"
-            :class="{ active: currentThemeMode === 'light' }"
-            @click="handleThemeModeSwitch('light')"
-          >
+          <div class="theme-mode-card" :class="{ active: currentThemeMode === 'light' }"
+            @click="handleThemeModeSwitch('light')">
             <div class="theme-mode-preview light-preview">
               <div class="preview-header"></div>
               <div class="preview-body"></div>
@@ -84,12 +70,9 @@
               <CheckOutlined />
             </div>
           </div>
-          
-          <div 
-            class="theme-mode-card"
-            :class="{ active: currentThemeMode === 'dark' }"
-            @click="handleThemeModeSwitch('dark')"
-          >
+
+          <div class="theme-mode-card" :class="{ active: currentThemeMode === 'dark' }"
+            @click="handleThemeModeSwitch('dark')">
             <div class="theme-mode-preview dark-preview">
               <div class="preview-header"></div>
               <div class="preview-body"></div>
@@ -104,32 +87,51 @@
           </div>
         </div>
       </div>
-      
+
       <!-- 侧边栏/顶栏主题切换 -->
       <div class="section">
         <h3 class="section-title">侧边栏/顶栏主题</h3>
-        
+
         <div class="theme-switch-list">
           <div class="theme-switch-item">
             <div class="theme-switch-info">
               <h4 class="theme-switch-name">深色侧边栏</h4>
               <p class="theme-switch-desc">使用深色的侧边栏主题</p>
             </div>
-            <a-switch 
-              :checked="currentSidebarTheme === 'dark'"
-              @change="(checked) => handleSidebarThemeSwitch(checked ? 'dark' : 'light')"
-            />
+            <a-switch :checked="currentSidebarTheme === 'dark'"
+              @change="(checked) => handleSidebarThemeSwitch(checked ? 'dark' : 'light')" />
           </div>
-          
+
           <div class="theme-switch-item">
             <div class="theme-switch-info">
               <h4 class="theme-switch-name">深色顶栏</h4>
               <p class="theme-switch-desc">使用深色的顶栏主题</p>
             </div>
-            <a-switch 
-              :checked="currentHeaderTheme === 'dark'"
-              @change="(checked) => handleHeaderThemeSwitch(checked ? 'dark' : 'light')"
-            />
+            <a-switch :checked="currentHeaderTheme === 'dark'"
+              @change="(checked) => handleHeaderThemeSwitch(checked ? 'dark' : 'light')" />
+          </div>
+        </div>
+      </div>
+
+      <!-- 自定义系统主题色 -->
+      <div class="setting-section">
+        <div class="section-title">系统主题色</div>
+        <div class="section-description">选择系统主题色，支持预设颜色和自定义颜色</div>
+
+        <!-- 预设主题色 -->
+        <div class="theme-colors">
+          <div v-for="(preset, index) in themeStore.colorPresets" :key="index" class="color-item"
+            :class="{ active: themeStore.selectedPresetIndex === index && themeStore.colorMode === 'preset' }"
+            :style="{ backgroundColor: preset.color }" @click="handlePresetColorSelect(index)" :title="preset.name">
+            <CheckOutlined v-if="themeStore.selectedPresetIndex === index && themeStore.colorMode === 'preset'"
+              class="check-icon" />
+          </div>
+
+          <!-- 自定义颜色选择器 -->
+          <div class="color-item custom-color" :class="{ active: themeStore.colorMode === 'custom' }">
+            <input type="color" :value="themeStore.primaryColorHex" @change="handleCustomColorChange"
+              class="color-picker" title="自定义颜色" />
+            <CheckOutlined v-if="themeStore.colorMode === 'custom'" class="check-icon" />
           </div>
         </div>
       </div>
@@ -141,7 +143,7 @@
 import { computed } from 'vue'
 import { CheckOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
-import { useAppStore } from '@/stores'
+import { useAppStore, useThemeStore } from '@/stores'
 import { getLayoutConfig } from '@/utils/layout.config.js'
 
 // Props
@@ -160,6 +162,7 @@ const props = defineProps({
 const emit = defineEmits(['update:visible', 'layout-switch'])
 
 const appStore = useAppStore()
+const themeStore = useThemeStore()
 
 // 当前布局
 const currentLayout = computed(() => appStore.layout)
@@ -187,10 +190,10 @@ const handleClose = () => {
 const handleLayoutSwitch = (layoutKey) => {
   // 直接在子组件中处理布局切换
   appStore.setLayout(layoutKey)
-  
+
   // 触发父组件的布局切换事件（用于显示加载状态）
   emit('layout-switch', layoutKey)
-  
+
   handleClose()
 }
 
@@ -208,9 +211,25 @@ const handleSidebarThemeSwitch = (theme) => {
 const handleHeaderThemeSwitch = (theme) => {
   appStore.setHeaderTheme(theme)
 }
+
+// 处理预设主题色选择
+const handlePresetColorSelect = (index) => {
+  themeStore.selectPresetColor(index)
+  message.success(`已切换到${themeStore.colorPresets[index].name}`)
+}
+
+// 处理自定义颜色变化
+const handleCustomColorChange = (event) => {
+  const color = event.target.value
+  themeStore.setCustomColor(color)
+}
+
+
+
+
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .settings-content {
   padding: 8px 0;
 }
@@ -531,4 +550,98 @@ const handleHeaderThemeSwitch = (theme) => {
   line-height: 1.3;
 }
 
+/* 主题色选择器样式 */
+.setting-section {
+  margin-bottom: 24px;
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #262626;
+  margin: 0 0 8px 0;
+}
+
+.section-description {
+  font-size: 14px;
+  color: #8c8c8c;
+  margin: 0 0 16px 0;
+}
+
+.theme-colors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.color-item {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.color-item:hover {
+  transform: scale(1.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.color-item.active {
+  border-color: #fff;
+  box-shadow: 0 0 0 2px #1890ff;
+}
+
+.color-picker {
+  width: 100%;
+  height: 100%;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  opacity: 1;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 3;
+}
+
+.custom-color {
+  position: relative;
+  background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%),
+    linear-gradient(-45deg, #f0f0f0 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #f0f0f0 75%),
+    linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+  background-size: 8px 8px;
+  background-position: 0 0, 0 4px, 4px -4px, -4px 0px;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--primary-color, #1890ff);
+    border-radius: 6px;
+    z-index: 1;
+  }
+
+  .check-icon {
+    z-index: 2;
+  }
+}
+
+
+
+.check-icon {
+  color: #fff;
+  font-size: 14px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
 </style>

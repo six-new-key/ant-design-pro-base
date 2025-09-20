@@ -7,15 +7,21 @@
 <script setup>
 import { computed } from 'vue'
 import { theme } from 'ant-design-vue'
-import { useAppStore } from '@/stores'
+import { useAppStore, useThemeStore } from '@/stores'
 
 const appStore = useAppStore()
+const themeStore = useThemeStore()
 
 // 主题配置
 const themeConfig = computed(() => {
   return {
     cssVar: true,
-    algorithm: appStore.themeMode === 'dark' ? theme.darkAlgorithm : theme.defaultAlgorithm
+    algorithm: appStore.themeMode === 'dark' ? theme.darkAlgorithm : theme.defaultAlgorithm,
+    token: {
+      colorPrimary: themeStore.primaryColorHex,
+      colorInfo: themeStore.primaryColorHex,
+      colorLink: themeStore.primaryColorHex
+    }
   }
 })
 </script>

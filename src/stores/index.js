@@ -22,3 +22,4 @@ export default pinia
 
 // 导出 stores
 export { useAppStore } from './modules/app'
+export { useThemeStore } from './modules/theme'
