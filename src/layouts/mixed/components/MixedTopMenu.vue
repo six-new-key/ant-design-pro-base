@@ -203,7 +203,7 @@ watch(() => route.path, (newPath) => {
   align-items: center;
   justify-content: flex-end;
   min-width: 300px;
-  background-color: yellow;
+  // background-color: yellow;
 
   .header-icon {
     font-size: 16px;

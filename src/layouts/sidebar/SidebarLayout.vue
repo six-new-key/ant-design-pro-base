@@ -23,23 +23,7 @@
       </div>
 
       <template #trigger>
-        <div class="custom-trigger" @click.stop
-          :class="{ 'collapsed': collapsed, 'theme-mode-trigger': appStore.sidebarTheme === 'dark' }">
-          <a-button type="text" @click="handleToggleCollapse">
-            <template #icon>
-              <DoubleLeftOutlined style="font-size: 10px;" v-if="!collapsed" />
-              <DoubleRightOutlined style="font-size: 10px;" v-else />
-            </template>
-          </a-button>
-          <a-tooltip :title="appStore.sidebarFixed ? '取消' : '固定'">
-            <a-button v-if="!collapsed" type="text" @click="handlePinClick">
-              <template #icon>
-                <StopOutlined style="font-size: 10px;" v-if="appStore.sidebarFixed" />
-                <PushpinOutlined style="font-size: 10px;" v-else />
-              </template>
-            </a-button>
-          </a-tooltip>
-        </div>
+        <TriggerCollapsed @trigger-collapse="handleToggleCollapse" @pin-click="handlePinClick" />
       </template>
     </a-layout-sider>
 
@@ -65,7 +49,7 @@ import Header from './components/Header.vue'
 import Sidebar from './components/Sidebar.vue'
 import { settings } from '@/settings'
 import { theme } from 'ant-design-vue'
-import { DoubleLeftOutlined, DoubleRightOutlined, PushpinOutlined, StopOutlined } from '@ant-design/icons-vue'
+import TriggerCollapsed from '@/components/core/TriggerCollapsed.vue'
 
 const sidebarWidth = ref(settings.sidebarWidth)
 const sidebarWidthCollapsed = ref(settings.sidebarWidthCollapsed)
@@ -93,7 +77,6 @@ const handleSidebarMouseEnter = () => {
 
 // 鼠标离开侧边栏事件处理
 const handleSidebarMouseLeave = () => {
-  console.log('handleSidebarMouseLeave')
   if (!appStore.sidebarFixed) {
     appStore.setSidebarCollapsed(true)
   }
@@ -148,37 +131,6 @@ watch(() => appStore.sidebarCollapsed, (newVal) => {
   .sidebar-menu {
     height: calc(100vh - $top-height - 50px);
     overflow-y: auto;
-  }
-
-  .custom-trigger {
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 10px;
-    border-right: 1px solid v-bind('token.colorFillSecondary');
-
-    &.collapsed {
-      padding: 0;
-      justify-content: center;
-    }
-
-    &.theme-mode-trigger {
-      background-color: #001529;
-
-
-      :where(.css-dev-only-do-not-override-1p3hq3p).ant-btn {
-        background: #002342;
-      }
-
-      :where(.css-dev-only-do-not-override-1p3hq3p).ant-btn:hover {
-        background: #002f59;
-      }
-
-      :where(.css-dev-only-do-not-override-1p3hq3p).ant-btn>span {
-        color: #fff;
-      }
-    }
   }
 }
 

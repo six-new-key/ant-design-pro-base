@@ -16,23 +16,7 @@
           <MixedSideMenu />
 
           <template #trigger>
-            <div class="custom-trigger" @click.stop
-              :class="{ 'collapsed': collapsed, 'theme-mode-trigger': appStore.sidebarTheme === 'dark' }">
-              <a-button type="text" @click="handleToggleCollapse">
-                <template #icon>
-                  <DoubleLeftOutlined style="font-size: 10px;" v-if="!collapsed" />
-                  <DoubleRightOutlined style="font-size: 10px;" v-else />
-                </template>
-              </a-button>
-              <a-tooltip :title="appStore.sidebarFixed ? '取消' : '固定'">
-                <a-button v-if="!collapsed" type="text" @click="handlePinClick">
-                  <template #icon>
-                    <StopOutlined style="font-size: 10px;" v-if="appStore.sidebarFixed" />
-                    <PushpinOutlined style="font-size: 10px;" v-else />
-                  </template>
-                </a-button>
-              </a-tooltip>
-            </div>
+             <TriggerCollapsed @trigger-collapse="handleToggleCollapse" @pin-click="handlePinClick" />
           </template>
         </a-layout-sider>
       </transition>
@@ -55,7 +39,7 @@ import MixedTopMenu from './components/MixedTopMenu.vue'
 import MixedSideMenu from './components/MixedSideMenu.vue'
 import { theme } from 'ant-design-vue'
 import { settings } from '@/settings'
-import { DoubleLeftOutlined, DoubleRightOutlined, PushpinOutlined, StopOutlined } from '@ant-design/icons-vue'
+import TriggerCollapsed from '@/components/core/TriggerCollapsed.vue'
 
 const sidebarWidth = ref(settings.sidebarWidth)
 const sidebarWidthCollapsed = ref(settings.sidebarWidthCollapsed)
@@ -126,35 +110,6 @@ const handleSidebarMouseLeave = () => {
 
   &.mixed-sider-dark {
     border-top: 1px solid #414141;
-  }
-
-  .custom-trigger {
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 10px;
-
-    &.collapsed {
-      padding: 0;
-      justify-content: center;
-    }
-
-    &.theme-mode-trigger {
-      background-color: #001529;
-
-      :where(.css-dev-only-do-not-override-1p3hq3p).ant-btn {
-        background: #002342;
-      }
-
-      :where(.css-dev-only-do-not-override-1p3hq3p).ant-btn:hover {
-        background: #002f59;
-      }
-
-      :where(.css-dev-only-do-not-override-1p3hq3p).ant-btn>span {
-        color: #fff;
-      }
-    }
   }
 }
 

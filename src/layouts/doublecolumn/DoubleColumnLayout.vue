@@ -22,23 +22,7 @@
                 <SecondColumnMenu :parent-route="selectedParentRoute" />
 
                 <template #trigger>
-                    <div class="custom-trigger" @click.stop
-                        :class="{ 'collapsed': collapsed, 'theme-mode-trigger': appStore.sidebarTheme === 'dark' }">
-                        <a-button type="text" @click="handleToggleCollapse">
-                            <template #icon>
-                                <DoubleLeftOutlined style="font-size: 10px;" v-if="!collapsed" />
-                                <DoubleRightOutlined style="font-size: 10px;" v-else />
-                            </template>
-                        </a-button>
-                        <a-tooltip :title="appStore.sidebarFixed ? '取消' : '固定'">
-                            <a-button v-if="!collapsed" type="text" @click="handlePinClick">
-                                <template #icon>
-                                    <StopOutlined style="font-size: 10px;" v-if="appStore.sidebarFixed" />
-                                    <PushpinOutlined style="font-size: 10px;" v-else />
-                                </template>
-                            </a-button>
-                        </a-tooltip>
-                    </div>
+                    <TriggerCollapsed @trigger-collapse="handleToggleCollapse" @pin-click="handlePinClick" />
                 </template>
             </a-layout-sider>
         </transition>
@@ -68,7 +52,7 @@ import FirstColumnMenu from './components/FirstColumnMenu.vue'
 import SecondColumnMenu from './components/SecondColumnMenu.vue'
 import { theme } from 'ant-design-vue'
 import { settings } from '@/settings'
-import { DoubleLeftOutlined, DoubleRightOutlined, StopOutlined, PushpinOutlined } from '@ant-design/icons-vue'
+import TriggerCollapsed from '@/components/core/TriggerCollapsed.vue'
 
 const appStore = useAppStore()
 const { token } = theme.useToken()
@@ -153,36 +137,6 @@ const handleFirstColumnSelect = (route) => {
     bottom: 0;
     z-index: 1;
     border-right: 1px solid v-bind('token.colorFillSecondary');
-
-    .custom-trigger {
-        height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0 10px;
-        border-right: 1px solid v-bind('token.colorFillSecondary');
-
-        &.collapsed {
-            padding: 0;
-            justify-content: center;
-        }
-
-        &.theme-mode-trigger {
-            background-color: #001529;
-
-            :where(.css-dev-only-do-not-override-1p3hq3p).ant-btn {
-                background: #002342;
-            }
-
-            :where(.css-dev-only-do-not-override-1p3hq3p).ant-btn:hover {
-                background: #002f59;
-            }
-
-            :where(.css-dev-only-do-not-override-1p3hq3p).ant-btn>span {
-                color: #fff;
-            }
-        }
-    }
 }
 
 /* 从左至右滑入动画 */

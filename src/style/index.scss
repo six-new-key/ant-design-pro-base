@@ -3,40 +3,6 @@
   padding: 0;
 }
 
-/*滚动条*/
-/*滚动条整体部分,必须要设置*/
-// ::-webkit-scrollbar {
-//   display: none;
-// }
-
-::-webkit-scrollbar {
-  width: 5px !important;
-  height: 0 !important;
-}
-/*
-/*滚动条的轨道*/
-// ::-webkit-scrollbar-track {
-//   // background: #fff;
-// }
-
-// /*滚动条的滑块按钮*/
-// ::-webkit-scrollbar-thumb {
-//   border-radius: 5px;
-//   background-color: #d9d9d9 !important;
-//   transition: all 0.2s;
-//   -webkit-transition: all 0.2s;
-// }
-
-// ::-webkit-scrollbar-thumb:hover {
-//   background-color: #b0abab !important;
-// }
-
-// /*滚动条的上下两端的按钮*/
-// ::-webkit-scrollbar-button {
-//   height: 0px;
-//   width: 0;
-// }
-
 :where(.ant-menu-horizontal) {
   border: none !important;
 }
@@ -65,4 +31,20 @@
   &::after {
     display: none !important;
   }
+}
+
+:where(.ant-menu-dark) {
+  background: rgb(22, 22, 24) !important;
+}
+
+:where(.ant-menu-dark.ant-menu-inline .ant-menu-sub.ant-menu-inline) {
+  background: rgb(22, 22, 24) !important;
+}
+
+:where(.ant-menu-dark.ant-menu-inline .ant-menu-sub.ant-menu-inline) {
+  background: rgba(255, 255, 255, 0.04) !important;
+}
+
+:where(.ant-menu-dark.ant-menu-submenu > .ant-menu) {
+  background: rgba(255, 255, 255, 0.04) !important;
 }
