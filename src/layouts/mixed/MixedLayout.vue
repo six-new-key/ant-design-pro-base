@@ -107,6 +107,7 @@ const handleSidebarMouseLeave = () => {
 }
 
 .mixed-sider {
+  border-right: 1px solid v-bind('token.colorFillSecondary');
 
   &.mixed-sider-dark {
     border-top: 1px solid #414141;

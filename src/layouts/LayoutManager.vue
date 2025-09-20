@@ -29,7 +29,7 @@ import { computed, ref, onMounted } from 'vue'
 import { useAppStore } from '@/stores'
 import { getEnabledLayouts, getLayoutConfig, getDefaultLayoutConfig } from '@/utils/layout.config.js'
 import { SettingOutlined } from '@ant-design/icons-vue'
-import AppSettingsDrawer from '@/components/appSettings/AppSettingsDrawer.vue'
+import AppSettingsDrawer from '@/components/core/AppSettingsDrawer.vue'
 
 const appStore = useAppStore()
 
