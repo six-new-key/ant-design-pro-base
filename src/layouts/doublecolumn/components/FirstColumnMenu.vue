@@ -128,7 +128,7 @@ watch(() => route.path, (newPath) => {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 52px; // 设置固定宽度
+    width: 50px; // 设置固定宽度
     height: 56px; // 设置固定高度
     line-height: 1.2;
 
@@ -137,8 +137,9 @@ watch(() => route.path, (newPath) => {
     }
 
     .menu-title {
-      width: 52px; // 设置具体宽度,考虑到padding的4px左右间距
+      width: 50px; // 设置具体宽度,考虑到padding的4px左右间距
       line-height: 1.2;
+      font-size: 13px;
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis; // 文字溢出显示省略号

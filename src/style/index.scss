@@ -44,7 +44,7 @@
 :where(.ant-menu.ant-menu-inline .ant-menu-sub.ant-menu-inline) {
   background: transparent !important;
 }
-:where(.ant-menu-dark.ant-menu-inline .ant-menu-item):hover {
+:where(.ant-menu-dark.ant-menu-inline .ant-menu-item):not(.ant-menu-item-selected):hover {
   background: rgba(255, 255, 255, 0.12) !important;
 }
 

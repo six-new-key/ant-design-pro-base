@@ -4,7 +4,7 @@
     <transition name="slide-fade">
       <div v-if="!appStore.sidebarCollapsed" class="project-title"
         :class="{ 'text-white': appStore.sidebarTheme === 'dark' }">
-        Ant Design Pro
+        {{ parentRoute?.meta?.title || parentRoute?.name || 'Ant Design Pro' }}
       </div>
     </transition>
 
@@ -139,10 +139,10 @@ watch(() => props.parentRoute, () => {
 .project-title {
   height: $top-height;
   display: flex;
-  padding-left: 26px;
+  padding-left: 28px;
   align-items: center;
   font-weight: bold;
-  font-size: 18px;
+  font-size: 16px;
   color: v-bind('token.colorText');
 
   &.text-white {
