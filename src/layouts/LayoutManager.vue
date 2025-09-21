@@ -157,7 +157,7 @@ defineExpose({
   align-items: center;
   justify-content: center;
   height: 100vh;
-  background: #f5f5f5;
+  background: #eee;
 }
 
 .loading-spinner {

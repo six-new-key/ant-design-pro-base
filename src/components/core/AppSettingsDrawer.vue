@@ -478,7 +478,7 @@ const handleCustomColorChange = (color) => {
 
 .light-preview .preview-header {
   height: 20px;
-  background: #f5f5f5;
+  background: #eee;
   border-bottom: 1px solid #e8e8e8;
 }
 
