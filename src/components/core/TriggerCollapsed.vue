@@ -62,7 +62,7 @@ watch(() => appStore.sidebarCollapsed, (newVal) => {
     }
 
     &.theme-mode-trigger {
-        background: #242424;
+        background: $component-bg-color;
         
         :where(.ant-btn):hover {
             background: rgb(52, 52, 57);

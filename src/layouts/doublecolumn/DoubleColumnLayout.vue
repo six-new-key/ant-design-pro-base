@@ -3,7 +3,7 @@
         <!-- 第一列：主菜单栏 -->
         <a-layout-sider :width="firstColumnWidth" class="first-column-sider"
             :class="{ 'first-column-sider-light': appStore.themeMode === 'light' && appStore.sidebarTheme === 'dark' }"
-            :theme="appStore.sidebarTheme">
+            theme="dark">
             <!-- Logo区域 -->
             <div class="logo-container">
                 <img src="/vite.svg" alt="logo" class="logo-img" />
@@ -16,7 +16,7 @@
         <!-- 第二列：子菜单栏 -->
         <transition name="slide-fade">
             <a-layout-sider v-if="showSecondColumn" :width="secondColumnWidth" v-model:collapsed="collapsed" collapsible
-                :collapsed-width="secondColumnWidthCollapsed" class="second-column-sider" :theme="appStore.sidebarTheme"
+                :collapsed-width="sidebarWidthCollapsed" class="second-column-sider" :theme="appStore.sidebarTheme"
                 @mouseenter="handleSidebarMouseEnter" @mouseleave="handleSidebarMouseLeave">
                 <!-- 第二列菜单 -->
                 <SecondColumnMenu :parent-route="selectedParentRoute" />
@@ -24,7 +24,7 @@
                 <template #trigger>
                     <TriggerCollapsed @trigger-collapse="handleToggleCollapse" @pin-click="handlePinClick" />
                 </template>
-            </a-layout-sider>
+            </a-layout-sider>   
         </transition>
 
 
@@ -90,7 +90,7 @@ const handleSidebarMouseLeave = () => {
 // 列宽设置
 const firstColumnWidth = ref(settings.firstColumnWidth)
 const secondColumnWidth = ref(settings.secondColumnWidth)
-const secondColumnWidthCollapsed = ref(settings.secondColumnWidthCollapsed)
+const sidebarWidthCollapsed = ref(settings.sidebarWidthCollapsed)
 
 // 当前选中的父级路由
 const selectedParentRoute = ref(null)
@@ -107,7 +107,7 @@ const totalSidebarWidth = computed(() => {
 
 // 总侧边栏宽度（折叠状态）
 const totalSidebarWidthCollapsed = computed(() => {
-    return firstColumnWidth.value + (showSecondColumn.value ? secondColumnWidthCollapsed.value : 0)
+    return firstColumnWidth.value + (showSecondColumn.value ? sidebarWidthCollapsed.value : 0)
 })
 
 // 处理第一列菜单选择
@@ -124,6 +124,7 @@ const handleFirstColumnSelect = (route) => {
     bottom: 0;
     z-index: 1;
     border-right: 1px solid v-bind('token.colorFillSecondary');
+    background: $bg-color !important;
 
     &.first-column-sider-light {
         border-right: 1px solid #414141;

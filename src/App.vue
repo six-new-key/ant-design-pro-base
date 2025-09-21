@@ -8,6 +8,7 @@
 import { computed } from 'vue'
 import { theme } from 'ant-design-vue'
 import { useAppStore, useThemeStore } from '@/stores'
+import { settings } from './settings'
 
 const appStore = useAppStore()
 
@@ -20,13 +21,13 @@ const themeConfig = computed(() => {
     token: {
       colorPrimary: themeStore.primaryColorHex,
       colorInfo: themeStore.primaryColorHex,
-      colorBgLayout: appStore.themeMode === 'dark' ? "#181818" : "#eee",
-      colorBgContainer: appStore.themeMode === 'dark' ? "#242424" : "#fff",
+      colorBgLayout: appStore.themeMode === 'dark' ? settings.bgColor : "#eee",
+      colorBgContainer: appStore.themeMode === 'dark' ? settings.componentBgColor : "#fff",
     },
     components: {
       Menu: {
-        colorItemBgSelected: themeStore.primaryColorHex + '36',
-        colorItemBgSelectedHorizontal: themeStore.primaryColorHex + '36',
+        // colorItemBgSelected: appStore.sidebarTheme === 'dark' || appStore.headerTheme === 'dark' ? themeStore.primaryColorHex : themeStore.primaryColorHex + '36',
+        // colorItemBgSelectedHorizontal: appStore.sidebarTheme === 'dark' || appStore.headerTheme === 'dark' ? themeStore.primaryColorHex : themeStore.primaryColorHex + '36',
       }
     }
   }
@@ -35,15 +36,15 @@ const themeConfig = computed(() => {
 
 <style>
 :where(.ant-layout .ant-layout-sider) {
-  background: v-bind('appStore.themeMode === "dark" || appStore.sidebarTheme === "dark" ? "#242424" : "#fff"') !important;
+  background: v-bind('appStore.themeMode === "dark" || appStore.sidebarTheme === "dark" ? settings.componentBgColor : "#fff"') !important;
 }
 
 :where(.mixed-top-header.theme-mode-header) {
-  background: v-bind('appStore.themeMode === "dark" || appStore.headerTheme === "dark" ? "#242424" : "#fff"') !important;
+  background: v-bind('appStore.themeMode === "dark" || appStore.headerTheme === "dark" ? settings.componentBgColor : "#fff"') !important;
 }
 
 :where(.topbar-header.theme-mode-header) {
-  background: v-bind('appStore.themeMode === "dark" || appStore.headerTheme === "dark" ? "#242424" : "#fff"') !important;
+  background: v-bind('appStore.themeMode === "dark" || appStore.headerTheme === "dark" ? settings.componentBgColor : "#fff"') !important;
 }
 
 ::-webkit-scrollbar {

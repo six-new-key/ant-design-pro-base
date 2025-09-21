@@ -1,7 +1,7 @@
 <template>
   <div class="first-column-menu">
-    <a-menu v-model:selectedKeys="selectedKeys" mode="vertical" :theme="appStore.sidebarTheme"
-      class="vertical-menu" @select="handleMenuSelect">
+    <a-menu v-model:selectedKeys="selectedKeys" mode="vertical" theme="dark" class="vertical-menu"
+      @select="handleMenuSelect">
       <a-menu-item v-for="route in firstLevelRoutes" :key="route.path">
         <template #icon>
           <component :is="route.meta?.icon" v-if="route.meta?.icon" />
@@ -110,28 +110,39 @@ watch(() => route.path, (newPath) => {
   overflow-y: auto;
 }
 
+//隐藏滚动条
+::-webkit-scrollbar {
+  display: none;
+}
+
 .vertical-menu {
   border: none;
   width: 100%;
+  background: $bg-color !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
   :deep(.ant-menu-item) {
     display: flex;
     flex-direction: column;
     align-items: center;
-    height: auto;
-    padding: 12px 0;
-    margin: 6px;
+    justify-content: center;
+    width: 52px; // 设置固定宽度
+    height: 56px; // 设置固定高度
     line-height: 1.2;
 
     .ant-menu-item-icon {
-      font-size: 20px;
       margin-bottom: 8px;
     }
 
     .menu-title {
-      font-size: 12px;
+      width: 52px; // 设置具体宽度,考虑到padding的4px左右间距
       line-height: 1.2;
-      padding-right: 8px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis; // 文字溢出显示省略号
+      box-sizing: border-box; // 确保padding计入宽度
     }
   }
 }
