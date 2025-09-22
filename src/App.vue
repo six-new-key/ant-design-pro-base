@@ -23,12 +23,9 @@ const themeConfig = computed(() => {
       colorInfo: themeStore.primaryColorHex,
       colorBgLayout: appStore.themeMode === 'dark' ? settings.bgColor : "#eee",
       colorBgContainer: appStore.themeMode === 'dark' ? settings.componentBgColor : "#fff",
-    },
-    components: {
-      Menu: {
-        // colorItemBgSelected: appStore.sidebarTheme === 'dark' || appStore.headerTheme === 'dark' ? themeStore.primaryColorHex : themeStore.primaryColorHex + '36',
-        // colorItemBgSelectedHorizontal: appStore.sidebarTheme === 'dark' || appStore.headerTheme === 'dark' ? themeStore.primaryColorHex : themeStore.primaryColorHex + '36',
-      }
+      fontSize: themeStore.baseConfig.fontSize,
+      borderRadius: themeStore.baseConfig.borderRadius,
+      wireframe: themeStore.baseConfig.wireframe,
     }
   }
 })
@@ -45,6 +42,12 @@ const themeConfig = computed(() => {
 
 :where(.topbar-header.theme-mode-header) {
   background: v-bind('appStore.themeMode === "dark" || appStore.headerTheme === "dark" ? settings.componentBgColor : "#fff"') !important;
+}
+
+
+:where(.ant-menu.ant-menu-horizontal > .ant-menu-item),
+:where(.ant-menu.ant-menu-horizontal > .ant-menu-submenu) {
+  border-radius: v-bind('themeStore.baseConfig.borderRadius + "px"') !important;
 }
 
 ::-webkit-scrollbar {

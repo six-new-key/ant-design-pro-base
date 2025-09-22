@@ -142,7 +142,6 @@ watch(() => props.parentRoute, () => {
   padding-left: 28px;
   align-items: center;
   font-weight: bold;
-  font-size: 16px;
   color: v-bind('token.colorText');
 
   &.text-white {

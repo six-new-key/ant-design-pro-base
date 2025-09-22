@@ -46,7 +46,7 @@ const { token } = theme.useToken()
   background: v-bind('token.colorBgContainer');
 
   &.theme-mode-header {
-    background-color: #001529;
+    background: $component-bg-color;
   }
 
   .header-left {
@@ -89,7 +89,6 @@ const { token } = theme.useToken()
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    // background-color: red;
   }
 }
 

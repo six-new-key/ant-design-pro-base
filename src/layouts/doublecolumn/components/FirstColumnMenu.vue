@@ -15,12 +15,12 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useAppStore } from '@/stores'
+import { useThemeStore} from '@/stores'
 // 图标组件已在main.js中全局注册，无需单独导入
 import { routes as allRoutes } from '@/router/routes'
 
 const emit = defineEmits(['menu-select'])
-const appStore = useAppStore()
+const themeStore = useThemeStore()
 const route = useRoute()
 const router = useRouter()
 const selectedKeys = ref([])
@@ -139,7 +139,7 @@ watch(() => route.path, (newPath) => {
     .menu-title {
       width: 50px; // 设置具体宽度,考虑到padding的4px左右间距
       line-height: 1.2;
-      font-size: 13px;
+      font-size: v-bind('themeStore.baseConfig.fontSize + "px"');
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis; // 文字溢出显示省略号

@@ -33,6 +33,13 @@ export const useThemeStore = defineStore('theme', () => {
   const colorMode = ref('preset') // 'preset' | 'custom'
   const selectedPresetIndex = ref(0)
   const colorPalette = ref([])
+  
+  // 基础配置状态
+  const baseConfig = ref({
+    fontSize: 14,
+    wireframe: false,
+    borderRadius: 4
+  })
 
   // 计算属性
   const primaryColorHex = computed(() => {
@@ -104,6 +111,23 @@ export const useThemeStore = defineStore('theme', () => {
   const clearCustomColors = () => {
     customColors.value = []
   }
+  
+  // 基础配置方法
+  const setBaseConfig = (config) => {
+    baseConfig.value = { ...baseConfig.value, ...config }
+  }
+  
+  const setFontSize = (size) => {
+    baseConfig.value.fontSize = Math.max(14, Math.min(20, size))
+  }
+  
+  const setWireframe = (enabled) => {
+    baseConfig.value.wireframe = enabled
+  }
+  
+  const setBorderRadius = (radius) => {
+    baseConfig.value.borderRadius = Math.max(0, Math.min(16, radius))
+  }
 
   return {
     // 状态
@@ -113,6 +137,7 @@ export const useThemeStore = defineStore('theme', () => {
     colorMode,
     selectedPresetIndex,
     colorPalette,
+    baseConfig,
     // 计算属性
     primaryColorHex,
     currentColorPalette,
@@ -123,13 +148,17 @@ export const useThemeStore = defineStore('theme', () => {
     setCustomColor,
     generateColorPalette,
     resetToDefault,
-    clearCustomColors
+    clearCustomColors,
+    setBaseConfig,
+    setFontSize,
+    setWireframe,
+    setBorderRadius
   }
 }, {
   // 持久化配置
   persist: {
     key: 'theme-store',
     storage: localStorage,
-    paths: ['primaryColor', 'customColors', 'colorMode', 'selectedPresetIndex']
+    paths: ['primaryColor', 'customColors', 'colorMode', 'selectedPresetIndex', 'baseConfig']
   }
 })

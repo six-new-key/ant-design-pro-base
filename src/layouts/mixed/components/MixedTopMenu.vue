@@ -1,53 +1,14 @@
 <template>
-  <div class="header-left">
-    <div class="logo">
-      <img src="/vite.svg" alt="logo" class="logo-img" />
-      <span class="logo-text" :class="{ 'theme-mode-logo-text': appStore.headerTheme === 'dark' }">Ant Design
-        Pro</span>
-    </div>
-
-    <!-- 水平导航菜单 -->
-    <a-menu v-model:selectedKeys="selectedKeys" mode="horizontal" class="top-menu" @click="handleTopMenuClick"
-      :theme="appStore.headerTheme">
-      <a-menu-item v-for="item in topMenuItems" :key="item.key">
-        <template #icon>
-          <component :is="item.icon" v-if="item.icon" />
-        </template>
-        {{ item.label }}
-      </a-menu-item>
-    </a-menu>
-  </div>
-
-  <div class="header-right">
-    <!-- 通知图标 -->
-    <a-badge :count="5" style="margin-right: 16px">
-      <bell-outlined class="header-icon" />
-    </a-badge>
-
-    <!-- 用户头像下拉菜单 -->
-    <a-dropdown>
-      <template #overlay>
-        <a-menu>
-          <a-menu-item key="profile">
-            <user-outlined />
-            个人中心
-          </a-menu-item>
-          <a-menu-item key="settings">
-            <setting-outlined />
-            个人设置
-          </a-menu-item>
-          <a-menu-divider />
-          <a-menu-item key="logout">
-            <logout-outlined />
-            退出登录
-          </a-menu-item>
-        </a-menu>
+  <!-- 水平导航菜单 -->
+  <a-menu v-model:selectedKeys="selectedKeys" mode="horizontal" @click="handleTopMenuClick"
+    :theme="appStore.headerTheme">
+    <a-menu-item v-for="item in topMenuItems" :key="item.key">
+      <template #icon>
+        <component :is="item.icon" v-if="item.icon" />
       </template>
-      <a-avatar class="user-avatar">
-        <template #icon><user-outlined /></template>
-      </a-avatar>
-    </a-dropdown>
-  </div>
+      {{ item.label }}
+    </a-menu-item>
+  </a-menu>
 </template>
 
 <script setup>
@@ -162,62 +123,3 @@ watch(() => route.path, (newPath) => {
   }
 }, { immediate: true })
 </script>
-
-<style scoped lang="scss">
-.header-left {
-  display: flex;
-  align-items: center;
-  flex: 1;
-
-  .logo {
-    min-width: 200px;
-    display: flex;
-    align-items: center;
-
-    .logo-img {
-      width: 32px;
-      height: 32px;
-      margin-right: 12px;
-    }
-
-    .logo-text {
-      font-size: 20px;
-      font-weight: 600;
-      color: v-bind('token.colorText');
-
-      &.theme-mode-logo-text {
-        color: #fff;
-      }
-    }
-  }
-
-  .top-menu {
-    flex: 1;
-    border-bottom: none;
-  }
-}
-
-.header-right {
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  min-width: 300px;
-  // background-color: yellow;
-
-  .header-icon {
-    font-size: 16px;
-    cursor: pointer;
-    color: #666;
-    transition: color 0.3s;
-  }
-
-  .header-icon:hover {
-    color: #1890ff;
-  }
-
-  .user-avatar {
-    cursor: pointer;
-  }
-}
-</style>

@@ -113,6 +113,55 @@
         </div>
       </div>
 
+      <!-- 基础配置 -->
+      <div class="section">
+        <h3 class="section-title">基础配置</h3>
+        <p class="section-desc">调整系统的基础显示参数</p>
+
+        <div class="base-config-list">
+          <div class="config-item">
+            <div class="config-info">
+              <h4 class="config-name">文字大小</h4>
+              <p class="config-desc">设置系统文字的基础大小</p>
+            </div>
+            <a-input-number 
+              v-model:value="currentFontSize" 
+              :min="14" 
+              :max="18" 
+              :step="1"
+              @change="handleFontSizeChange"
+              style="width: 80px;"
+            />
+          </div>
+
+          <div class="config-item">
+            <div class="config-info">
+              <h4 class="config-name">圆角设置</h4>
+              <p class="config-desc">设置组件的圆角大小</p>
+            </div>
+            <a-input-number 
+              v-model:value="currentBorderRadius" 
+              :min="1" 
+              :max="16" 
+              :step="1"
+              @change="handleBorderRadiusChange"
+              style="width: 80px;"
+            />
+          </div>
+
+          <div class="config-item">
+            <div class="config-info">
+              <h4 class="config-name">线宽风格</h4>
+              <p class="config-desc">启用线框风格的组件样式</p>
+            </div>
+            <a-switch 
+              v-model:checked="currentWireframe" 
+              @change="handleWireframeChange" 
+            />
+          </div>
+        </div>
+      </div>
+
       <!-- 自定义系统主题色 -->
       <div class="setting-section">
         <div class="section-title">系统主题色</div>
@@ -166,6 +215,11 @@ const themeStore = useThemeStore()
 
 // 自定义颜色响应式变量
 const customColor = ref(themeStore.primaryColorHex)
+
+// 基础配置响应式变量
+const currentFontSize = ref(themeStore.baseConfig.fontSize)
+const currentBorderRadius = ref(themeStore.baseConfig.borderRadius)
+const currentWireframe = ref(themeStore.baseConfig.wireframe)
 
 // 当前布局
 const currentLayout = computed(() => appStore.layout)
@@ -233,6 +287,26 @@ const handleCustomColorClick = () => {
 const handleCustomColorChange = (color) => {
   customColor.value = color
   themeStore.setCustomColor(color)
+}
+
+// 处理基础配置变化
+const handleFontSizeChange = (value) => {
+  if (value !== null && value !== undefined) {
+    themeStore.setFontSize(value)
+    currentFontSize.value = value
+  }
+}
+
+const handleBorderRadiusChange = (value) => {
+  if (value !== null && value !== undefined) {
+    themeStore.setBorderRadius(value)
+    currentBorderRadius.value = value
+  }
+}
+
+const handleWireframeChange = (checked) => {
+  themeStore.setWireframe(checked)
+  currentWireframe.value = checked
 }
 
 
@@ -555,6 +629,43 @@ const handleCustomColorChange = (color) => {
 }
 
 .theme-switch-desc {
+  font-size: 12px;
+  color: #8c8c8c;
+  margin: 0;
+  line-height: 1.3;
+}
+
+/* 基础配置列表样式 */
+.base-config-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.config-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.config-item:last-child {
+  border-bottom: none;
+}
+
+.config-info {
+  flex: 1;
+}
+
+.config-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #262626;
+  margin: 0 0 4px 0;
+}
+
+.config-desc {
   font-size: 12px;
   color: #8c8c8c;
   margin: 0;

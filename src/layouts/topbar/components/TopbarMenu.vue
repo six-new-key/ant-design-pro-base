@@ -144,9 +144,3 @@ watch(() => route.path, (newPath) => {
   selectedKeys.value = [topLevelRoute]
 }, { immediate: true })
 </script>
-
-<style lang="scss" scoped>
-.topbar-menu {
-  width: 100%;
-}
-</style>

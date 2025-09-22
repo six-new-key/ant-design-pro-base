@@ -1,8 +1,22 @@
 <template>
   <a-layout style="height: 100vh;width: 100%;">
     <!-- 顶部导航栏 -->
-    <a-layout-header class="mixed-top-header" :class="{ 'theme-mode-header': appStore.headerTheme === 'dark' }">
-      <MixedTopMenu />
+    <a-layout-header class="mixed-top-header"  :class="{ 'theme-mode-header': appStore.headerTheme === 'dark' }">
+      <div class="header-left">
+        <div class="logo">
+          <img src="/vite.svg" alt="logo" class="logo-img" />
+          <span class="logo-text" :class="{ 'theme-mode-logo-text': appStore.headerTheme === 'dark' }">Ant Design
+            Pro</span>
+        </div>
+      </div>
+
+      <div class="top-menu">
+        <MixedTopMenu />
+      </div>
+
+      <div class="header-right">
+        <HeaderActions />
+      </div>
     </a-layout-header>
 
     <a-layout>
@@ -16,7 +30,7 @@
           <MixedSideMenu />
 
           <template #trigger>
-             <TriggerCollapsed @trigger-collapse="handleToggleCollapse" @pin-click="handlePinClick" />
+            <TriggerCollapsed @trigger-collapse="handleToggleCollapse" @pin-click="handlePinClick" />
           </template>
         </a-layout-sider>
       </transition>
@@ -37,6 +51,7 @@ import { useAppStore } from '@/stores'
 import { routes as allRoutes } from '@/router/routes'
 import MixedTopMenu from './components/MixedTopMenu.vue'
 import MixedSideMenu from './components/MixedSideMenu.vue'
+import HeaderActions from './components/HeaderActions.vue'
 import { theme } from 'ant-design-vue'
 import { settings } from '@/settings'
 import TriggerCollapsed from '@/components/core/TriggerCollapsed.vue'
@@ -102,7 +117,63 @@ const handleSidebarMouseLeave = () => {
   border-bottom: 1px solid v-bind('token.colorFillSecondary');
 
   &.theme-mode-header {
-    background-color: #001529;
+    background: $component-bg-color;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    width: 15%;
+
+    .logo {
+      min-width: 200px;
+      display: flex;
+      align-items: center;
+
+      .logo-img {
+        width: 32px;
+        height: 32px;
+        margin-right: 12px;
+      }
+
+      .logo-text {
+        font-size: 20px;
+        font-weight: 600;
+        color: v-bind('token.colorText');
+
+        &.theme-mode-logo-text {
+          color: #fff;
+        }
+      }
+    }
+  }
+
+  .top-menu {
+    width: 60%;
+    border-bottom: none;
+  }
+
+  .header-right {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    width: 25%;
+
+    .header-icon {
+      font-size: 16px;
+      cursor: pointer;
+      color: #666;
+      transition: color 0.3s;
+    }
+
+    .header-icon:hover {
+      color: #1890ff;
+    }
+
+    .user-avatar {
+      cursor: pointer;
+    }
   }
 }
 

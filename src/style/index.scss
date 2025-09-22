@@ -20,12 +20,6 @@
   line-height: 34px !important;
 }
 
-//后续可能需要修改，不能固定死
-:where(.ant-menu.ant-menu-horizontal > .ant-menu-item),
-:where(.ant-menu.ant-menu-horizontal > .ant-menu-submenu) {
-  border-radius: 4px !important;
-}
-
 :where(.ant-menu.ant-menu-horizontal > .ant-menu-item-selected),
 :where(.ant-menu.ant-menu-horizontal > .ant-menu-submenu-selected) {
   &::after {
