@@ -20,7 +20,6 @@
           <a-space>
             <IconFont 
               type="icon-space_demo_dashboard-fill_down"
-              size="20px" 
               :script-url="iconScriptUrl"
             />
             <IconFont 
@@ -32,6 +31,11 @@
               type="icon-shouye" 
               size="30px" 
               :script-url="iconScriptUrl"
+            />
+            <SvgIcon 
+              name="github" 
+              width="30px"
+              height="30px"
             />
           </a-space>
         </div>

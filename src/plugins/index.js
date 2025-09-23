@@ -1,11 +1,11 @@
 //引入所有需要注册为全局组件的组件
 //封装svg图标
-// import SvgIcon from "@/components/custom/SvgIcon.vue";
+import SvgIcon from "@/components/core/SvgIcon.vue";
 //封装iconfont.cn图标库
 import IconFont from "@/components/core/IconFont.vue";
 
 //全局对象
-const allGlobalComponent = { IconFont };
+const allGlobalComponent = { IconFont, SvgIcon };
 
 //对外暴露插件对象
 export default {

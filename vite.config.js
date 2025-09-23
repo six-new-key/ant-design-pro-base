@@ -6,6 +6,7 @@ import { AntDesignVueResolver } from "unplugin-vue-components/resolvers";
 import path from "path";
 import { resolve } from "path";
 import VueDevTools from "vite-plugin-vue-devtools";
+import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 
 // 导出 Vite 配置
 export default defineConfig(({ command, mode }) => {
@@ -42,11 +43,11 @@ export default defineConfig(({ command, mode }) => {
         ],
       }),
       vue(),
-      // createSvgIconsPlugin({
-      //   // 配置svg图标所在位置
-      //   iconDirs: [path.resolve(process.cwd(), "src/assets/icons")],
-      //   symbolId: "icon-[dir]-[name]",
-      // }),
+      createSvgIconsPlugin({
+        // 配置svg图标所在位置
+        iconDirs: [path.resolve(process.cwd(), "src/assets/icons")],
+        symbolId: "icon-[dir]-[name]",
+      }),
       VueDevTools(),
       // vitePluginsAutoI18n({
       //   targetLangList: ['en'],

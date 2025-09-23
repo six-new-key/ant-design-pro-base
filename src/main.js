@@ -2,15 +2,14 @@ import { createApp } from 'vue'
 import '@/style/index.scss'
 import App from './App.vue'
 import router from './router'
-//引入图标库
-import * as antIcons from "@ant-design/icons-vue";
+import * as antIcons from "@ant-design/icons-vue" //引入UI图标库
 import 'ant-design-vue/dist/reset.css'
 import pinia from './stores'
 import './permission' // 导入权限控制模块，自动配置路由守卫
 import Vue3ColorPicker from 'vue3-colorpicker' // 引入颜色选择器插件
 import 'vue3-colorpicker/style.css'
-//引入自定义插件用来注册全局组件
-import globalComponent from "@/plugins";
+import 'virtual:svg-icons-register' //svg注册
+import globalComponent from "@/plugins" //引入自定义插件用来注册全局组件
 
 const app = createApp(App)
 

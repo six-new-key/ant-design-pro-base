@@ -22,7 +22,7 @@ const props = defineProps({
     type: [String, Number],
     default: '16px'
   },
-  // Iconfont 脚本地址
+  // Iconfont 脚本地址，在Symbol中获取
   scriptUrl: {
     type: String,
     required: true
