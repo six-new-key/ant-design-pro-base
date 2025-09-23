@@ -33,6 +33,9 @@
         <Header />
       </a-layout-header>
 
+      <!-- 页签区域 -->
+      <TabsView />
+
       <!-- 内容区域 -->
       <a-layout-content class="sidebar-content">
         <router-view />
@@ -46,6 +49,7 @@ import { ref, watch } from 'vue'
 import { useAppStore } from '@/stores'
 import Header from './components/Header.vue'
 import Sidebar from './components/Sidebar.vue'
+import TabsView from '@/components/core/TabsView.vue'
 import { settings } from '@/settings'
 import { theme } from 'ant-design-vue'
 import TriggerCollapsed from '@/components/core/TriggerCollapsed.vue'
