@@ -25,11 +25,13 @@
             <IconFont 
               type="icon-shequ" 
               size="20px" 
+              rotate="60"
               :script-url="iconScriptUrl"
             />
             <IconFont 
               type="icon-shouye" 
               size="30px" 
+              spin
               :script-url="iconScriptUrl"
             />
             <SvgIcon 

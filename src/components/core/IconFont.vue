@@ -2,7 +2,9 @@
   <component 
     :is="IconFont" 
     :type="type" 
+    :spin="spin"
     :style="iconStyle"
+    :rotate="rotate"
   />
 </template>
 
@@ -16,6 +18,16 @@ const props = defineProps({
   type: {
     type: String,
     required: true
+  },
+  // 是否旋转
+  spin: {
+    type: Boolean,
+    default: false
+  },
+  // 旋转角度
+  rotate: {
+    type: Number,
+    default: 0
   },
   // 图标大小
   size: {
