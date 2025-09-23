@@ -18,14 +18,34 @@
             </template>
             <template #title>{{ child.meta?.title || child.name }}</template>
 
-            <a-menu-item v-for="grandChild in child.children" :key="grandChild.path" v-show="!grandChild.meta?.hidden">
-              <template #icon>
-                <component :is="grandChild.meta?.icon" v-if="grandChild.meta?.icon" />
-              </template>
-              <router-link :to="grandChild.path">
-                {{ grandChild.meta?.title || grandChild.name }}
-              </router-link>
-            </a-menu-item>
+            <template v-for="grandChild in child.children" :key="grandChild.path">
+              <!-- 三级子菜单 -->
+              <a-sub-menu v-if="grandChild.children && grandChild.children.length > 0" :key="'sub-' + grandChild.path">
+                <template #icon>
+                  <component :is="grandChild.meta?.icon" v-if="grandChild.meta?.icon" />
+                </template>
+                <template #title>{{ grandChild.meta?.title || grandChild.name }}</template>
+
+                <a-menu-item v-for="greatGrandChild in grandChild.children" :key="greatGrandChild.path" v-show="!greatGrandChild.meta?.hidden">
+                  <template #icon>
+                    <component :is="greatGrandChild.meta?.icon" v-if="greatGrandChild.meta?.icon" />
+                  </template>
+                  <router-link :to="greatGrandChild.path">
+                    {{ greatGrandChild.meta?.title || greatGrandChild.name }}
+                  </router-link>
+                </a-menu-item>
+              </a-sub-menu>
+
+              <!-- 二级菜单项 -->
+              <a-menu-item v-else-if="!grandChild.meta?.hidden" :key="grandChild.path">
+                <template #icon>
+                  <component :is="grandChild.meta?.icon" v-if="grandChild.meta?.icon" />
+                </template>
+                <router-link :to="grandChild.path">
+                  {{ grandChild.meta?.title || grandChild.name }}
+                </router-link>
+              </a-menu-item>
+            </template>
           </a-sub-menu>
 
           <!-- 一级子菜单项 -->

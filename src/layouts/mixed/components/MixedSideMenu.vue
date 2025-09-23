@@ -18,7 +18,7 @@
               </template>
               <template #title>{{ child.meta?.title || child.name }}</template>
 
-              <a-menu-item v-for="grandChild in child.children" :key="grandChild.path"
+              <a-menu-item v-for="grandChild in child.children" :key="'item-' + grandChild.path"
                 v-show="!grandChild.meta?.hidden">
                 <template #icon>
                   <component :is="grandChild.meta?.icon" v-if="grandChild.meta?.icon && grandChild.meta.icon !== ''" />
@@ -29,7 +29,7 @@
               </a-menu-item>
             </a-sub-menu>
 
-            <a-menu-item v-else-if="!child.meta?.hidden" :key="child.path">
+            <a-menu-item v-else-if="!child.meta?.hidden" :key="'item-' + child.path">
               <template #icon>
                 <component :is="child.meta?.icon" v-if="child.meta?.icon && child.meta.icon !== ''" />
               </template>
@@ -41,7 +41,7 @@
         </a-sub-menu>
 
         <!-- 没有子菜单的情况 -->
-        <a-menu-item v-else-if="!route.meta?.hidden" :key="route.path">
+        <a-menu-item v-else-if="!route.meta?.hidden" :key="'item-' + route.path">
           <template #icon>
             <component :is="route.meta?.icon" v-if="route.meta?.icon && route.meta.icon !== ''" />
           </template>
@@ -121,36 +121,42 @@ const visibleRoutes = computed(() => {
     })
 })
 
-// 监听路由变化
-watch(() => route.path, (newPath) => {
-  selectedKeys.value = [newPath]
+// 根据当前路由自动展开菜单和设置选中状态
+const updateMenuState = (currentPath) => {
+  selectedKeys.value = ['item-' + currentPath]
 
-  // 自动展开包含当前路由的菜单
-  const findParentKeys = (routes, targetPath, parentKey = '') => {
-    for (const r of routes) {
-      const currentKey = parentKey ? `sub-${r.path}` : `sub-${r.path}`
-      if (r.path === targetPath) {
-        return parentKey ? [parentKey] : []
+  // 查找父级菜单并自动展开
+  const findParentKeys = (routes, targetPath, parentKeys = []) => {
+    for (const route of routes) {
+      if (route.path === targetPath) {
+        return parentKeys
       }
-      if (r.children) {
-        const result = findParentKeys(r.children, targetPath, currentKey)
-        if (result.length > 0) {
-          return parentKey ? [parentKey, ...result] : [currentKey, ...result]
+      if (route.children && route.children.length > 0) {
+        const found = findParentKeys(route.children, targetPath, [...parentKeys, 'sub-' + route.path])
+        if (found.length > 0) {
+          return found
         }
       }
     }
     return []
   }
 
-  const parentKeys = findParentKeys(visibleRoutes.value, newPath)
-  if (parentKeys.length > 0) {
-    openKeys.value = parentKeys
-  }
-})
+  const parentKeys = findParentKeys(visibleRoutes.value, currentPath)
+  openKeys.value = parentKeys
+}
+
+// 监听路由变化
+watch(() => route.path, (newPath) => {
+  updateMenuState(newPath)
+}, { immediate: true })
 
 // 监听顶部菜单变化，重置侧边栏状态
 watch(() => appStore.currentTopMenu, () => {
-  openKeys.value = []
+  // 延迟执行，确保visibleRoutes已更新
+  setTimeout(() => {
+    updateMenuState(route.path)
+  }, 0)
+
   // 如果当前路由不属于新选中的顶部菜单，则清空选中状态
   const currentTopMenuKey = appStore.currentTopMenu
   if (currentTopMenuKey && !route.path.startsWith(currentTopMenuKey)) {

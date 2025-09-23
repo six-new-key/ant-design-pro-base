@@ -24,10 +24,6 @@ const router = createRouter({
       name: 'Layout',
       component: LayoutManager,
       children: layoutRoutes,
-      meta: {
-        requiresAuth: true,
-        title: '主应用布局'
-      }
     }
   ]
 })

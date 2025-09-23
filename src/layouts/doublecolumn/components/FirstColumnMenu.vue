@@ -84,7 +84,14 @@ const updateSelectedKey = (currentPath) => {
       const isChildRoute = firstRoute.children.some(child => {
         if (currentPath === child.path) return true
         if (child.children) {
-          return child.children.some(grandChild => currentPath === grandChild.path)
+          return child.children.some(grandChild => {
+            if (currentPath === grandChild.path) return true
+            // 检查三级子路由
+            if (grandChild.children) {
+              return grandChild.children.some(greatGrandChild => currentPath === greatGrandChild.path)
+            }
+            return false
+          })
         }
         return false
       })
