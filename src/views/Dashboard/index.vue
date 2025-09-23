@@ -13,12 +13,36 @@
           <a-statistic title="活跃用户" :value="93" suffix="%" />
         </a-col>
       </a-row>
+
+      <div>
+        <span>图标测试</span>
+        <div>
+          <a-space>
+            <IconFont 
+              type="icon-space_demo_dashboard-fill_down"
+              size="20px" 
+              :script-url="iconScriptUrl"
+            />
+            <IconFont 
+              type="icon-shequ" 
+              size="20px" 
+              :script-url="iconScriptUrl"
+            />
+            <IconFont 
+              type="icon-shouye" 
+              size="30px" 
+              :script-url="iconScriptUrl"
+            />
+          </a-space>
+        </div>
+      </div>
     </a-card>
   </div>
 </template>
 
 <script setup>
-// 仪表盘页面
+// 定义图标脚本地址
+const iconScriptUrl = '//at.alicdn.com/t/c/font_4736930_l6olb1tzza.js';
 </script>
 
 <style scoped>

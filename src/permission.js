@@ -1,11 +1,6 @@
-/**
- * 权限管理模块
- * 职责：处理用户认证、路由权限控制和相关辅助函数
- */
-
 import router from '@/router'
+import { settings } from './settings'
 
-// ==================== 辅助函数 ====================
 /**
  * 获取用户登录状态
  * @returns {boolean} 是否已登录
@@ -34,7 +29,6 @@ export function isLoggedInUserAccessingLogin(to, isLoggedIn) {
   return to.path === '/login' && isLoggedIn
 }
 
-// ==================== 路由守卫配置 ====================
 /**
  * 全局前置守卫
  * 处理用户认证和路由权限控制
@@ -62,5 +56,5 @@ router.beforeEach((to, from, next) => {
  */
 router.afterEach((to) => {
   // 设置页面标题
-  document.title = to.meta?.title ? `${to.meta.title} - 管理系统` : '管理系统'
+  document.title = to.meta?.title ? `${to.meta.title} - ${settings.projectName}` : settings.projectName
 })
