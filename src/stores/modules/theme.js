@@ -4,9 +4,9 @@ import { generate } from '@ant-design/colors'
 
 // 预设主题色（用户指定的7个颜色）
 const COLOR_PRESETS = [
+  { name: '明青', color: 'rgb(29, 132, 255)' },
   { name: '拂晓蓝', color: 'rgb(93, 135, 255)' },
   { name: '薄暮紫', color: 'rgb(180, 141, 243)' },
-  { name: '明青', color: 'rgb(29, 132, 255)' },
   { name: '极光绿', color: 'rgb(96, 192, 65)' },
   { name: '拂晓青', color: 'rgb(56, 192, 252)' },
   { name: '日暮橙', color: 'rgb(249, 144, 31)' },

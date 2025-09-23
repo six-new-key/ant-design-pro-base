@@ -5,8 +5,7 @@
       <div class="header-left">
         <div class="logo">
           <img src="/vite.svg" alt="logo" class="logo-img" />
-          <span class="logo-text" :class="{ 'theme-mode-logo-text': appStore.headerTheme === 'dark' }">Ant Design
-            Pro</span>
+          <span class="logo-text" :class="{ 'theme-mode-logo-text': appStore.headerTheme === 'dark' }">{{ settings.projectName }}</span>
         </div>
       </div>
 
@@ -32,6 +31,7 @@ import TopbarMenu from './components/TopbarMenu.vue'
 import HeaderActions from './components/HeaderActions.vue'
 import { theme } from 'ant-design-vue'
 import { useAppStore } from '@/stores'
+import { settings } from '@/settings'
 
 const appStore = useAppStore()
 const { token } = theme.useToken()

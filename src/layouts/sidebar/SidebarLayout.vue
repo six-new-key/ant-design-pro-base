@@ -9,9 +9,8 @@
         <div class="logo">
           <img src="/vite.svg" alt="logo" class="logo-img" />
           <transition name="slide-fade">
-            <span v-if="!collapsed" class="logo-text" :class="{ 'text-white': appStore.sidebarTheme === 'dark' }">Ant
-              Design
-              Pro</span>
+            <span v-if="!collapsed" class="logo-text" :class="{ 'text-white': appStore.sidebarTheme === 'dark' }">{{
+              settings.projectName }}</span>
           </transition>
 
         </div>

@@ -3,7 +3,7 @@
     <div class="login-box">
       <div class="login-header">
         <img src="/vite.svg" alt="logo" class="logo" />
-        <h1 class="title">Ant Design Pro</h1>
+        <h1 class="title">{{ settings.projectName }}</h1>
         <p class="subtitle">欢迎登录后台管理系统</p>
       </div>
       
@@ -61,6 +61,7 @@
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { message } from 'ant-design-vue'
+import { settings } from '@/settings'
 
 const router = useRouter()
 const loading = ref(false)

@@ -4,7 +4,7 @@
     <transition name="slide-fade">
       <div v-if="!appStore.sidebarCollapsed" class="project-title"
         :class="{ 'text-white': appStore.sidebarTheme === 'dark' }">
-        {{ parentRoute?.meta?.title || parentRoute?.name || 'Ant Design Pro' }}
+        {{ parentRoute?.meta?.title || parentRoute?.name || settings.projectName }}
       </div>
     </transition>
 
@@ -49,6 +49,7 @@ import { useRoute } from 'vue-router'
 import { useAppStore } from '@/stores'
 // 图标组件已在main.js中全局注册，无需单独导入
 import { theme } from 'ant-design-vue'
+import { settings } from '@/settings'
 
 const props = defineProps({
   parentRoute: {

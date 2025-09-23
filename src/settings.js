@@ -1,4 +1,6 @@
 export const settings = {
+    //项目名称
+    projectName: 'Ant Design Pro',
     //页面背景主色，需要和global.scss中的$bg-color保持一致
     bgColor: '#181818',
     //组件容器背景色，需要和global.scss中的$component-bg-color保持一致
