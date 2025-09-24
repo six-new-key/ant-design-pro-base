@@ -31,6 +31,7 @@ export const layoutRoutes = [
   {
     path: "/form",
     name: "Form",
+    redirect: "/form/basic",
     meta: {
       title: "表单页",
       icon: "FormOutlined",
@@ -81,6 +82,7 @@ export const layoutRoutes = [
   {
     path: "/list",
     name: "List",
+    redirect: "/list/table",
     meta: {
       title: "列表页",
       icon: "TableOutlined",
@@ -128,6 +130,7 @@ export const layoutRoutes = [
       {
         path: "/list/search",
         name: "SearchList",
+        redirect: "/list/search/articles",
         meta: {
           title: "搜索列表",
           icon: "SearchOutlined",
@@ -180,6 +183,7 @@ export const layoutRoutes = [
   {
     path: "/profile",
     name: "Profile",
+    redirect: "/profile/basic",
     meta: {
       title: "详情页",
       icon: "ProfileOutlined",
@@ -218,6 +222,7 @@ export const layoutRoutes = [
   {
     path: "/result",
     name: "Result",
+    redirect: "/result/success",
     meta: {
       title: "结果页",
       icon: "CheckCircleOutlined",
@@ -256,6 +261,7 @@ export const layoutRoutes = [
   {
     path: "/exception",
     name: "Exception",
+    redirect: "/exception/403",
     meta: {
       title: "异常页",
       icon: "ExclamationCircleOutlined",
@@ -306,6 +312,7 @@ export const layoutRoutes = [
   {
     path: "/user",
     name: "User",
+    redirect: "/user/center",
     meta: {
       title: "个人页",
       icon: "UserOutlined",
@@ -344,6 +351,7 @@ export const layoutRoutes = [
   {
     path: "/account",
     name: "Account",
+    redirect: "/account/center",
     meta: {
       title: "账户管理",
       icon: "FormOutlined",
@@ -382,6 +390,7 @@ export const layoutRoutes = [
   {
     path: "/editor",
     name: "Editor",
+    redirect: "/editor/flow",
     meta: {
       title: "图形编辑器",
       icon: "EditOutlined",
@@ -432,6 +441,7 @@ export const layoutRoutes = [
   {
     path: "/nested",
     name: "Nested",
+    redirect: "/nested/menu1",
     meta: {
       title: "路由嵌套",
       icon: "MenuOutlined",
@@ -443,6 +453,7 @@ export const layoutRoutes = [
       {
         path: "/nested/menu1",
         name: "NestedMenu1",
+        redirect: "/nested/menu1/menu1-1",
         meta: {
           title: "Menu1",
           icon: "MenuOutlined",
@@ -466,6 +477,7 @@ export const layoutRoutes = [
           {
             path: "/nested/menu1/menu1-2",
             name: "NestedMenu1-2",
+            redirect: "/nested/menu1/menu1-2/menu1-2-1",
             meta: {
               title: "Menu1-2",
               icon: "MenuOutlined",

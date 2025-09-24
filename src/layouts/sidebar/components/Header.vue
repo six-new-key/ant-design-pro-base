@@ -1,14 +1,7 @@
 <template>
   <div class="header-left">
     <!-- 面包屑导航 -->
-    <a-breadcrumb class="breadcrumb">
-      <a-breadcrumb-item v-for="item in breadcrumbItems" :key="item.path">
-        <router-link v-if="item.path && item.path !== route.path" :to="item.path">
-          {{ item.title }}
-        </router-link>
-        <span v-else>{{ item.title }}</span>
-      </a-breadcrumb-item>
-    </a-breadcrumb>
+    <Breadcrumb strategy="matched" :show-home="true" />
   </div>
 
   <div class="header-right">
@@ -65,6 +58,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import Breadcrumb from '@/components/core/Breadcrumb.vue'
 import {
   BellOutlined,
   UserOutlined,
@@ -74,31 +68,9 @@ import {
   DownOutlined
 } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
-import { routes as allRoutes } from '@/router/routes'
 
 const route = useRoute()
 const router = useRouter()
-
-// 生成面包屑导航
-const breadcrumbItems = computed(() => {
-  const matched = route.matched.filter(item => item.meta && item.meta.title)
-  const items = []
-
-  // 添加首页
-  items.push({ title: '首页', path: '/dashboard' })
-
-  // 添加匹配的路由
-  matched.forEach(match => {
-    if (match.path !== '/dashboard' && match.meta?.title) {
-      items.push({
-        title: match.meta.title,
-        path: match.path
-      })
-    }
-  })
-
-  return items
-})
 
 // 搜索功能
 const onSearch = (value) => {
@@ -137,10 +109,6 @@ const handleMenuClick = ({ key }) => {
 .header-left {
   display: flex;
   align-items: center;
-  flex: 1;
-}
-
-.breadcrumb {
   flex: 1;
 }
 
