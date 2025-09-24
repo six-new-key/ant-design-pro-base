@@ -10,7 +10,7 @@
         <a-tooltip v-if="!collapsed" :title="appStore.sidebarFixed ? '取消' : '固定'">
             <a-button type="text" @click="handlePinClick">
                 <template #icon>
-                    <StopOutlined style="font-size: 10px;" v-if="appStore.sidebarFixed" />
+                    <PushpinFilled :rotate="-45" style="font-size: 10px;" v-if="appStore.sidebarFixed" />
                     <PushpinOutlined :rotate="-45" style="font-size: 10px;" v-else />
                 </template>
             </a-button>
@@ -22,7 +22,7 @@
 import { ref, watch } from 'vue'
 import { useAppStore } from '@/stores'
 import { theme } from 'ant-design-vue'
-import { DoubleLeftOutlined, DoubleRightOutlined, PushpinOutlined, StopOutlined } from '@ant-design/icons-vue'
+import { DoubleLeftOutlined, DoubleRightOutlined, PushpinOutlined, PushpinFilled } from '@ant-design/icons-vue'
 
 const appStore = useAppStore()
 const collapsed = ref(appStore.sidebarCollapsed)

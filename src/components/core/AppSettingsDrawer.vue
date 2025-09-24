@@ -159,6 +159,17 @@
               @change="handleWireframeChange" 
             />
           </div>
+
+          <div class="config-item">
+            <div class="config-info">
+              <h4 class="config-name">页签阴影</h4>
+              <p class="config-desc">启用页签的阴影效果</p>
+            </div>
+            <a-switch 
+              v-model:checked="currentTabShadow" 
+              @change="handleTabShadowChange" 
+            />
+          </div>
         </div>
       </div>
 
@@ -220,6 +231,7 @@ const customColor = ref(themeStore.primaryColorHex)
 const currentFontSize = ref(themeStore.baseConfig.fontSize)
 const currentBorderRadius = ref(themeStore.baseConfig.borderRadius)
 const currentWireframe = ref(themeStore.baseConfig.wireframe)
+const currentTabShadow = ref(themeStore.baseConfig.tabShadow)
 
 // 当前布局
 const currentLayout = computed(() => appStore.layout)
@@ -309,6 +321,11 @@ const handleWireframeChange = (checked) => {
   currentWireframe.value = checked
 }
 
+// 处理页签阴影效果切换
+const handleTabShadowChange = (checked) => {
+  themeStore.setTabShadow(checked)
+  currentTabShadow.value = checked
+}
 
 
 

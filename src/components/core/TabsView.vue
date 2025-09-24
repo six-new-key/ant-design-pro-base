@@ -29,10 +29,10 @@
 
       <!-- 右侧下拉菜单 -->
       <div class="tabs-actions">
-        <a-dropdown :trigger="['click']" placement="bottomRight">
-          <a-button type="text" size="small" class="tabs-menu-btn">
-            <MoreOutlined />
-          </a-button>
+        <a-dropdown :trigger="['click']" placement="bottomRight" arrow>
+          <div class="tabs-menu-btn">
+            <DownOutlined />
+          </div>
 
           <template #overlay>
             <a-menu @click="handleMenuClick">
@@ -42,30 +42,30 @@
               </a-menu-item>
 
               <a-menu-item key="togglePin" :disabled="tabsStore.activeTab?.path === '/dashboard'">
-                <PushpinOutlined v-if="!tabsStore.activeTab?.pinned" />
-                <PushpinFilled v-else />
+                <PushpinOutlined :rotate="-45" v-if="!tabsStore.activeTab?.pinned" />
+                <PushpinFilled :rotate="-45" v-else />
                 {{ tabsStore.activeTab?.pinned ? '取消固定' : '固定' }}
               </a-menu-item>
 
               <a-menu-divider />
 
               <a-menu-item key="closeLeft" :disabled="menuDisabledStates.closeLeft">
-                <ArrowLeftOutlined />
+                <VerticalRightOutlined />
                 关闭左侧
               </a-menu-item>
 
               <a-menu-item key="closeRight" :disabled="menuDisabledStates.closeRight">
-                <ArrowRightOutlined />
+                <VerticalLeftOutlined />
                 关闭右侧
               </a-menu-item>
 
               <a-menu-item key="closeOthers" :disabled="menuDisabledStates.closeOthers">
-                <MinusOutlined />
+                <VerticalAlignMiddleOutlined />
                 关闭其他
               </a-menu-item>
 
               <a-menu-item key="closeAll" :disabled="menuDisabledStates.closeAll">
-                <CloseOutlined />
+                <SwapOutlined />
                 关闭全部
               </a-menu-item>
             </a-menu>
@@ -79,16 +79,17 @@
 <script setup>
 import { ref, onMounted, nextTick, watch, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { useTabsStore, useAppStore } from '@/stores'
+import { useTabsStore, useAppStore, useThemeStore } from '@/stores'
 import {
   CloseCircleOutlined,
-  MoreOutlined,
+  SwapOutlined,
+  DownOutlined,
   ReloadOutlined,
   PushpinOutlined,
   PushpinFilled,
-  ArrowLeftOutlined,
-  ArrowRightOutlined,
-  MinusOutlined
+  VerticalLeftOutlined,
+  VerticalRightOutlined,
+  VerticalAlignMiddleOutlined
 } from '@ant-design/icons-vue'
 import { theme } from 'ant-design-vue'
 
@@ -96,6 +97,7 @@ const router = useRouter()
 const route = useRoute()
 const tabsStore = useTabsStore()
 const appStore = useAppStore()
+const themeStore = useThemeStore()
 const { token } = theme.useToken()
 
 // 模板引用
@@ -299,10 +301,11 @@ const handleWheel = (e) => {
   border-bottom: 1px solid v-bind('token.colorFillSecondary');
   position: relative;
   background: v-bind('token.colorBgContainer');
-  //底部抬高的阴影效果
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  //页签阴影效果
+  box-shadow: v-bind('themeStore.baseConfig.tabShadow ? "0 2px 4px rgba(0, 0, 0, 0.08)" : "none"');
 
   .tabs-container {
+    height: 100%;
     display: flex;
     align-items: center;
     padding: 2px 0;
@@ -407,19 +410,6 @@ const handleWheel = (e) => {
           background: v-bind('token.colorPrimary + "10"');
           color: v-bind('token.colorPrimary');
 
-          // &::after {
-          //   content: '';
-          //   position: absolute;
-          //   bottom: 0;
-          //   left: 50%;
-          //   transform: translateX(-50%);
-          //   width: 24px;
-          //   height: 2px;
-          //   background: v-bind('token.colorPrimary');
-          //   border-radius: 2px;
-          //   transition: all 0.2s;
-          // }
-
           .tab-close {
             color: v-bind('token.colorPrimary');
 
@@ -453,20 +443,23 @@ const handleWheel = (e) => {
         }
       }
     }
-  }
 
-  .tabs-actions {
-    height: 100%;
-    display: flex;
-    align-items: center;
-    padding: 0 12px;
-    border-left: 1px solid v-bind('token.colorFillSecondary');
+    .tabs-actions {
+      height: 100%;
+      padding: 0 15px;
+      border-left: 1px solid v-bind('token.colorFillSecondary');
 
-    .tabs-menu-btn {
-      color: v-bind('token.colorText');
-      transition: all 0.2s;
+      .tabs-menu-btn {
+        display: flex;
+        align-items: center;
+        color: v-bind('token.colorText');
+        transition: all 0.2s;
+        height: 100%;
+        width: 100%;
+      }
 
       &:hover {
+        cursor: pointer;
         color: v-bind('token.colorText');
         background: v-bind('appStore.themeMode === "dark" ? "rgba(255, 255, 255, 0.04)" : "rgba(0, 0, 0, 0.04)"');
       }

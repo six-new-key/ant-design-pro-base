@@ -38,7 +38,8 @@ export const useThemeStore = defineStore('theme', () => {
   const baseConfig = ref({
     fontSize: 14,
     wireframe: false,
-    borderRadius: 4
+    borderRadius: 4,
+    tabShadow: false
   })
 
   // 计算属性
@@ -129,6 +130,11 @@ export const useThemeStore = defineStore('theme', () => {
     baseConfig.value.borderRadius = Math.max(0, Math.min(16, radius))
   }
 
+  // 处理页签阴影效果切换
+  const setTabShadow = (enabled) => {
+    baseConfig.value.tabShadow = enabled
+  }
+
   return {
     // 状态
     primaryColor,
@@ -151,6 +157,7 @@ export const useThemeStore = defineStore('theme', () => {
     clearCustomColors,
     setBaseConfig,
     setFontSize,
+    setTabShadow,
     setWireframe,
     setBorderRadius
   }
