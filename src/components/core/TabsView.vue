@@ -31,7 +31,7 @@
       <div class="tabs-actions">
         <a-dropdown :trigger="['click']" placement="bottomRight" arrow>
           <div class="tabs-menu-btn">
-            <DownOutlined />
+            <DownOutlined style="font-size: 12px;" />
           </div>
 
           <template #overlay>
