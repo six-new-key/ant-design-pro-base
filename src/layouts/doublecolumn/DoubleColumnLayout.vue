@@ -24,7 +24,7 @@
                 <template #trigger>
                     <TriggerCollapsed @trigger-collapse="handleToggleCollapse" @pin-click="handlePinClick" />
                 </template>
-            </a-layout-sider>   
+            </a-layout-sider>
         </transition>
 
 
@@ -35,6 +35,11 @@
             <a-layout-header class="double-column-header">
                 <Header />
             </a-layout-header>
+
+            <!-- 页签区域 -->
+            <transition name="tabs-fade">
+                <TabsView v-if="appStore.tabsShow" />
+            </transition>
 
             <!-- 内容区域 -->
             <a-layout-content class="double-column-content">
@@ -50,6 +55,7 @@ import { useAppStore } from '@/stores'
 import Header from './components/Header.vue'
 import FirstColumnMenu from './components/FirstColumnMenu.vue'
 import SecondColumnMenu from './components/SecondColumnMenu.vue'
+import TabsView from '@/components/core/TabsView.vue'
 import { theme } from 'ant-design-vue'
 import { settings } from '@/settings'
 import TriggerCollapsed from '@/components/core/TriggerCollapsed.vue'
@@ -190,5 +196,16 @@ const handleFirstColumnSelect = (route) => {
         width: 32px;
         height: 32px;
     }
+}
+
+/* 页签区域淡入淡出动画 */
+.tabs-fade-enter-active,
+.tabs-fade-leave-active {
+  transition: all 0.2s ease-out;
+}
+
+.tabs-fade-enter-from,
+.tabs-fade-leave-to {
+  opacity: 0;
 }
 </style>

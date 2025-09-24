@@ -347,10 +347,10 @@ const handleWheel = (e) => {
         position: relative;
         transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
         margin: 0 2px;
-        border-radius: 6px;
+        border-radius: v-bind('themeStore.baseConfig.borderRadius + "px"');
         background: transparent;
 
-        &::after {
+        &:not(.active):not(:has(+ .active))::after {
           content: '';
           position: absolute;
           right: 0;
@@ -358,7 +358,7 @@ const handleWheel = (e) => {
           transform: translateX(-50%);
           width: 1px;
           height: 16px;
-          background: v-bind('token.colorFillSecondary');
+          background: v-bind('token.colorFill');
           border-radius: 2px;
           transition: all 0.2s;
         }

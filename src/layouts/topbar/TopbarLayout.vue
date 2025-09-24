@@ -19,6 +19,11 @@
       </div>
     </a-layout-header>
 
+    <!-- 页签区域 -->
+      <transition name="tabs-fade">
+        <TabsView v-if="appStore.tabsShow" />
+      </transition>
+
     <!-- 主内容区域 -->
     <a-layout-content class="topbar-content">
       <router-view />
@@ -29,6 +34,7 @@
 <script setup>
 import TopbarMenu from './components/TopbarMenu.vue'
 import HeaderActions from './components/HeaderActions.vue'
+import TabsView from '@/components/core/TabsView.vue'
 import { theme } from 'ant-design-vue'
 import { useAppStore } from '@/stores'
 import { settings } from '@/settings'
@@ -101,5 +107,16 @@ const { token } = theme.useToken()
 .topbar-footer {
   text-align: center;
   background: #f0f2f5;
+}
+
+/* 页签区域淡入淡出动画 */
+.tabs-fade-enter-active,
+.tabs-fade-leave-active {
+  transition: all 0.2s ease-out;
+}
+
+.tabs-fade-enter-from,
+.tabs-fade-leave-to {
+  opacity: 0;
 }
 </style>

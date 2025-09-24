@@ -1,11 +1,12 @@
 <template>
   <a-layout style="height: 100vh;width: 100%;">
     <!-- 顶部导航栏 -->
-    <a-layout-header class="mixed-top-header"  :class="{ 'theme-mode-header': appStore.headerTheme === 'dark' }">
+    <a-layout-header class="mixed-top-header" :class="{ 'theme-mode-header': appStore.headerTheme === 'dark' }">
       <div class="header-left">
         <div class="logo">
           <img src="/vite.svg" alt="logo" class="logo-img" />
-          <span class="logo-text" :class="{ 'theme-mode-logo-text': appStore.headerTheme === 'dark' }">{{ settings.projectName }}</span>
+          <span class="logo-text" :class="{ 'theme-mode-logo-text': appStore.headerTheme === 'dark' }">{{
+            settings.projectName }}</span>
         </div>
       </div>
 
@@ -36,6 +37,12 @@
 
       <!-- 主内容区域 -->
       <a-layout>
+        <!-- 页签区域 -->
+        <transition name="tabs-fade">
+          <TabsView v-if="appStore.tabsShow" />
+        </transition>
+        
+        <!-- 主内容区域 -->
         <a-layout-content class="mixed-content">
           <router-view />
         </a-layout-content>
@@ -51,6 +58,7 @@ import { routes as allRoutes } from '@/router/routes'
 import MixedTopMenu from './components/MixedTopMenu.vue'
 import MixedSideMenu from './components/MixedSideMenu.vue'
 import HeaderActions from './components/HeaderActions.vue'
+import TabsView from '@/components/core/TabsView.vue'
 import { theme } from 'ant-design-vue'
 import { settings } from '@/settings'
 import TriggerCollapsed from '@/components/core/TriggerCollapsed.vue'
@@ -207,5 +215,16 @@ const handleSidebarMouseLeave = () => {
   padding: $content-padding;
   height: calc(100vh - $top-height-horizontal);
   overflow-y: scroll;
+}
+
+/* 页签区域淡入淡出动画 */
+.tabs-fade-enter-active,
+.tabs-fade-leave-active {
+  transition: all 0.2s ease-out;
+}
+
+.tabs-fade-enter-from,
+.tabs-fade-leave-to {
+  opacity: 0;
 }
 </style>
