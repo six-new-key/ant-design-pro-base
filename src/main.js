@@ -10,6 +10,7 @@ import Vue3ColorPicker from 'vue3-colorpicker' // 引入颜色选择器插件
 import 'vue3-colorpicker/style.css'
 import 'virtual:svg-icons-register' //svg注册
 import globalComponent from "@/plugins" //引入自定义插件用来注册全局组件
+import 'animate.css' // 引入动画库
 
 const app = createApp(App)
 

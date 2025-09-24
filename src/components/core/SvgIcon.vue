@@ -18,7 +18,7 @@ defineProps({
     },
     //svg名字
     name: String,
-    //颜色
+    //颜色说明：如果想要通过属性设置则在复制svg代码时将其fill固定颜色值删除才会生效
     color: {
         type: String,
         default: ''
@@ -36,7 +36,7 @@ defineProps({
 <style scoped>
 svg {
   display: inline-block;
-  vertical-align: middle;
+  vertical-align: -0.22em; /* 微调SVG图标的垂直对齐位置,使其更精确地居中 */
   fill: currentColor;
   overflow: hidden;
 }

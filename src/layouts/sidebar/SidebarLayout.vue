@@ -152,7 +152,6 @@ watch(() => appStore.sidebarCollapsed, (newVal) => {
   background: v-bind('token.colorBgContainer');
   display: flex;
   align-items: center;
-  justify-content: space-between;
   height: $top-height;
 }
 
