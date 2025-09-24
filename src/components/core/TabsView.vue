@@ -342,7 +342,7 @@ const handleWheel = (e) => {
         display: flex;
         align-items: center;
         height: $tab-height;
-        padding: 0 16px;
+        padding: 0 12px;
         cursor: pointer;
         position: relative;
         transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
