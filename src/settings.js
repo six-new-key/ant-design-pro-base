@@ -13,4 +13,6 @@ export const settings = {
     firstColumnWidth: 70,
     //双列布局中的第二列宽度，需要和global.scss中的$second-column-width保持一致
     secondColumnWidth: 210,
+    //iconfont图标地址
+    scriptUrl: '//at.alicdn.com/t/c/font_5029165_esd9378ubd.js',
 }

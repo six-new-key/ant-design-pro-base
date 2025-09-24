@@ -11,7 +11,7 @@
             <a-button type="text" @click="handlePinClick">
                 <template #icon>
                     <StopOutlined style="font-size: 10px;" v-if="appStore.sidebarFixed" />
-                    <PushpinOutlined style="font-size: 10px;" v-else />
+                    <PushpinOutlined :rotate="-45" style="font-size: 10px;" v-else />
                 </template>
             </a-button>
         </a-tooltip>

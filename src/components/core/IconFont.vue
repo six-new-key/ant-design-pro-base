@@ -34,6 +34,11 @@ const props = defineProps({
     type: [String, Number],
     default: '16px'
   },
+  //颜色
+  color: {
+    type: String,
+    default: 'inherit'
+  },
   // Iconfont 脚本地址，在Symbol中获取
   scriptUrl: {
     type: String,
@@ -60,6 +65,10 @@ const iconStyle = computed(() => {
   
   if (props.size) {
     style.fontSize = typeof props.size === 'number' ? `${props.size}px` : props.size;
+  }
+  // 颜色
+  if (props.color) {
+    style.color = props.color;
   }
   
   return style;

@@ -18,10 +18,10 @@
             <span class="tab-title">{{ tab.title }}</span>
 
             <!-- 固定图标 -->
-            <PushpinOutlined v-if="tab.pinned" class="tab-pin-icon" />
+            <PushpinOutlined :rotate="-45" v-if="tab.pinned" class="tab-pin-icon" />
 
             <!-- 关闭按钮 -->
-            <CloseOutlined v-if="tab.closable && !tab.pinned" class="tab-close"
+            <CloseCircleOutlined v-if="tab.closable && !tab.pinned" class="tab-close"
               @click.stop="handleTabClose(tab.path)" />
           </div>
         </div>
@@ -81,7 +81,7 @@ import { ref, onMounted, nextTick, watch, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useTabsStore, useAppStore } from '@/stores'
 import {
-  CloseOutlined,
+  CloseCircleOutlined,
   MoreOutlined,
   ReloadOutlined,
   PushpinOutlined,
@@ -346,7 +346,6 @@ const handleWheel = (e) => {
         margin: 0 2px;
         border-radius: 6px;
         background: transparent;
-        // border-right: 1px solid v-bind('token.colorFillSecondary');
 
         &::after {
           content: '';
@@ -385,7 +384,7 @@ const handleWheel = (e) => {
           justify-content: center;
           border-radius: 50%;
           margin-left: 5px;
-          font-size: 10px;
+          font-size: 12px;
           color: v-bind('token.colorText');
 
           &:hover {
@@ -433,14 +432,7 @@ const handleWheel = (e) => {
         // 固定页签样式
         &.pinned {
           .tab-pin-icon {
-            color: v-bind('token.colorSuccess');
             transition: all 0.2s;
-          }
-
-          &.active {
-            .tab-pin-icon {
-              color: v-bind('token.colorSuccess');
-            }
           }
 
           &:hover {
