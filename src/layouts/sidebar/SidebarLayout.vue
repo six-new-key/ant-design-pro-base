@@ -34,7 +34,9 @@
       </a-layout-header>
 
       <!-- 页签区域 -->
-      <TabsView />
+      <transition name="tabs-fade">
+        <TabsView v-if="appStore.tabsShow" />
+      </transition>
 
       <!-- 内容区域 -->
       <a-layout-content class="sidebar-content">
@@ -175,4 +177,16 @@ watch(() => appStore.sidebarCollapsed, (newVal) => {
   transform: translateX(-20px);
   opacity: 0;
 }
+
+/* 页签区域淡入淡出动画 */
+.tabs-fade-enter-active,
+.tabs-fade-leave-active {
+  transition: all 0.2s ease-out;
+}
+
+.tabs-fade-enter-from,
+.tabs-fade-leave-to {
+  opacity: 0;
+}
+
 </style>

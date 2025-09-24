@@ -14,6 +14,7 @@ export const useAppStore = defineStore(
     const sidebarFixed = ref(true); // 侧边栏是否固定
     const loading = ref(false);
     const currentTopMenu = ref(""); // 当前选中的顶部菜单
+    const tabsShow = ref(true); // 页签是否显示
 
     // Getters
     const isLoading = computed(() => loading.value);
@@ -60,6 +61,10 @@ export const useAppStore = defineStore(
       currentTopMenu.value = menuKey;
     };
 
+    const setTabsShow = (show) => {
+      tabsShow.value = show;
+    };
+
     return {
       // State
       themeMode,
@@ -71,6 +76,7 @@ export const useAppStore = defineStore(
       sidebarFixed,
       loading,
       currentTopMenu,
+      tabsShow,
 
       // Getters
       isLoading,
@@ -84,6 +90,7 @@ export const useAppStore = defineStore(
       setLayout,
       toggleSidebar,
       setSidebarCollapsed,
+      setTabsShow,
       setLoading,
       setCurrentTopMenu,
       setSidebarFixed,
@@ -100,6 +107,7 @@ export const useAppStore = defineStore(
         "layout",
         "sidebarCollapsed",
         "sidebarFixed",
+        "tabsShow",
         "currentTopMenu",
       ],
     },

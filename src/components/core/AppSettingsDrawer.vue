@@ -151,6 +151,17 @@
 
           <div class="config-item">
             <div class="config-info">
+              <h4 class="config-name">页签</h4>
+              <p class="config-desc">开启或关闭页签</p>
+            </div>
+            <a-switch 
+              v-model:checked="currentTabsShow" 
+              @change="handleTabsShowChange" 
+            />
+          </div>
+
+          <div class="config-item">
+            <div class="config-info">
               <h4 class="config-name">线宽风格</h4>
               <p class="config-desc">启用线框风格的组件样式</p>
             </div>
@@ -232,6 +243,7 @@ const currentFontSize = ref(themeStore.baseConfig.fontSize)
 const currentBorderRadius = ref(themeStore.baseConfig.borderRadius)
 const currentWireframe = ref(themeStore.baseConfig.wireframe)
 const currentTabShadow = ref(themeStore.baseConfig.tabShadow)
+const currentTabsShow = ref(appStore.tabsShow)
 
 // 当前布局
 const currentLayout = computed(() => appStore.layout)
@@ -314,6 +326,13 @@ const handleBorderRadiusChange = (value) => {
     themeStore.setBorderRadius(value)
     currentBorderRadius.value = value
   }
+}
+
+
+// 处理页签显示切换
+const handleTabsShowChange = (checked) => {
+  appStore.setTabsShow(checked)
+  currentTabsShow.value = checked
 }
 
 const handleWireframeChange = (checked) => {
