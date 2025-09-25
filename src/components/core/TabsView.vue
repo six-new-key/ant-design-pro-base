@@ -29,7 +29,7 @@
 
       <!-- 右侧下拉菜单 -->
       <div class="tabs-actions">
-        <a-dropdown :trigger="['hover']" placement="bottomRight" arrow>
+        <a-dropdown :trigger="['hover']" arrow>
           <a-button type="text">
             <DownOutlined style="font-size: 12px;" />
           </a-button>

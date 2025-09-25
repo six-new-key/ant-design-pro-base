@@ -212,8 +212,7 @@
 import { computed, ref } from 'vue'
 import { CheckOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
-import { useAppStore, useThemeStore, PAGE_ANIMATIONS } from '@/stores'
-import { getLayoutConfig } from '@/utils/layout.config.js'
+import { useAppStore, useThemeStore, PAGE_ANIMATION_CONFIG } from '@/stores'
 
 // Props
 const props = defineProps({
@@ -246,42 +245,8 @@ const currentTabsShow = ref(appStore.tabsShow)
 // 当前布局
 const currentLayout = computed(() => appStore.layout)
 
-// 页面动画效果选项
-const pageAnimations = [
-  // 滑动动效
-  { value: PAGE_ANIMATIONS.SLIDE_LEFT, label: '从左滑入', icon: 'chevron-right' },
-  { value: PAGE_ANIMATIONS.SLIDE_RIGHT, label: '从右滑入', icon: 'chevron-left' },
-  { value: PAGE_ANIMATIONS.SLIDE_UP, label: '从下滑入', icon: 'chevron-up' },
-  { value: PAGE_ANIMATIONS.SLIDE_DOWN, label: '从上滑入', icon: 'chevron-down' },
-  // 淡入淡出动效
-  { value: PAGE_ANIMATIONS.FADE, label: '淡入淡出', icon: 'view-module' },
-  { value: PAGE_ANIMATIONS.FADE_IN_UP, label: '淡入向上', icon: 'arrow-up' },
-  { value: PAGE_ANIMATIONS.FADE_IN_DOWN, label: '淡入向下', icon: 'arrow-down' },
-  { value: PAGE_ANIMATIONS.FADE_IN_LEFT, label: '淡入向左', icon: 'arrow-left' },
-  { value: PAGE_ANIMATIONS.FADE_IN_RIGHT, label: '淡入向右', icon: 'arrow-right' },
-  { value: PAGE_ANIMATIONS.ZOOM_IN_DOWN, label: '放大向下', icon: 'aspect-ratio' },
-  { value: PAGE_ANIMATIONS.BOUNCE_IN_LEFT, label: '弹跳向左', icon: 'call-received' },
-  { value: PAGE_ANIMATIONS.BOUNCE_IN_RIGHT, label: '弹跳向右', icon: 'call-made' },
-  // 旋转动效
-  { value: PAGE_ANIMATIONS.ROTATE_IN_DOWN_LEFT, label: '左下旋转', icon: 'rotate-ccw' },
-  { value: PAGE_ANIMATIONS.ROTATE_IN_DOWN_RIGHT, label: '右下旋转', icon: 'rotate-cw' },
-  { value: PAGE_ANIMATIONS.ROTATE_IN_UP_LEFT, label: '左上旋转', icon: 'undo' },
-  { value: PAGE_ANIMATIONS.ROTATE_IN_UP_RIGHT, label: '右上旋转', icon: 'redo' },
-  // 光速动效
-  { value: PAGE_ANIMATIONS.LIGHT_SPEED_IN_LEFT, label: '光速左入', icon: 'fast-forward' },
-  { value: PAGE_ANIMATIONS.LIGHT_SPEED_IN_RIGHT, label: '光速右入', icon: 'fast-rewind' },
-  // 缩放动效
-  { value: PAGE_ANIMATIONS.ZOOM, label: '缩放效果', icon: 'fullscreen' },
-  // 弹跳动效
-  { value: PAGE_ANIMATIONS.BOUNCE, label: '弹跳效果', icon: 'jump' },
-  // 翻转动效
-  { value: PAGE_ANIMATIONS.FLIP, label: '翻转效果', icon: 'swap' },
-  // 摆动动效
-  { value: PAGE_ANIMATIONS.SWING, label: '摆动效果', icon: 'vibration' },
-  { value: PAGE_ANIMATIONS.JELLO, label: '果冻效果', icon: 'blur-on' },
-  // 心跳动效
-  { value: PAGE_ANIMATIONS.PULSE, label: '脉冲效果', icon: 'radio-button-checked' }
-]
+// 页面动画效果选项 - 使用统一配置
+const pageAnimations = PAGE_ANIMATION_CONFIG.options
 
 // 当前主题模式
 const currentThemeMode = computed(() => appStore.themeMode || 'light')
@@ -304,32 +269,26 @@ const handleLayoutSwitch = (layoutKey) => {
 
   // 触发父组件的布局切换事件（用于显示加载状态）
   emit('layout-switch', layoutKey)
-
-  handleClose()
 }
 
 // 处理主题模式切换
 const handleThemeModeSwitch = (mode) => {
   appStore.setThemeMode(mode)
-  handleClose()
 }
 
 // 处理侧边栏主题切换
 const handleSidebarThemeSwitch = (theme) => {
   appStore.setSidebarTheme(theme)
-  handleClose()
 }
 
 // 处理顶部主题切换
 const handleHeaderThemeSwitch = (theme) => {
   appStore.setHeaderTheme(theme)
-  handleClose()
 }
 
 // 处理预设主题色选择
 const handlePresetColorSelect = (index) => {
   themeStore.selectPresetColor(index)
-  handleClose()
 }
 
 // 处理自定义颜色点击
@@ -338,14 +297,12 @@ const handleCustomColorClick = () => {
   if (themeStore.colorMode !== 'custom') {
     themeStore.setPrimaryColor(customColor.value, 'custom')
   }
-  handleClose()
 }
 
 // 处理自定义颜色变化
 const handleCustomColorChange = (color) => {
   customColor.value = color
   themeStore.setCustomColor(color)
-  handleClose()
 }
 
 // 处理基础配置变化
@@ -368,26 +325,22 @@ const handleBorderRadiusChange = (value) => {
 const handleTabsShowChange = (checked) => {
   appStore.setTabsShow(checked)
   currentTabsShow.value = checked
-  handleClose()
 }
 
 const handleWireframeChange = (checked) => {
   themeStore.setWireframe(checked)
   currentWireframe.value = checked
-  handleClose()
 }
 
 // 处理页签阴影效果切换
 const handleTabShadowChange = (checked) => {
   themeStore.setTabShadow(checked)
   currentTabShadow.value = checked
-  handleClose()
 }
 
 // 处理动画效果切换
 const handleAnimationChange = (animation) => {
   appStore.setPageAnimation(animation)
-  handleClose()
 }
 
 </script>
