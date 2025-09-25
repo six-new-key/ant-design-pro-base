@@ -1,6 +1,51 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 
+// 页面切换动画效果选项
+export const PAGE_ANIMATIONS = {
+  // 滑动动效
+  SLIDE_LEFT: 'slide-left',
+  SLIDE_RIGHT: 'slide-right',
+  SLIDE_UP: 'slide-up',
+  SLIDE_DOWN: 'slide-down',
+
+  // 淡入淡出动效
+  FADE: 'fade',
+  FADE_IN_UP: 'fadeInUp',
+  FADE_IN_DOWN: 'fadeInDown',
+  FADE_IN_LEFT: 'fadeInLeft',
+  FADE_IN_RIGHT: 'fadeInRight',
+
+  // 缩放动效
+  ZOOM: 'zoom',
+  ZOOM_IN_DOWN: 'zoomInDown',
+
+  // 翻转动效
+  FLIP: 'flip',
+
+  // 弹跳动效
+  BOUNCE: 'bounce',
+  BOUNCE_IN_LEFT: 'bounceInLeft',
+  BOUNCE_IN_RIGHT: 'bounceInRight',
+
+  // 旋转动效
+  ROTATE_IN_DOWN_LEFT: 'rotateInDownLeft',
+  ROTATE_IN_DOWN_RIGHT: 'rotateInDownRight',
+  ROTATE_IN_UP_LEFT: 'rotateInUpLeft',
+  ROTATE_IN_UP_RIGHT: 'rotateInUpRight',
+
+  // 光速动效
+  LIGHT_SPEED_IN_LEFT: 'lightSpeedInLeft',
+  LIGHT_SPEED_IN_RIGHT: 'lightSpeedInRight',
+
+  // 摆动动效
+  SWING: 'swing',
+  JELLO: 'jello',
+
+  // 心跳动效
+  PULSE: 'pulse'
+}
+
 export const useAppStore = defineStore(
   "app",
   () => {
@@ -16,6 +61,8 @@ export const useAppStore = defineStore(
     const currentTopMenu = ref(""); // 当前选中的顶部菜单
     const tabsShow = ref(true); // 页签是否显示
     const shouldRefresh = ref(false) // 页面刷新标志
+    //默认页面切换动画
+    const currentPageAnimation = ref(PAGE_ANIMATIONS.BOUNCE_IN_LEFT)
 
     // Getters
     const isLoading = computed(() => loading.value);
@@ -75,6 +122,11 @@ export const useAppStore = defineStore(
       shouldRefresh.value = false
     }
 
+    // 设置页面切换动画
+    const setPageAnimation = (animation) => {
+      currentPageAnimation.value = animation
+    }
+
     return {
       // State
       themeMode,
@@ -92,6 +144,8 @@ export const useAppStore = defineStore(
       // Getters
       isLoading,
       currentLayout,
+      currentPageAnimation,
+
 
       // Actions
       setThemeMode,
@@ -106,7 +160,9 @@ export const useAppStore = defineStore(
       setCurrentTopMenu,
       setSidebarFixed,
       triggerRefresh,
-      resetRefresh
+      resetRefresh,
+      setPageAnimation,
+
     };
   },
   {
@@ -122,7 +178,9 @@ export const useAppStore = defineStore(
         "sidebarFixed",
         "tabsShow",
         "currentTopMenu",
+        'currentPageAnimation'
       ],
     },
   }
 );
+

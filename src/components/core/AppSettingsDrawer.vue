@@ -124,14 +124,8 @@
               <h4 class="config-name">文字大小</h4>
               <p class="config-desc">设置系统文字的基础大小</p>
             </div>
-            <a-input-number 
-              v-model:value="currentFontSize" 
-              :min="14" 
-              :max="18" 
-              :step="1"
-              @change="handleFontSizeChange"
-              style="width: 80px;"
-            />
+            <a-input-number v-model:value="currentFontSize" :min="14" :max="18" :step="1" @change="handleFontSizeChange"
+              style="width: 80px;" />
           </div>
 
           <div class="config-item">
@@ -139,14 +133,8 @@
               <h4 class="config-name">圆角设置</h4>
               <p class="config-desc">设置组件的圆角大小</p>
             </div>
-            <a-input-number 
-              v-model:value="currentBorderRadius" 
-              :min="1" 
-              :max="16" 
-              :step="1"
-              @change="handleBorderRadiusChange"
-              style="width: 80px;"
-            />
+            <a-input-number v-model:value="currentBorderRadius" :min="1" :max="16" :step="1"
+              @change="handleBorderRadiusChange" style="width: 80px;" />
           </div>
 
           <div class="config-item">
@@ -154,10 +142,7 @@
               <h4 class="config-name">页签</h4>
               <p class="config-desc">开启或关闭页签</p>
             </div>
-            <a-switch 
-              v-model:checked="currentTabsShow" 
-              @change="handleTabsShowChange" 
-            />
+            <a-switch v-model:checked="currentTabsShow" @change="handleTabsShowChange" />
           </div>
 
           <div class="config-item">
@@ -165,10 +150,7 @@
               <h4 class="config-name">线宽风格</h4>
               <p class="config-desc">启用线框风格的组件样式</p>
             </div>
-            <a-switch 
-              v-model:checked="currentWireframe" 
-              @change="handleWireframeChange" 
-            />
+            <a-switch v-model:checked="currentWireframe" @change="handleWireframeChange" />
           </div>
 
           <div class="config-item">
@@ -176,10 +158,7 @@
               <h4 class="config-name">页签阴影</h4>
               <p class="config-desc">启用页签的阴影效果</p>
             </div>
-            <a-switch 
-              v-model:checked="currentTabShadow" 
-              @change="handleTabShadowChange" 
-            />
+            <a-switch v-model:checked="currentTabShadow" @change="handleTabShadowChange" />
           </div>
         </div>
       </div>
@@ -206,6 +185,25 @@
           </div>
         </div>
       </div>
+
+      <!-- 页面动效 -->
+      <div class="setting-section">
+        <div class="section-title">页面动效</div>
+        <div class="section-description">选择好看有趣的页面动效</div>
+
+        <div class="animation-options">
+          <div v-for="animation in pageAnimations" :key="animation.value" class="animation-item"
+            :class="{ active: appStore.currentPageAnimation === animation.value }"
+            @click="handleAnimationChange(animation.value)">
+            <div class="animation-content">
+              <!-- <t-icon :name="animation.icon" class="animation-icon" /> -->
+              <span class="animation-label">{{ animation.label }}</span>
+            </div>
+            <!-- <t-icon v-if="appStore.currentPageAnimation === animation.value" name="check" class="check-icon" /> -->
+            <CheckOutlined v-if="appStore.currentPageAnimation === animation.value" class="check-icon" />
+          </div>
+        </div>
+      </div>
     </div>
   </a-drawer>
 </template>
@@ -214,7 +212,7 @@
 import { computed, ref } from 'vue'
 import { CheckOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
-import { useAppStore, useThemeStore } from '@/stores'
+import { useAppStore, useThemeStore, PAGE_ANIMATIONS } from '@/stores'
 import { getLayoutConfig } from '@/utils/layout.config.js'
 
 // Props
@@ -248,10 +246,42 @@ const currentTabsShow = ref(appStore.tabsShow)
 // 当前布局
 const currentLayout = computed(() => appStore.layout)
 
-// 当前布局配置
-const currentLayoutConfig = computed(() => {
-  return getLayoutConfig(currentLayout.value)
-})
+// 页面动画效果选项
+const pageAnimations = [
+  // 滑动动效
+  { value: PAGE_ANIMATIONS.SLIDE_LEFT, label: '从左滑入', icon: 'chevron-right' },
+  { value: PAGE_ANIMATIONS.SLIDE_RIGHT, label: '从右滑入', icon: 'chevron-left' },
+  { value: PAGE_ANIMATIONS.SLIDE_UP, label: '从下滑入', icon: 'chevron-up' },
+  { value: PAGE_ANIMATIONS.SLIDE_DOWN, label: '从上滑入', icon: 'chevron-down' },
+  // 淡入淡出动效
+  { value: PAGE_ANIMATIONS.FADE, label: '淡入淡出', icon: 'view-module' },
+  { value: PAGE_ANIMATIONS.FADE_IN_UP, label: '淡入向上', icon: 'arrow-up' },
+  { value: PAGE_ANIMATIONS.FADE_IN_DOWN, label: '淡入向下', icon: 'arrow-down' },
+  { value: PAGE_ANIMATIONS.FADE_IN_LEFT, label: '淡入向左', icon: 'arrow-left' },
+  { value: PAGE_ANIMATIONS.FADE_IN_RIGHT, label: '淡入向右', icon: 'arrow-right' },
+  { value: PAGE_ANIMATIONS.ZOOM_IN_DOWN, label: '放大向下', icon: 'aspect-ratio' },
+  { value: PAGE_ANIMATIONS.BOUNCE_IN_LEFT, label: '弹跳向左', icon: 'call-received' },
+  { value: PAGE_ANIMATIONS.BOUNCE_IN_RIGHT, label: '弹跳向右', icon: 'call-made' },
+  // 旋转动效
+  { value: PAGE_ANIMATIONS.ROTATE_IN_DOWN_LEFT, label: '左下旋转', icon: 'rotate-ccw' },
+  { value: PAGE_ANIMATIONS.ROTATE_IN_DOWN_RIGHT, label: '右下旋转', icon: 'rotate-cw' },
+  { value: PAGE_ANIMATIONS.ROTATE_IN_UP_LEFT, label: '左上旋转', icon: 'undo' },
+  { value: PAGE_ANIMATIONS.ROTATE_IN_UP_RIGHT, label: '右上旋转', icon: 'redo' },
+  // 光速动效
+  { value: PAGE_ANIMATIONS.LIGHT_SPEED_IN_LEFT, label: '光速左入', icon: 'fast-forward' },
+  { value: PAGE_ANIMATIONS.LIGHT_SPEED_IN_RIGHT, label: '光速右入', icon: 'fast-rewind' },
+  // 缩放动效
+  { value: PAGE_ANIMATIONS.ZOOM, label: '缩放效果', icon: 'fullscreen' },
+  // 弹跳动效
+  { value: PAGE_ANIMATIONS.BOUNCE, label: '弹跳效果', icon: 'jump' },
+  // 翻转动效
+  { value: PAGE_ANIMATIONS.FLIP, label: '翻转效果', icon: 'swap' },
+  // 摆动动效
+  { value: PAGE_ANIMATIONS.SWING, label: '摆动效果', icon: 'vibration' },
+  { value: PAGE_ANIMATIONS.JELLO, label: '果冻效果', icon: 'blur-on' },
+  // 心跳动效
+  { value: PAGE_ANIMATIONS.PULSE, label: '脉冲效果', icon: 'radio-button-checked' }
+]
 
 // 当前主题模式
 const currentThemeMode = computed(() => appStore.themeMode || 'light')
@@ -281,22 +311,25 @@ const handleLayoutSwitch = (layoutKey) => {
 // 处理主题模式切换
 const handleThemeModeSwitch = (mode) => {
   appStore.setThemeMode(mode)
+  handleClose()
 }
 
 // 处理侧边栏主题切换
 const handleSidebarThemeSwitch = (theme) => {
   appStore.setSidebarTheme(theme)
+  handleClose()
 }
 
 // 处理顶部主题切换
 const handleHeaderThemeSwitch = (theme) => {
   appStore.setHeaderTheme(theme)
+  handleClose()
 }
 
 // 处理预设主题色选择
 const handlePresetColorSelect = (index) => {
   themeStore.selectPresetColor(index)
-  message.success(`已切换到${themeStore.colorPresets[index].name}`)
+  handleClose()
 }
 
 // 处理自定义颜色点击
@@ -305,12 +338,14 @@ const handleCustomColorClick = () => {
   if (themeStore.colorMode !== 'custom') {
     themeStore.setPrimaryColor(customColor.value, 'custom')
   }
+  handleClose()
 }
 
 // 处理自定义颜色变化
 const handleCustomColorChange = (color) => {
   customColor.value = color
   themeStore.setCustomColor(color)
+  handleClose()
 }
 
 // 处理基础配置变化
@@ -333,20 +368,27 @@ const handleBorderRadiusChange = (value) => {
 const handleTabsShowChange = (checked) => {
   appStore.setTabsShow(checked)
   currentTabsShow.value = checked
+  handleClose()
 }
 
 const handleWireframeChange = (checked) => {
   themeStore.setWireframe(checked)
   currentWireframe.value = checked
+  handleClose()
 }
 
 // 处理页签阴影效果切换
 const handleTabShadowChange = (checked) => {
   themeStore.setTabShadow(checked)
   currentTabShadow.value = checked
+  handleClose()
 }
 
-
+// 处理动画效果切换
+const handleAnimationChange = (animation) => {
+  appStore.setPageAnimation(animation)
+  handleClose()
+}
 
 </script>
 
@@ -760,5 +802,71 @@ const handleTabShadowChange = (checked) => {
   color: #fff;
   font-size: 14px;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* 动画选项样式 */
+.animation-options {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  padding: 15px;
+}
+
+.animation-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 4px;
+  border: 1px solid var(--td-border-level-1-color);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--td-bg-color-container);
+  min-height: 40px;
+  position: relative;
+  margin: 0 4px 4px 0;
+}
+
+.animation-item:hover {
+  border-color: var(--td-brand-color);
+  background: var(--td-bg-color-container-hover);
+}
+
+.animation-item.active {
+  border-color: var(--td-brand-color);
+  background: var(--td-brand-color-light);
+}
+
+.animation-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+}
+
+.animation-icon {
+  font-size: 16px;
+  color: var(--td-text-color-secondary);
+}
+
+.animation-item.active .animation-icon {
+  color: var(--td-brand-color);
+}
+
+.animation-label {
+  font-size: 11px;
+  color: var(--td-text-color-primary);
+  text-align: center;
+  line-height: 1.1;
+}
+
+.animation-item .check-icon {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  font-size: 12px;
+  color: var(--td-brand-color);
 }
 </style>
