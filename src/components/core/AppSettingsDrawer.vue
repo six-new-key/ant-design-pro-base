@@ -40,7 +40,6 @@
 
             <div class="layout-info">
               <h4 class="layout-name">{{ config.name }}</h4>
-              <p class="layout-desc">{{ config.description }}</p>
             </div>
 
             <div v-if="currentLayout === config.key" class="active-badge">
@@ -64,7 +63,6 @@
             </div>
             <div class="theme-mode-info">
               <h4 class="theme-mode-name">明亮模式</h4>
-              <p class="theme-mode-desc">适合白天使用的明亮主题</p>
             </div>
             <div v-if="currentThemeMode === 'light'" class="active-badge">
               <CheckOutlined />
@@ -79,7 +77,6 @@
             </div>
             <div class="theme-mode-info">
               <h4 class="theme-mode-name">暗黑模式</h4>
-              <p class="theme-mode-desc">适合夜间使用的暗黑主题</p>
             </div>
             <div v-if="currentThemeMode === 'dark'" class="active-badge">
               <CheckOutlined />
@@ -96,7 +93,6 @@
           <div class="theme-switch-item">
             <div class="theme-switch-info">
               <h4 class="theme-switch-name">深色侧边栏</h4>
-              <p class="theme-switch-desc">使用深色的侧边栏主题</p>
             </div>
             <a-switch :checked="currentSidebarTheme === 'dark'"
               @change="(checked) => handleSidebarThemeSwitch(checked ? 'dark' : 'light')" />
@@ -105,7 +101,6 @@
           <div class="theme-switch-item">
             <div class="theme-switch-info">
               <h4 class="theme-switch-name">深色顶栏</h4>
-              <p class="theme-switch-desc">使用深色的顶栏主题</p>
             </div>
             <a-switch :checked="currentHeaderTheme === 'dark'"
               @change="(checked) => handleHeaderThemeSwitch(checked ? 'dark' : 'light')" />
@@ -116,13 +111,11 @@
       <!-- 基础配置 -->
       <div class="section">
         <h3 class="section-title">基础配置</h3>
-        <p class="section-desc">调整系统的基础显示参数</p>
 
         <div class="base-config-list">
           <div class="config-item">
             <div class="config-info">
               <h4 class="config-name">文字大小</h4>
-              <p class="config-desc">设置系统文字的基础大小</p>
             </div>
             <a-input-number v-model:value="currentFontSize" :min="14" :max="18" :step="1" @change="handleFontSizeChange"
               style="width: 80px;" />
@@ -131,7 +124,6 @@
           <div class="config-item">
             <div class="config-info">
               <h4 class="config-name">圆角设置</h4>
-              <p class="config-desc">设置组件的圆角大小</p>
             </div>
             <a-input-number v-model:value="currentBorderRadius" :min="1" :max="16" :step="1"
               @change="handleBorderRadiusChange" style="width: 80px;" />
@@ -140,7 +132,6 @@
           <div class="config-item">
             <div class="config-info">
               <h4 class="config-name">页签</h4>
-              <p class="config-desc">开启或关闭页签</p>
             </div>
             <a-switch v-model:checked="currentTabsShow" @change="handleTabsShowChange" />
           </div>
@@ -148,7 +139,6 @@
           <div class="config-item">
             <div class="config-info">
               <h4 class="config-name">线宽风格</h4>
-              <p class="config-desc">启用线框风格的组件样式</p>
             </div>
             <a-switch v-model:checked="currentWireframe" @change="handleWireframeChange" />
           </div>
@@ -178,7 +168,8 @@
           </div>
 
           <!-- 自定义颜色选择器 -->
-          <div @click="handleCustomColorClick">
+          <div class="custom-color-container" @click="handleCustomColorClick">
+            <div class="custom-color-label">自定义</div>
             <color-picker v-model:pureColor="customColor" @pureColorChange="handleCustomColorChange"
               :theme="appStore.themeMode === 'dark' ? 'black' : 'white'" />
             <CheckOutlined v-if="themeStore.colorMode === 'custom'" class="check-icon" />
@@ -211,7 +202,7 @@
 <script setup>
 import { computed, ref } from 'vue'
 import { CheckOutlined } from '@ant-design/icons-vue'
-import { message } from 'ant-design-vue'
+import { message } from '@/utils'
 import { useAppStore, useThemeStore, PAGE_ANIMATION_CONFIG } from '@/stores'
 
 // Props
@@ -351,77 +342,126 @@ const handleAnimationChange = (animation) => {
 }
 
 .section {
-  margin-bottom: 24px;
+  margin-bottom: 32px;
+  
+  &:last-child {
+    margin-bottom: 16px;
+  }
 }
 
 .section-title {
   font-size: 16px;
   font-weight: 600;
-  color: #262626;
-  margin: 0 0 8px 0;
+  color: #1a1a1a;
+  margin: 0 0 6px 0;
+  letter-spacing: -0.02em;
 }
 
 .section-desc {
-  font-size: 14px;
-  color: #8c8c8c;
-  margin: 0 0 16px 0;
+  font-size: 13px;
+  color: #666;
+  margin: 0 0 20px 0;
+  line-height: 1.4;
 }
 
 .layout-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
+  gap: 16px;
 }
 
 .layout-card {
   border: 1px solid #e8e8e8;
-  border-radius: 8px;
-  padding: 12px;
+  border-radius: 12px;
+  padding: 16px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   background: #fff;
-}
-
-.layout-card:hover {
-  border-color: #1890ff;
-  box-shadow: 0 2px 8px rgba(24, 144, 255, 0.1);
-}
-
-.layout-card.active {
-  border-color: #1890ff;
-  background: #f6ffed;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  
+  &:hover {
+    border-color: #4096ff;
+    box-shadow: 0 4px 12px rgba(64, 150, 255, 0.15);
+    transform: translateY(-2px);
+  }
+  
+  &.active {
+    border-color: #4096ff;
+    background: linear-gradient(135deg, #f6ffed 0%, #f0f9ff 100%);
+    box-shadow: 0 4px 16px rgba(64, 150, 255, 0.2);
+    
+    .layout-name {
+      color: #1890ff;
+      font-weight: 600;
+    }
+  }
 }
 
 .layout-preview {
-  margin-bottom: 8px;
+  margin-bottom: 12px;
 }
 
 .preview-container {
   width: 100%;
-  height: 60px;
+  height: 64px;
   border: 1px solid #f0f0f0;
-  border-radius: 4px;
+  border-radius: 8px;
   overflow: hidden;
   background: #fafafa;
+  position: relative;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.2) 100%);
+    pointer-events: none;
+  }
 }
 
 /* 侧边栏布局预览 */
 .preview-sidebar {
   display: flex;
   height: 100%;
-}
-
-.preview-sidebar .sidebar {
-  width: 20px;
-  background: #1890ff;
-}
-
-.preview-sidebar .content {
-  flex: 1;
-  background: #fff;
-  margin: 4px;
-  border-radius: 2px;
+  
+  .sidebar {
+    width: 22px;
+    background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+    position: relative;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      top: 8px;
+      left: 6px;
+      right: 6px;
+      height: 2px;
+      background: rgba(255,255,255,0.6);
+      border-radius: 1px;
+    }
+  }
+  
+  .content {
+    flex: 1;
+    background: #fff;
+    margin: 6px;
+    border-radius: 4px;
+    position: relative;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      top: 6px;
+      left: 6px;
+      right: 6px;
+      height: 1px;
+      background: #f0f0f0;
+    }
+  }
 }
 
 /* 顶部导航布局预览 */
@@ -429,18 +469,42 @@ const handleAnimationChange = (animation) => {
   display: flex;
   flex-direction: column;
   height: 100%;
-}
-
-.preview-topbar .topbar {
-  height: 12px;
-  background: #1890ff;
-}
-
-.preview-topbar .content {
-  flex: 1;
-  background: #fff;
-  margin: 4px;
-  border-radius: 2px;
+  
+  .topbar {
+    height: 14px;
+    background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+    position: relative;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 8px;
+      transform: translateY(-50%);
+      width: 20px;
+      height: 2px;
+      background: rgba(255,255,255,0.6);
+      border-radius: 1px;
+    }
+  }
+  
+  .content {
+    flex: 1;
+    background: #fff;
+    margin: 6px;
+    border-radius: 4px;
+    position: relative;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      top: 6px;
+      left: 6px;
+      right: 6px;
+      height: 1px;
+      background: #f0f0f0;
+    }
+  }
 }
 
 /* 混合布局预览 */
@@ -448,36 +512,49 @@ const handleAnimationChange = (animation) => {
   display: flex;
   flex-direction: column;
   height: 100%;
-}
-
-.preview-mixed .topbar {
-  height: 10px;
-  background: #1890ff;
-}
-
-.preview-mixed .main {
-  display: flex;
-  flex: 1;
-}
-
-.preview-mixed .sidebar {
-  width: 16px;
-  background: #52c41a;
-}
-
-.preview-mixed .content {
-  flex: 1;
-  background: #fff;
-  margin: 2px;
-  border-radius: 2px;
+  
+  .topbar {
+    height: 12px;
+    background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+  }
+  
+  .main {
+    display: flex;
+    flex: 1;
+    
+    .sidebar {
+      width: 18px;
+      background: linear-gradient(135deg, #52c41a 0%, #389e0d 100%);
+    }
+    
+    .content {
+      flex: 1;
+      background: #fff;
+      margin: 4px;
+      border-radius: 3px;
+    }
+  }
 }
 
 /* 极简布局预览 */
 .preview-minimal .content.full {
   width: 100%;
   height: 100%;
-  background: #fff;
-  border-radius: 2px;
+  background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+  border-radius: 4px;
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 24px;
+    height: 2px;
+    background: #d9d9d9;
+    border-radius: 1px;
+  }
 }
 
 /* 卡片布局预览 */
@@ -487,19 +564,20 @@ const handleAnimationChange = (animation) => {
   justify-content: center;
   height: 100%;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-
-.preview-card .card-container {
-  width: 80%;
-  height: 70%;
-}
-
-.preview-card .card {
-  width: 100%;
-  height: 100%;
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 4px;
-  backdrop-filter: blur(10px);
+  
+  .card-container {
+    width: 80%;
+    height: 70%;
+    
+    .card {
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 6px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+  }
 }
 
 .layout-info {
@@ -511,13 +589,14 @@ const handleAnimationChange = (animation) => {
   font-weight: 500;
   color: #262626;
   margin: 0 0 4px 0;
+  transition: all 0.2s ease;
 }
 
 .layout-desc {
   font-size: 12px;
   color: #8c8c8c;
   margin: 0;
-  line-height: 1.3;
+  line-height: 1.4;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -526,89 +605,147 @@ const handleAnimationChange = (animation) => {
 
 .active-badge {
   position: absolute;
-  top: 8px;
-  right: 8px;
+  top: 12px;
+  right: 12px;
   width: 20px;
   height: 20px;
-  background: #52c41a;
+  background: linear-gradient(135deg, #52c41a 0%, #389e0d 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #fff;
   font-size: 12px;
+  box-shadow: 0 2px 6px rgba(82, 196, 26, 0.3);
 }
 
 /* 主题模式切换样式 */
 .theme-mode-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
+  gap: 16px;
 }
 
 .theme-mode-card {
   border: 1px solid #e8e8e8;
-  border-radius: 8px;
-  padding: 12px;
+  border-radius: 12px;
+  padding: 16px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   background: #fff;
-}
-
-.theme-mode-card:hover {
-  border-color: #1890ff;
-  box-shadow: 0 2px 8px rgba(24, 144, 255, 0.1);
-}
-
-.theme-mode-card.active {
-  border-color: #1890ff;
-  background: #f6ffed;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  
+  &:hover {
+    border-color: #4096ff;
+    box-shadow: 0 4px 12px rgba(64, 150, 255, 0.15);
+    transform: translateY(-2px);
+  }
+  
+  &.active {
+    border-color: #4096ff;
+    background: linear-gradient(135deg, #f6ffed 0%, #f0f9ff 100%);
+    box-shadow: 0 4px 16px rgba(64, 150, 255, 0.2);
+    
+    .theme-mode-name {
+      color: #1890ff;
+      font-weight: 600;
+    }
+  }
 }
 
 .theme-mode-preview {
   width: 100%;
-  height: 60px;
+  height: 64px;
   border: 1px solid #f0f0f0;
-  border-radius: 4px;
+  border-radius: 8px;
   overflow: hidden;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 .light-preview {
   background: #ffffff;
-}
-
-.light-preview .preview-header {
-  height: 20px;
-  background: #eee;
-  border-bottom: 1px solid #e8e8e8;
-}
-
-.light-preview .preview-body {
-  flex: 1;
-  background: #ffffff;
-  margin: 4px;
-  border-radius: 2px;
+  
+  .preview-header {
+    height: 20px;
+    background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+    border-bottom: 1px solid #e8e8e8;
+    position: relative;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 8px;
+      transform: translateY(-50%);
+      width: 16px;
+      height: 2px;
+      background: #bfbfbf;
+      border-radius: 1px;
+    }
+  }
+  
+  .preview-body {
+    flex: 1;
+    background: #ffffff;
+    margin: 6px;
+    border-radius: 4px;
+    position: relative;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      top: 6px;
+      left: 6px;
+      right: 6px;
+      height: 1px;
+      background: #f0f0f0;
+    }
+  }
 }
 
 .dark-preview {
   background: #1f1f1f;
-}
-
-.dark-preview .preview-header {
-  height: 20px;
-  background: #141414;
-  border-bottom: 1px solid #303030;
-}
-
-.dark-preview .preview-body {
-  flex: 1;
-  background: #262626;
-  margin: 4px;
-  border-radius: 2px;
+  
+  .preview-header {
+    height: 20px;
+    background: linear-gradient(135deg, #141414 0%, #0f0f0f 100%);
+    border-bottom: 1px solid #303030;
+    position: relative;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 8px;
+      transform: translateY(-50%);
+      width: 16px;
+      height: 2px;
+      background: #595959;
+      border-radius: 1px;
+    }
+  }
+  
+  .preview-body {
+    flex: 1;
+    background: #262626;
+    margin: 6px;
+    border-radius: 4px;
+    position: relative;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      top: 6px;
+      left: 6px;
+      right: 6px;
+      height: 1px;
+      background: #404040;
+    }
+  }
 }
 
 .theme-mode-info {
@@ -620,32 +757,42 @@ const handleAnimationChange = (animation) => {
   font-weight: 500;
   color: #262626;
   margin: 0 0 4px 0;
+  transition: all 0.2s ease;
 }
 
 .theme-mode-desc {
   font-size: 12px;
   color: #8c8c8c;
   margin: 0;
-  line-height: 1.3;
+  line-height: 1.4;
 }
 
 /* 主题切换列表样式 */
 .theme-switch-list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 0;
 }
 
 .theme-switch-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 0;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.theme-switch-item:last-child {
-  border-bottom: none;
+  padding: 16px 0;
+  border-bottom: 1px solid #f5f5f5;
+  transition: all 0.2s ease;
+  
+  &:last-child {
+    border-bottom: none;
+  }
+  
+  &:hover {
+    background: rgba(24, 144, 255, 0.02);
+    margin: 0 -16px;
+    padding-left: 16px;
+    padding-right: 16px;
+    border-radius: 8px;
+  }
 }
 
 .theme-switch-info {
@@ -663,26 +810,35 @@ const handleAnimationChange = (animation) => {
   font-size: 12px;
   color: #8c8c8c;
   margin: 0;
-  line-height: 1.3;
+  line-height: 1.4;
 }
 
 /* 基础配置列表样式 */
 .base-config-list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 0;
 }
 
 .config-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 0;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.config-item:last-child {
-  border-bottom: none;
+  padding: 16px 0;
+  border-bottom: 1px solid #f5f5f5;
+  transition: all 0.2s ease;
+  
+  &:last-child {
+    border-bottom: none;
+  }
+  
+  &:hover {
+    background: rgba(24, 144, 255, 0.02);
+    margin: 0 -16px;
+    padding-left: 16px;
+    padding-right: 16px;
+    border-radius: 8px;
+  }
 }
 
 .config-info {
@@ -700,126 +856,226 @@ const handleAnimationChange = (animation) => {
   font-size: 12px;
   color: #8c8c8c;
   margin: 0;
-  line-height: 1.3;
+  line-height: 1.4;
 }
 
 /* 主题色选择器样式 */
 .setting-section {
-  margin-bottom: 24px;
+  margin-bottom: 32px;
+  
+  &:last-child {
+    margin-bottom: 16px;
+  }
 }
 
 .section-title {
   font-size: 16px;
   font-weight: 600;
   color: #262626;
-  margin: 0 0 8px 0;
+  margin: 0 0 6px 0;
+  letter-spacing: -0.02em;
 }
 
 .section-description {
-  font-size: 14px;
-  color: #8c8c8c;
-  margin: 0 0 16px 0;
+  font-size: 13px;
+  color: #666;
+  margin: 0 0 20px 0;
+  line-height: 1.4;
 }
 
 .theme-colors {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 12px;
   margin-bottom: 16px;
+  padding: 16px;
+  background: #fafafa;
+  border-radius: 12px;
+  border: 1px solid #f0f0f0;
 }
 
 .color-item {
-  width: 32px;
-  height: 32px;
-  border-radius: 6px;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
   cursor: pointer;
   position: relative;
   border: 2px solid transparent;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.color-item:hover {
-  transform: scale(1.1);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-}
-
-.color-item.active {
-  border-color: #fff;
-  box-shadow: 0 0 0 2px #1890ff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  
+  &:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+  
+  &.active {
+    border-color: #fff;
+    box-shadow: 0 0 0 3px #1890ff, 0 4px 12px rgba(0, 0, 0, 0.2);
+    transform: scale(1.05);
+  }
 }
 
 .check-icon {
   color: #fff;
   font-size: 14px;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  filter: drop-shadow(0 1px 1px rgba(0,0,0,0.3));
+}
+
+/* 自定义颜色选择器样式 */
+.custom-color-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  position: relative;
+}
+
+.custom-color-label {
+  font-size: 12px;
+  color: #8c8c8c;
+  font-weight: 500;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.custom-color-container:hover .custom-color-label {
+  color: #1890ff;
 }
 
 /* 动画选项样式 */
 .animation-options {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
-  padding: 15px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  padding: 16px;
+  background: #fafafa;
+  border-radius: 12px;
+  border: 1px solid #f0f0f0;
 }
 
 .animation-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  padding: 8px 4px;
-  border: 1px solid var(--td-border-level-1-color);
-  border-radius: 4px;
+  justify-content: center;
+  padding: 16px 12px;
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s;
-  background: var(--td-bg-color-container);
-  min-height: 40px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: #fff;
   position: relative;
-  margin: 0 4px 4px 0;
-}
-
-.animation-item:hover {
-  border-color: var(--td-brand-color);
-  background: var(--td-bg-color-container-hover);
-}
-
-.animation-item.active {
-  border-color: var(--td-brand-color);
-  background: var(--td-brand-color-light);
+  min-height: 60px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  
+  &:hover {
+    border-color: #4096ff;
+    background: #f0f9ff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(64, 150, 255, 0.15);
+  }
+  
+  &.active {
+    border-color: #4096ff;
+    background: linear-gradient(135deg, #f6ffed 0%, #f0f9ff 100%);
+    box-shadow: 0 4px 16px rgba(64, 150, 255, 0.2);
+    
+    .animation-label {
+      color: #1890ff;
+      font-weight: 600;
+    }
+  }
 }
 
 .animation-content {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   flex: 1;
 }
 
 .animation-icon {
-  font-size: 16px;
-  color: var(--td-text-color-secondary);
+  font-size: 18px;
+  color: #8c8c8c;
+  transition: all 0.2s ease;
 }
 
 .animation-item.active .animation-icon {
-  color: var(--td-brand-color);
+  color: #1890ff;
 }
 
 .animation-label {
-  font-size: 11px;
-  color: var(--td-text-color-primary);
+  font-size: 12px;
+  color: #262626;
   text-align: center;
-  line-height: 1.1;
+  line-height: 1.2;
+  transition: all 0.2s ease;
 }
 
 .animation-item .check-icon {
   position: absolute;
-  top: 2px;
-  right: 2px;
+  top: 8px;
+  right: 8px;
   font-size: 12px;
-  color: var(--td-brand-color);
+  color: #1890ff;
+  background: #fff;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 3px rgba(24, 144, 255, 0.3);
+}
+
+/* 抽屉整体样式优化 */
+:deep(.ant-drawer-header) {
+  border-bottom: 1px solid #f0f0f0;
+  padding: 16px 24px;
+  
+  .ant-drawer-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1a1a1a;
+  }
+}
+
+:deep(.ant-drawer-body) {
+  padding: 24px;
+  background: #fafafa;
+}
+
+:deep(.ant-drawer-content) {
+  border-radius: 0;
+}
+
+/* 开关组件样式优化 */
+:deep(.ant-switch) {
+  &.ant-switch-checked {
+    background-color: #1890ff;
+  }
+}
+
+/* 数字输入框样式优化 */
+:deep(.ant-input-number) {
+  border-radius: 6px;
+  border-color: #d9d9d9;
+  
+  &:hover {
+    border-color: #4096ff;
+  }
+  
+  &:focus,
+  &.ant-input-number-focused {
+    border-color: #4096ff;
+    box-shadow: 0 0 0 2px rgba(64, 150, 255, 0.2);
+  }
 }
 </style>

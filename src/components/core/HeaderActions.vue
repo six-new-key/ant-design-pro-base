@@ -88,7 +88,7 @@ import {
     SyncOutlined,
     GlobalOutlined
 } from '@ant-design/icons-vue'
-import { message } from 'ant-design-vue'
+import { message } from '@/utils'
 import { useAppStore } from '@/stores'
 
 const router = useRouter()

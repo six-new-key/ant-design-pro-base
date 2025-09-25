@@ -42,6 +42,15 @@
           </a-space>
         </div>
       </div>
+
+      <div>
+        <a-button type="primary" @click="handleTestClick1">
+          测试按钮
+        </a-button>
+        <a-button style="margin-left: 1.25rem;" type="primary" @click="handleTestClick2">
+          测试按钮2
+        </a-button>
+      </div>
     </a-card>
 
     <a-card title="仪表盘">
@@ -224,11 +233,23 @@
 </template>
 
 <script setup>
+import { message ,notification} from '@/utils'
+
+// 测试按钮点击事件
+const handleTestClick1 = () => {
+  message.success('测试按钮1点击了')
+}
+
+// 测试按钮2点击事件
+const handleTestClick2 = () => {
+  notification.success('测试按钮2点击了')
+}
+
 // 定义图标脚本地址
 const iconScriptUrl = '//at.alicdn.com/t/c/font_4736930_l6olb1tzza.js';
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .dashboard {
 
   :where(.ant-card){
