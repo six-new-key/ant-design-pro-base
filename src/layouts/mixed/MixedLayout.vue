@@ -120,7 +120,7 @@ const handleSidebarMouseLeave = () => {
   background: v-bind('token.colorBgContainer');
   display: flex;
   align-items: center;
-  height: $top-height-horizontal;
+  height: $top-height;
   border-bottom: 1px solid v-bind('token.colorFillSecondary');
 
   &.theme-mode-header {
@@ -213,7 +213,7 @@ const handleSidebarMouseLeave = () => {
 
 .mixed-content {
   padding: $content-padding;
-  height: calc(100vh - $top-height-horizontal);
+  height: calc(100vh - $top-height);
   overflow-y: scroll;
 }
 

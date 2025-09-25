@@ -112,7 +112,7 @@ watch(() => appStore.sidebarCollapsed, (newVal) => {
   border-right: 1px solid v-bind('token.colorFillSecondary');
 
   .logo-container {
-    height: $logo-height;
+    height: $top-height;
     display: flex;
     justify-content: center;
     align-items: center;

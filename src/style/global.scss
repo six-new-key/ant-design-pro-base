@@ -10,17 +10,11 @@ $sidebar-width: 228px;
 //左侧菜单收缩后的宽度，如果这里修改了，将需要修改settings.js中的sidebarWidthCollapsed
 $sidebar-width-collapsed: 48px;
 
-//内容区顶部高度
-$top-height: 54px;
-
-//水平布局下的顶部高度为64px
-$top-height-horizontal: 64px;
-
-//logo区顶部高度
-$logo-height: 54px;
+//顶部高度
+$top-height: 52px;
 
 //顶栏内边距
-$top-padding: 10px;
+$top-padding: 20px;
 
 //内容区内边距
 $content-padding: 20px;

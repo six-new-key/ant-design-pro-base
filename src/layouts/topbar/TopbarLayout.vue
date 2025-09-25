@@ -48,7 +48,7 @@ const { token } = theme.useToken()
 .topbar-header {
   display: flex;
   align-items: center;
-  height: $top-height-horizontal;
+  height: $top-height;
   background: v-bind('token.colorBgContainer');
 
   &.theme-mode-header {
@@ -100,7 +100,7 @@ const { token } = theme.useToken()
 
 .topbar-content {
   padding: $content-padding;
-  height: calc(100vh - $top-height-horizontal);
+  height: calc(100vh - $top-height);
   overflow-y: scroll;
 }
 

@@ -14,15 +14,17 @@
         </a-tooltip>
 
         <!-- 主题切换按钮 -->
-        <a-button type="text" @click="toggleThemeMode(appStore.themeMode === 'dark' ? 'light' : 'dark')">
+        <a-button type="text"
+            @click="toggleThemeMode(appStore.themeMode === 'dark' ? 'light' : 'dark')">
             <template #icon>
-                <svg-icon :name="appStore.themeMode === 'dark' ? 'sun' : 'moon'" width="17px" height="17px"
-                    :color="appStore.themeMode === 'dark' ? '#fff' : '#2c2c2c'" />
+                <svg-icon :name="appStore.themeMode === 'dark' ? 'sun' : 'moon'"
+                    width="17px" height="17px"
+                    :color="color" />
             </template>
         </a-button>
 
         <!-- 语言切换按钮 -->
-        <a-dropdown arrow>
+        <a-dropdown arrow placement="bottomRight">
             <template #overlay>
                 <a-menu @click="toggleLanguage">
                     <a-menu-item key="zh-CN">
@@ -44,7 +46,7 @@
       </a-badge> -->
 
         <!-- 用户头像下拉菜单 -->
-        <a-dropdown>
+        <a-dropdown arrow placement="bottomRight">
             <div class="user-info">
                 <a-avatar>
                     <template #icon><user-outlined /></template>
@@ -72,7 +74,7 @@
 </template>
 
 <script setup>
-import { h } from 'vue'
+import { computed, h } from 'vue'
 import { useRouter } from 'vue-router'
 import {
     UserOutlined,
@@ -93,6 +95,15 @@ const onSearch = (value) => {
     console.log('搜索:', value)
     message.info(`搜索: ${value}`)
 }
+
+//颜色复杂计算
+const color = computed(() => {
+    if(appStore.themeMode === 'dark' || (appStore.layout === 'topbar' || appStore.layout === 'mixed') && appStore.headerTheme === 'dark'){
+        return '#fff'
+    }else{
+        return '#2c2c2c'
+    }
+})
 
 // 刷新功能
 const handleRefresh = () => {
@@ -140,5 +151,13 @@ const handleMenuClick = ({ key }) => {
 <style scoped>
 .user-info {
     cursor: pointer;
+}
+
+.ant-btn:hover{
+    background: v-bind('appStore.headerTheme === "dark" && (appStore.layout === 'topbar' || appStore.layout === 'mixed') ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"');
+}
+
+.anticon {
+    color: v-bind('appStore.headerTheme === "dark" && (appStore.layout === 'topbar' || appStore.layout === 'mixed') ? "#fff" : ""');
 }
 </style>
