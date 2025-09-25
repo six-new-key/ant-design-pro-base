@@ -10,15 +10,18 @@
 
         <!-- 全屏按钮 -->
         <a-tooltip title="全屏">
-            <a-button type="text" :icon="h(FullscreenOutlined)" @click="toggleFullscreen" />
+            <a-button type="text" @click="toggleFullscreen">
+                <template #icon>
+                    <FullscreenOutlined v-if="!isFullscreen" />
+                    <FullscreenExitOutlined v-else />
+                </template>
+            </a-button>
         </a-tooltip>
 
         <!-- 主题切换按钮 -->
-        <a-button type="text"
-            @click="toggleThemeMode(appStore.themeMode === 'dark' ? 'light' : 'dark')">
+        <a-button type="text" @click="toggleThemeMode(appStore.themeMode === 'dark' ? 'light' : 'dark')">
             <template #icon>
-                <svg-icon :name="appStore.themeMode === 'dark' ? 'sun' : 'moon'"
-                    width="17px" height="17px"
+                <svg-icon :name="appStore.themeMode === 'dark' ? 'sun' : 'moon'" width="17px" height="17px"
                     :color="color" />
             </template>
         </a-button>
@@ -74,13 +77,14 @@
 </template>
 
 <script setup>
-import { computed, h } from 'vue'
+import { computed, h, ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import {
     UserOutlined,
     SettingOutlined,
     LogoutOutlined,
     FullscreenOutlined,
+    FullscreenExitOutlined,
     SyncOutlined,
     GlobalOutlined
 } from '@ant-design/icons-vue'
@@ -89,6 +93,7 @@ import { useAppStore } from '@/stores'
 
 const router = useRouter()
 const appStore = useAppStore()
+const isFullscreen = ref(false)
 
 // 搜索功能
 const onSearch = (value) => {
@@ -98,25 +103,24 @@ const onSearch = (value) => {
 
 //颜色复杂计算
 const color = computed(() => {
-    if(appStore.themeMode === 'dark' || (appStore.layout === 'topbar' || appStore.layout === 'mixed') && appStore.headerTheme === 'dark'){
+    if (appStore.themeMode === 'dark' || (appStore.layout === 'topbar' || appStore.layout === 'mixed') && appStore.headerTheme === 'dark') {
         return '#fff'
-    }else{
+    } else {
         return '#2c2c2c'
     }
 })
 
-// 刷新功能
-const handleRefresh = () => {
-    window.location.reload()
-}
-
-// 全屏功能
-const toggleFullscreen = () => {
-    if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen()
+const anticonColor = computed(() => {
+    if (appStore.headerTheme === "dark" && (appStore.layout === 'topbar' || appStore.layout === 'mixed')) {
+        return '#fff'
     } else {
-        document.exitFullscreen()
+        return ''
     }
+})
+
+// 刷新页面
+const handleRefresh = () => {
+    appStore.triggerRefresh()
 }
 
 // 主题切换
@@ -146,18 +150,41 @@ const handleMenuClick = ({ key }) => {
             break
     }
 }
+
+// 全屏切换
+const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen()
+    } else {
+        document.exitFullscreen()
+    }
+}
+
+// 监听全屏状态变化
+const handleFullscreenChange = () => {
+    isFullscreen.value = !!document.fullscreenElement
+}
+
+// 生命周期
+onMounted(() => {
+    document.addEventListener('fullscreenchange', handleFullscreenChange)
+})
+
+onUnmounted(() => {
+    document.removeEventListener('fullscreenchange', handleFullscreenChange)
+})
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .user-info {
     cursor: pointer;
 }
 
-.ant-btn:hover{
-    background: v-bind('appStore.headerTheme === "dark" && (appStore.layout === 'topbar' || appStore.layout === 'mixed') ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"');
+.ant-btn:hover {
+    background: v-bind('appStore.headerTheme === "dark" && (appStore.layout === ' topbar' || appStore.layout === ' mixed') ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"');
 }
 
 .anticon {
-    color: v-bind('appStore.headerTheme === "dark" && (appStore.layout === 'topbar' || appStore.layout === 'mixed') ? "#fff" : ""');
+    color: v-bind('anticonColor');
 }
 </style>

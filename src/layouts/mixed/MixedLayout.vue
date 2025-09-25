@@ -44,7 +44,7 @@
         
         <!-- 主内容区域 -->
         <a-layout-content class="mixed-content">
-          <router-view />
+          <LayoutContent />
         </a-layout-content>
       </a-layout>
     </a-layout>
@@ -59,6 +59,7 @@ import MixedTopMenu from './components/MixedTopMenu.vue'
 import MixedSideMenu from './components/MixedSideMenu.vue'
 import HeaderActions from '@/components/core/HeaderActions.vue'
 import TabsView from '@/components/core/TabsView.vue'
+import LayoutContent from '@/components/core/LayoutContent.vue'
 import { theme } from 'ant-design-vue'
 import { settings } from '@/settings'
 import TriggerCollapsed from '@/components/core/TriggerCollapsed.vue'

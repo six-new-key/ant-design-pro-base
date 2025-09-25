@@ -26,7 +26,7 @@
 
     <!-- 主内容区域 -->
     <a-layout-content class="topbar-content">
-      <router-view />
+      <LayoutContent />
     </a-layout-content>
   </a-layout>
 </template>
@@ -35,6 +35,7 @@
 import TopbarMenu from './components/TopbarMenu.vue'
 import HeaderActions from '@/components/core/HeaderActions.vue'
 import TabsView from '@/components/core/TabsView.vue'
+import LayoutContent from '@/components/core/LayoutContent.vue'
 import { theme } from 'ant-design-vue'
 import { useAppStore } from '@/stores'
 import { settings } from '@/settings'

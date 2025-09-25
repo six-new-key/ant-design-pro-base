@@ -15,6 +15,7 @@ export const useAppStore = defineStore(
     const loading = ref(false);
     const currentTopMenu = ref(""); // 当前选中的顶部菜单
     const tabsShow = ref(true); // 页签是否显示
+    const shouldRefresh = ref(false) // 页面刷新标志
 
     // Getters
     const isLoading = computed(() => loading.value);
@@ -65,6 +66,15 @@ export const useAppStore = defineStore(
       tabsShow.value = show;
     };
 
+    // 刷新相关方法
+    const triggerRefresh = () => {
+      shouldRefresh.value = true
+    }
+
+    const resetRefresh = () => {
+      shouldRefresh.value = false
+    }
+
     return {
       // State
       themeMode,
@@ -77,6 +87,7 @@ export const useAppStore = defineStore(
       loading,
       currentTopMenu,
       tabsShow,
+      shouldRefresh,
 
       // Getters
       isLoading,
@@ -94,6 +105,8 @@ export const useAppStore = defineStore(
       setLoading,
       setCurrentTopMenu,
       setSidebarFixed,
+      triggerRefresh,
+      resetRefresh
     };
   },
   {

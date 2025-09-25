@@ -51,7 +51,7 @@
 
             <!-- 内容区域 -->
             <a-layout-content class="double-column-content">
-                <router-view />
+                <LayoutContent />
             </a-layout-content>
         </a-layout>
     </a-layout>
@@ -65,6 +65,7 @@ import HeaderActions from '@/components/core/HeaderActions.vue'
 import FirstColumnMenu from './components/FirstColumnMenu.vue'
 import SecondColumnMenu from './components/SecondColumnMenu.vue'
 import TabsView from '@/components/core/TabsView.vue'
+import LayoutContent from '@/components/core/LayoutContent.vue'
 import { theme } from 'ant-design-vue'
 import { settings } from '@/settings'
 import TriggerCollapsed from '@/components/core/TriggerCollapsed.vue'

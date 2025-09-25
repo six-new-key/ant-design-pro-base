@@ -12,7 +12,6 @@
             <span v-if="!collapsed" class="logo-text" :class="{ 'text-white': appStore.sidebarTheme === 'dark' }">{{
               settings.projectName }}</span>
           </transition>
-
         </div>
       </div>
 
@@ -47,7 +46,7 @@
 
       <!-- 内容区域 -->
       <a-layout-content class="sidebar-content">
-        <router-view />
+        <LayoutContent />
       </a-layout-content>
     </a-layout>
   </a-layout>
@@ -60,6 +59,7 @@ import Breadcrumb from '@/components/core/Breadcrumb.vue'
 import HeaderActions from '@/components/core/HeaderActions.vue'
 import Sidebar from './components/Sidebar.vue'
 import TabsView from '@/components/core/TabsView.vue'
+import LayoutContent from '@/components/core/LayoutContent.vue'
 import { settings } from '@/settings'
 import { theme } from 'ant-design-vue'
 import TriggerCollapsed from '@/components/core/TriggerCollapsed.vue'
