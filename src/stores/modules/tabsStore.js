@@ -85,15 +85,6 @@ export const useTabsStore = defineStore('tabs', () => {
     }
   }
 
-  const refreshTab = (targetPath) => {
-    // 刷新页签的逻辑，这里可以触发组件重新加载
-    const tab = tabs.value.find(tab => tab.path === targetPath)
-    if (tab) {
-      // 可以通过修改key来强制组件重新渲染
-      tab.key = Date.now()
-    }
-  }
-
   const closeLeftTabs = (targetPath) => {
     const targetIndex = tabs.value.findIndex(tab => tab.path === targetPath)
     if (targetIndex <= 0) return
@@ -162,7 +153,6 @@ export const useTabsStore = defineStore('tabs', () => {
     removeTab,
     setActiveTab,
     toggleTabPin,
-    refreshTab,
     closeLeftTabs,
     closeRightTabs,
     closeOtherTabs,

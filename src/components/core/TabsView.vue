@@ -216,9 +216,7 @@ const handleMenuClick = ({ key }) => {
 
   switch (key) {
     case 'refresh':
-      tabsStore.refreshTab(currentPath)
-      // 刷新当前页面
-      router.go(0)
+      appStore.triggerRefresh()
       break
 
     case 'togglePin':
