@@ -27,13 +27,21 @@
             </a-layout-sider>
         </transition>
 
-
         <!-- 主内容区域 -->
         <a-layout class="double-column-layout"
             :style="{ marginLeft: appStore.sidebarCollapsed ? totalSidebarWidthCollapsed + 'px' : totalSidebarWidth + 'px' }">
             <!-- 头部 -->
             <a-layout-header class="double-column-header">
-                <Header />
+                <!-- 左侧区域 -->
+                <div class="header-left">
+                    <!-- 面包屑导航 -->
+                    <Breadcrumb strategy="hierarchy" />
+                </div>
+
+                <!-- 右侧区域 -->
+                <div class="header-right">
+                    <HeaderActions />
+                </div>
             </a-layout-header>
 
             <!-- 页签区域 -->
@@ -52,7 +60,8 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import { useAppStore } from '@/stores'
-import Header from './components/Header.vue'
+import Breadcrumb from '@/components/core/Breadcrumb.vue'
+import HeaderActions from '@/components/core/HeaderActions.vue'
 import FirstColumnMenu from './components/FirstColumnMenu.vue'
 import SecondColumnMenu from './components/SecondColumnMenu.vue'
 import TabsView from '@/components/core/TabsView.vue'
@@ -177,6 +186,22 @@ const handleFirstColumnSelect = (route) => {
     align-items: center;
     justify-content: space-between;
     height: $top-height;
+
+    .header-left {
+        flex: 1;
+        display: flex;
+        align-items: center;
+
+        .toggle-collapse {
+            margin-right: 12px;
+        }
+    }
+
+    .header-right {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
 }
 
 .double-column-content {
@@ -201,11 +226,11 @@ const handleFirstColumnSelect = (route) => {
 /* 页签区域淡入淡出动画 */
 .tabs-fade-enter-active,
 .tabs-fade-leave-active {
-  transition: all 0.2s ease-out;
+    transition: all 0.2s ease-out;
 }
 
 .tabs-fade-enter-from,
 .tabs-fade-leave-to {
-  opacity: 0;
+    opacity: 0;
 }
 </style>

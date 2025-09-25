@@ -230,8 +230,6 @@ const iconScriptUrl = '//at.alicdn.com/t/c/font_4736930_l6olb1tzza.js';
 
 <style scoped>
 .dashboard {
-  /* padding: 24px; */
-  /* height: 200vh; */
 
   :where(.ant-card){
     margin-bottom: 20px;

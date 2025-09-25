@@ -30,7 +30,14 @@
     <a-layout class="sidebar-layout" :class="{ 'right-collapsed': collapsed }">
       <!-- 头部 -->
       <a-layout-header class="sidebar-header">
-        <Header />
+        <div class="header-left">
+          <!-- 面包屑导航 -->
+          <Breadcrumb strategy="matched" :show-home="true" />
+        </div>
+
+        <div class="header-right">
+          <HeaderActions />
+        </div>
       </a-layout-header>
 
       <!-- 页签区域 -->
@@ -49,7 +56,8 @@
 <script setup>
 import { ref, watch } from 'vue'
 import { useAppStore } from '@/stores'
-import Header from './components/Header.vue'
+import Breadcrumb from '@/components/core/Breadcrumb.vue'
+import HeaderActions from '@/components/core/HeaderActions.vue'
 import Sidebar from './components/Sidebar.vue'
 import TabsView from '@/components/core/TabsView.vue'
 import { settings } from '@/settings'
@@ -153,6 +161,18 @@ watch(() => appStore.sidebarCollapsed, (newVal) => {
   display: flex;
   align-items: center;
   height: $top-height;
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    flex: 1;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
 }
 
 .sidebar-content {
@@ -187,5 +207,4 @@ watch(() => appStore.sidebarCollapsed, (newVal) => {
 .tabs-fade-leave-to {
   opacity: 0;
 }
-
 </style>

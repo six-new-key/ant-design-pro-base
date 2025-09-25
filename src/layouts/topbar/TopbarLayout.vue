@@ -33,7 +33,7 @@
 
 <script setup>
 import TopbarMenu from './components/TopbarMenu.vue'
-import HeaderActions from './components/HeaderActions.vue'
+import HeaderActions from '@/components/core/HeaderActions.vue'
 import TabsView from '@/components/core/TabsView.vue'
 import { theme } from 'ant-design-vue'
 import { useAppStore } from '@/stores'
