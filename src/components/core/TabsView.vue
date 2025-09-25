@@ -29,10 +29,10 @@
 
       <!-- 右侧下拉菜单 -->
       <div class="tabs-actions">
-        <a-dropdown :trigger="['click']" placement="bottomRight" arrow>
-          <div class="tabs-menu-btn">
+        <a-dropdown :trigger="['hover']" placement="bottomRight" arrow>
+          <a-button type="text">
             <DownOutlined style="font-size: 12px;" />
-          </div>
+          </a-button>
 
           <template #overlay>
             <a-menu @click="handleMenuClick">
@@ -77,7 +77,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick, watch, computed } from 'vue'
+import { ref, onMounted, nextTick, watch, computed} from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useTabsStore, useAppStore, useThemeStore } from '@/stores'
 import {
@@ -350,7 +350,7 @@ const handleWheel = (e) => {
         border-radius: v-bind('themeStore.baseConfig.borderRadius + "px"');
         background: transparent;
 
-        &:not(.active):not(:has(+ .active))::after {
+        &:not(.active):not(:has(+ .active)):not(:last-child)::after {
           content: '';
           position: absolute;
           right: 0;
@@ -444,25 +444,15 @@ const handleWheel = (e) => {
       }
     }
 
-    .tabs-actions {
+    .ant-btn {
       height: 100%;
-      padding: 0 15px;
+      width: 100%;
+      border-radius: 0;
       border-left: 1px solid v-bind('token.colorFillSecondary');
+    }
 
-      .tabs-menu-btn {
-        display: flex;
-        align-items: center;
-        color: v-bind('token.colorText');
-        transition: all 0.2s;
-        height: 100%;
-        width: 100%;
-      }
-
-      &:hover {
-        cursor: pointer;
-        color: v-bind('token.colorText');
-        background: v-bind('appStore.themeMode === "dark" ? "rgba(255, 255, 255, 0.04)" : "rgba(0, 0, 0, 0.04)"');
-      }
+    .ant-btn:hover {
+      background: none;
     }
   }
 }
