@@ -1,8 +1,15 @@
 <template>
   <div class="tabs-view">
-    <div class="tabs-container" ref="tabsContainer">
+    <div class="tabs-container">
+      <!-- 左滚动按钮 -->
+      <div class="scroll-button scroll-left" v-show="showScrollButtons && canScrollLeft" @click="scrollLeft">
+        <a-button type="text">
+          <LeftOutlined style="font-size: 12px;" />
+        </a-button>
+      </div>
+
       <!-- 页签滚动区域 -->
-      <div class="tabs-scroll-area" ref="tabsScrollArea" @mousedown="handleMouseDown" @wheel="handleWheel">
+      <div class="tabs-scroll-area" ref="tabsScrollArea" @wheel="handleWheel">
         <div class="tabs-list" ref="tabsList">
           <div v-for="tab in tabsStore.activeTabs" :key="tab.path" :class="[
             'tab-item',
@@ -25,6 +32,13 @@
               @click.stop="handleTabClose(tab.path)" />
           </div>
         </div>
+      </div>
+
+      <!-- 右滚动按钮 -->
+      <div class="scroll-button scroll-right" v-show="showScrollButtons && canScrollRight" @click="scrollRight">
+        <a-button type="text">
+          <RightOutlined style="font-size: 12px;" />
+        </a-button>
       </div>
 
       <!-- 右侧下拉菜单 -->
@@ -77,7 +91,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick, watch, computed} from 'vue'
+import { ref, onMounted, nextTick, watch, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useTabsStore, useAppStore, useThemeStore } from '@/stores'
 import {
@@ -89,7 +103,9 @@ import {
   PushpinFilled,
   VerticalLeftOutlined,
   VerticalRightOutlined,
-  VerticalAlignMiddleOutlined
+  VerticalAlignMiddleOutlined,
+  LeftOutlined,
+  RightOutlined
 } from '@ant-design/icons-vue'
 import { theme } from 'ant-design-vue'
 
@@ -101,14 +117,31 @@ const themeStore = useThemeStore()
 const { token } = theme.useToken()
 
 // 模板引用
-const tabsContainer = ref(null)
 const tabsScrollArea = ref(null)
 const tabsList = ref(null)
 
-// 拖拽滚动相关
-const isDragging = ref(false)
-const startX = ref(0)
-const scrollLeft = ref(0)
+// 滚动按钮状态
+const showScrollButtons = ref(false)
+const canScrollLeft = ref(false)
+const canScrollRight = ref(false)
+
+// 检查滚动状态
+const checkScrollState = () => {
+  if (!tabsScrollArea.value || !tabsList.value) return
+
+  const scrollArea = tabsScrollArea.value
+  const scrollWidth = scrollArea.scrollWidth
+  const clientWidth = scrollArea.clientWidth
+  const scrollLeft = scrollArea.scrollLeft
+
+  // 判断是否需要显示滚动按钮
+  showScrollButtons.value = scrollWidth > clientWidth
+
+  // 判断左右滚动按钮的可用状态
+  // 添加1像素的容差值来处理浮点数精度问题
+  canScrollLeft.value = scrollLeft > 1
+  canScrollRight.value = scrollLeft < (scrollWidth - clientWidth - 1)
+}
 
 // 初始化
 onMounted(() => {
@@ -117,6 +150,15 @@ onMounted(() => {
   if (route.path) {
     tabsStore.addTab(route)
   }
+
+  // 初始化滚动状态检查
+  nextTick(() => {
+    checkScrollState()
+    // 监听滚动区域的滚动事件
+    if (tabsScrollArea.value) {
+      tabsScrollArea.value.addEventListener('scroll', checkScrollState)
+    }
+  })
 })
 
 // 监听路由变化
@@ -126,14 +168,21 @@ watch(() => route.path, (newPath) => {
     // 路由变化时也需要滚动到激活页签
     nextTick(() => {
       scrollToActiveTab()
+      checkScrollState()
     })
   }
 }, { immediate: true })
 
+// 监听页签变化，更新滚动状态
+watch(() => tabsStore.activeTabs.length, () => {
+  nextTick(() => {
+    checkScrollState()
+  })
+})
+
 // 计算下拉菜单项的禁用状态
 const menuDisabledStates = computed(() => {
   const currentIndex = tabsStore.activeTabIndex
-  const totalTabs = tabsStore.activeTabs.length
   const currentTab = tabsStore.activeTab
 
   // 检查左侧是否有可关闭的页签
@@ -193,6 +242,43 @@ const scrollToActiveTab = () => {
     left: Math.max(0, targetScrollLeft),
     behavior: 'smooth'
   })
+}
+
+// 左滚动按钮点击事件
+const scrollLeft = () => {
+  if (!tabsScrollArea.value) return
+
+  const scrollAmount = 400 // 每次滚动的距离
+  const currentScrollLeft = tabsScrollArea.value.scrollLeft
+
+  tabsScrollArea.value.scrollTo({
+    left: Math.max(0, currentScrollLeft - scrollAmount),
+    behavior: 'smooth'
+  })
+
+  // 滚动完成后检查状态
+  setTimeout(() => {
+    checkScrollState()
+  }, 300)
+}
+
+// 右滚动按钮点击事件
+const scrollRight = () => {
+  if (!tabsScrollArea.value) return
+
+  const scrollAmount = 400 // 每次滚动的距离
+  const currentScrollLeft = tabsScrollArea.value.scrollLeft
+  const maxScrollLeft = tabsScrollArea.value.scrollWidth - tabsScrollArea.value.clientWidth
+
+  tabsScrollArea.value.scrollTo({
+    left: Math.min(maxScrollLeft, currentScrollLeft + scrollAmount),
+    behavior: 'smooth'
+  })
+
+  // 滚动完成后检查状态
+  setTimeout(() => {
+    checkScrollState()
+  }, 300)
 }
 
 // 页签关闭事件
@@ -256,40 +342,14 @@ const handleMenuClick = ({ key }) => {
   }
 }
 
-// 鼠标按下事件（开始拖拽）
-const handleMouseDown = (e) => {
-  isDragging.value = true
-  startX.value = e.pageX - tabsScrollArea.value.offsetLeft
-  scrollLeft.value = tabsScrollArea.value.scrollLeft
-
-  document.addEventListener('mousemove', handleMouseMove)
-  document.addEventListener('mouseup', handleMouseUp)
-
-  // 防止文本选择
-  e.preventDefault()
-}
-
-// 鼠标移动事件（拖拽滚动）
-const handleMouseMove = (e) => {
-  if (!isDragging.value) return
-
-  e.preventDefault()
-  const x = e.pageX - tabsScrollArea.value.offsetLeft
-  const walk = (x - startX.value) * 1 // 滚动速度
-  tabsScrollArea.value.scrollLeft = scrollLeft.value - walk
-}
-
-// 鼠标释放事件（结束拖拽）
-const handleMouseUp = () => {
-  isDragging.value = false
-  document.removeEventListener('mousemove', handleMouseMove)
-  document.removeEventListener('mouseup', handleMouseUp)
-}
-
 // 鼠标滚轮事件
 const handleWheel = (e) => {
   e.preventDefault()
   tabsScrollArea.value.scrollLeft += e.deltaY
+  // 滚轮滚动后更新按钮状态
+  nextTick(() => {
+    checkScrollState()
+  })
 }
 </script>
 
@@ -306,7 +366,35 @@ const handleWheel = (e) => {
     height: 100%;
     display: flex;
     align-items: center;
-    padding: 2px 0;
+    position: relative;
+
+    .scroll-button {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 35px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      // background: v-bind('token.colorBgContainer');
+      // background: red;
+      border-radius: v-bind('themeStore.baseConfig.borderRadius + "px"');
+      cursor: pointer;
+      z-index: 10;
+      transition: all 0.2s ease;
+
+      &.scroll-left {
+        opacity: 0.5;
+        left: 0;
+        border-right: 1px solid v-bind('token.colorFillSecondary');
+      }
+
+      &.scroll-right {
+        opacity: 0.5;
+        right: v-bind('(showScrollButtons === true && canScrollRight === true) ? "48px" : "0"');
+        /* 调整到下拉菜单左侧，为下拉菜单留出空间 */
+      }
+    }
 
     .tabs-scroll-area {
       flex: 1;
@@ -314,6 +402,10 @@ const handleWheel = (e) => {
       overflow-y: hidden;
       cursor: default;
       height: 100%;
+      padding: 2px 0;
+      margin-left: v-bind('(showScrollButtons === true && canScrollLeft === true) ? "48px" : "0"');
+      margin-right: v-bind('(showScrollButtons === true && canScrollRight === true) ? "48px" : "0"');
+      /* 左侧为左滚动按钮留空间，右侧为右滚动按钮和下拉菜单留空间 */
 
       &:active {
         cursor: grabbing;
@@ -443,8 +535,6 @@ const handleWheel = (e) => {
     }
 
     .ant-btn {
-      height: 100%;
-      width: 100%;
       border-radius: 0;
       border-left: 1px solid v-bind('token.colorFillSecondary');
     }
