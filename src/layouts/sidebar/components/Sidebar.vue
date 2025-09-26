@@ -1,6 +1,5 @@
 <template>
-  <a-menu v-model:selectedKeys="selectedKeys" v-model:openKeys="openKeys"
-    mode="inline" :theme="appStore.sidebarTheme"
+  <a-menu v-model:selectedKeys="selectedKeys" v-model:openKeys="openKeys" mode="inline" :theme="appStore.sidebarTheme"
     :inline-collapsed="appStore.sidebarCollapsed">
     <template v-for="route in visibleRoutes" :key="route.path">
       <!-- 有子菜单的情况 -->
@@ -26,7 +25,8 @@
                 </template>
                 <template #title>{{ grandChild.meta?.title || grandChild.name }}</template>
 
-                <a-menu-item v-for="greatGrandChild in grandChild.children" :key="greatGrandChild.path" v-show="!greatGrandChild.meta?.hidden">
+                <a-menu-item v-for="greatGrandChild in grandChild.children" :key="greatGrandChild.path"
+                  v-show="!greatGrandChild.meta?.hidden">
                   <template #icon>
                     <component :is="greatGrandChild.meta?.icon" v-if="greatGrandChild.meta?.icon" />
                   </template>
@@ -85,7 +85,6 @@ const route = useRoute()
 const selectedKeys = ref([route.path])
 const openKeys = ref([])
 
-// 图标映射已移除，直接使用meta.icon
 
 // 获取用户登录状态
 const getUserLoginStatus = () => {
