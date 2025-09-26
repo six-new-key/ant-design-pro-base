@@ -21,6 +21,6 @@ pinia.use(
 export default pinia
 
 // 导出 stores
-export { useAppStore, PAGE_ANIMATION_CONFIG } from './modules/app'
+export { useAppStore } from './modules/app'
 export { useThemeStore } from './modules/theme'
 export { useTabsStore } from './modules/tabsStore'

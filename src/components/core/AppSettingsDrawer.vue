@@ -203,7 +203,8 @@
 import { computed, ref } from 'vue'
 import { CheckOutlined } from '@ant-design/icons-vue'
 import { message } from '@/utils'
-import { useAppStore, useThemeStore, PAGE_ANIMATION_CONFIG } from '@/stores'
+import { useAppStore, useThemeStore } from '@/stores'
+import { PAGE_ANIMATION_CONFIG } from '@/utils'
 
 // Props
 const props = defineProps({

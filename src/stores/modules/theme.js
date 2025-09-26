@@ -1,29 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { generate } from '@ant-design/colors'
-
-// 预设主题色（用户指定的7个颜色）
-const COLOR_PRESETS = [
-  { name: '明青', color: 'rgb(29, 132, 255)' },
-  { name: '拂晓蓝', color: 'rgb(93, 135, 255)' },
-  { name: '薄暮紫', color: 'rgb(180, 141, 243)' },
-  { name: '极光绿', color: 'rgb(96, 192, 65)' },
-  { name: '拂晓青', color: 'rgb(56, 192, 252)' },
-  { name: '日暮橙', color: 'rgb(249, 144, 31)' },
-  { name: '法式洋红', color: 'rgb(255, 128, 200)' }
-]
-
-// RGB转HEX
-function rgbToHex(rgb) {
-  const match = rgb.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/)
-  if (!match) return rgb
-  
-  const r = parseInt(match[1])
-  const g = parseInt(match[2])
-  const b = parseInt(match[3])
-  
-  return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)
-}
+import { COLOR_PRESETS, rgbToHex } from '@/utils'
 
 export const useThemeStore = defineStore('theme', () => {
   // 状态

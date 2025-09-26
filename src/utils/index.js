@@ -4,9 +4,9 @@ export { default as notification } from './notification.js'
 export { default as layoutConfig } from './layout.config.js'
 
 // 主题相关工具函数
-export {
-    themeChangeWithAnimation
-} from './themes.js'
+export { themeChangeWithAnimation, COLOR_PRESETS, rgbToHex } from './themes.js'
+// 页面动画配置
+export { PAGE_ANIMATION_CONFIG, PAGE_ANIMATIONS } from './pageAnimationConfig.js'
 
 // 为了兼容性，也导出大写版本
 export { default as Message } from './message.js'

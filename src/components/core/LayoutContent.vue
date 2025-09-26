@@ -10,7 +10,8 @@
 
 <script setup>
 import { ref, watch, nextTick,computed } from 'vue'
-import { useAppStore, PAGE_ANIMATION_CONFIG } from '@/stores'
+import { useAppStore } from '@/stores'
+import { PAGE_ANIMATION_CONFIG } from '@/utils'
 
 const appStore = useAppStore()
 
