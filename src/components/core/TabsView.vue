@@ -17,7 +17,9 @@
               'active': tab.path === tabsStore.activeTabPath,
               'pinned': tab.pinned
             }
-          ]" @click="handleTabClick(tab)">
+          ]" @click="handleTabClick(tab)" 
+             @mouseenter="hoveredTabPath = tab.path"
+             @mouseleave="hoveredTabPath = null">
             <!-- 页签图标 -->
             <component v-if="tab.icon" :is="tab.icon" class="tab-icon" />
 
@@ -28,8 +30,10 @@
             <PushpinOutlined :rotate="-45" v-if="tab.pinned" class="tab-pin-icon" />
 
             <!-- 关闭按钮 -->
-            <CloseCircleOutlined v-if="tab.closable && !tab.pinned" class="tab-close"
-              @click.stop="handleTabClose(tab.path)" />
+            <Transition name="tab-close-fade" mode="out-in">
+              <CloseCircleOutlined v-if="tab.closable && !tab.pinned && hoveredTabPath === tab.path" class="tab-close"
+                @click.stop="handleTabClose(tab.path)" />
+            </Transition>
           </div>
         </div>
       </div>
@@ -119,6 +123,9 @@ const { token } = theme.useToken()
 // 模板引用
 const tabsScrollArea = ref(null)
 const tabsList = ref(null)
+
+// 悬停状态管理
+const hoveredTabPath = ref(null)
 
 // 滚动按钮状态
 const showScrollButtons = ref(false)
@@ -489,10 +496,6 @@ const handleWheel = (e) => {
         // 悬停效果
         &:hover {
           background: v-bind('appStore.themeMode === "dark" ? "rgba(255, 255, 255, 0.06)" : "rgba(0, 0, 0, 0.06)"');
-
-          .tab-close {
-            opacity: 0.7;
-          }
         }
 
         // 激活状态
@@ -500,6 +503,7 @@ const handleWheel = (e) => {
           background: v-bind('token.colorPrimary + "10"');
           color: v-bind('token.colorPrimary');
 
+          // 激活状态下的关闭按钮样式
           .tab-close {
             color: v-bind('token.colorPrimary');
 
@@ -531,6 +535,28 @@ const handleWheel = (e) => {
           font-size: 12px;
           margin-left: 4px;
         }
+      }
+
+      // 关闭按钮动画
+      .tab-close-fade-enter-active,
+      .tab-close-fade-leave-active {
+        transition: all 0.2s ease;
+      }
+
+      .tab-close-fade-enter-from {
+        opacity: 0;
+        transform: scale(0.8);
+      }
+
+      .tab-close-fade-leave-to {
+        opacity: 0;
+        transform: scale(0.8);
+      }
+
+      .tab-close-fade-enter-to,
+      .tab-close-fade-leave-from {
+        opacity: 1;
+        transform: scale(1);
       }
     }
 
