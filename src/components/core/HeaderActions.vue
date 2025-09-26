@@ -19,7 +19,7 @@
         </a-tooltip>
 
         <!-- 主题切换按钮 -->
-        <a-button type="text" @click="toggleThemeMode(appStore.themeMode === 'dark' ? 'light' : 'dark')">
+        <a-button type="text" @click="toggleThemeMode">
             <template #icon>
                 <svg-icon :name="appStore.themeMode === 'dark' ? 'sun' : 'moon'" width="17px" height="17px"
                     :color="color" />
@@ -88,8 +88,9 @@ import {
     SyncOutlined,
     GlobalOutlined
 } from '@ant-design/icons-vue'
-import { message } from '@/utils'
+import { message, themeChangeWithAnimation } from '@/utils'
 import { useAppStore } from '@/stores'
+import { theme } from 'ant-design-vue'
 
 const router = useRouter()
 const appStore = useAppStore()
@@ -97,7 +98,6 @@ const isFullscreen = ref(false)
 
 // 搜索功能
 const onSearch = (value) => {
-    console.log('搜索:', value)
     message.info(`搜索: ${value}`)
 }
 
@@ -124,10 +124,13 @@ const handleRefresh = () => {
 }
 
 // 主题切换
-const toggleThemeMode = (themeMode) => {
-    appStore.setThemeMode(themeMode)
+const toggleThemeMode = async (e) => {
+    await themeChangeWithAnimation(e, () => {
+        appStore.setThemeMode(appStore.themeMode === 'dark' ? 'light' : 'dark')
+    }, {
+        themeMode: appStore.themeMode === 'dark' ? 'light' : 'dark'
+    })
 }
-
 
 // 语言切换
 const toggleLanguage = () => {

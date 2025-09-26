@@ -72,4 +72,16 @@ const themeConfig = computed(() => {
   height: 0px;
   width: 0;
 }
+
+/* 配合主题切换动效使用 */
+::view-transition-new(root),
+::view-transition-old(root) {
+  /* 关闭默认动画，否则影响自定义动画的执行 */
+  animation: none !important;
+  /* transform: none !important; */
+}
+
+[theme-mode="dark"]::view-transition-old(root) {
+  z-index: 99;
+}
 </style>
