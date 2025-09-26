@@ -1,3 +1,6 @@
+/**
+ * 二次封装消息提示组件
+ */
 import { notification } from 'ant-design-vue'
 
 // 用于存储已显示的通知，避免重复显示
