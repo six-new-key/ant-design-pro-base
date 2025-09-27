@@ -5,10 +5,11 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, watch, onMounted } from 'vue'
 import { theme } from 'ant-design-vue'
 import { useAppStore, useThemeStore } from '@/stores'
 import { settings } from './settings'
+import { setNProgressStyle } from '@/utils'
 
 const appStore = useAppStore()
 
@@ -28,6 +29,16 @@ const themeConfig = computed(() => {
       wireframe: themeStore.baseConfig.wireframe,
     }
   }
+})
+
+//监听primaryColorHex
+watch(() => themeStore.primaryColorHex, (newVal) => {
+  setNProgressStyle(newVal)
+})
+
+onMounted(() => {
+  //设置进度条背景色
+  setNProgressStyle(themeStore.primaryColorHex)
 })
 </script>
 
@@ -71,17 +82,5 @@ const themeConfig = computed(() => {
 ::-webkit-scrollbar-button {
   height: 0px;
   width: 0;
-}
-
-/* 配合主题切换动效使用 */
-::view-transition-new(root),
-::view-transition-old(root) {
-  /* 关闭默认动画，否则影响自定义动画的执行 */
-  animation: none !important;
-  /* transform: none !important; */
-}
-
-[theme-mode="dark"]::view-transition-old(root) {
-  z-index: 99;
 }
 </style>

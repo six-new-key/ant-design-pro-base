@@ -1,5 +1,9 @@
 import router from '@/router'
 import { settings } from './settings'
+import { NProgress, initNProgress } from '@/utils'
+
+// 初始化NProgress配置
+initNProgress()
 
 /**
  * 获取用户登录状态
@@ -34,6 +38,9 @@ export function isLoggedInUserAccessingLogin(to, isLoggedIn) {
  * 处理用户认证和路由权限控制
  */
 router.beforeEach((to, from, next) => {
+  // 启动NProgress进度条
+  NProgress.start()
+  
   // 获取用户登录状态
   const isLoggedIn = getUserLoginStatus()
   
@@ -55,6 +62,9 @@ router.beforeEach((to, from, next) => {
  * 处理页面标题等后置逻辑
  */
 router.afterEach((to) => {
+  // 完成NProgress进度条
+  NProgress.done()
+  
   // 设置页面标题
   document.title = to.meta?.title ? `${to.meta.title} - ${settings.projectName}` : settings.projectName
 })

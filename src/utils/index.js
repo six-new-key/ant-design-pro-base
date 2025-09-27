@@ -7,6 +7,10 @@ export { default as layoutConfig } from './layout.config.js'
 export { themeChangeWithAnimation, COLOR_PRESETS, rgbToHex } from './themes.js'
 // 页面动画配置
 export { PAGE_ANIMATION_CONFIG, PAGE_ANIMATIONS } from './pageAnimationConfig.js'
+// 进度条
+export { NProgress, initNProgress, configureNProgress, setNProgressStyle } from './nprogress.js'
+
+
 
 // 为了兼容性，也导出大写版本
 export { default as Message } from './message.js'
