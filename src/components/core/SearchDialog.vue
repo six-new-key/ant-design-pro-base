@@ -6,7 +6,6 @@
         :closable="false"
         :mask-closable="true"
         :width="600"
-        :centered="true"
         class="search-dialog"
         @cancel="handleClose"
     >

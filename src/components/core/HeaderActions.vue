@@ -40,7 +40,8 @@
                 <a-menu @click="toggleLanguage">
                     <a-menu-item v-for="option in languageOptions" :key="option.key">
                         <template #icon>
-                            <svg-icon :style="{opacity: appStore.language === option.key ? 1 : 0}" :color="dotColor" :name="option.icon" :width="iconSize" :height="iconSize" />
+                            <svg-icon :style="{ opacity: appStore.language === option.key ? 1 : 0 }" :color="dotColor"
+                                :name="option.icon" :width="iconSize" :height="iconSize" />
                         </template>
                         {{ option.label }}
                     </a-menu-item>
@@ -104,7 +105,7 @@
 </template>
 
 <script setup>
-import { computed, h, ref, onMounted, onUnmounted, nextTick } from 'vue'
+import { computed, h, ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import {
     UserOutlined,
@@ -119,9 +120,10 @@ import {
 } from '@ant-design/icons-vue'
 import { getLanguageOptions } from '@/locale'
 import { message, themeChangeWithAnimation } from '@/utils'
-import { useAppStore,useThemeStore } from '@/stores'
+import { useAppStore, useThemeStore } from '@/stores'
 import SearchDialog from './SearchDialog.vue'
 import LockScreenDialog from './LockScreenDialog.vue'
+import { theme } from 'ant-design-vue'
 
 const router = useRouter()
 const appStore = useAppStore()
@@ -132,6 +134,7 @@ const dotColor = computed(() => themeStore.primaryColorHex)
 const iconSize = computed(() => {
     return themeStore.baseConfig.fontSize + 8 + 'px'
 })
+const { token } = theme.useToken()
 
 // 搜索功能
 const searchDialogVisible = ref(false)
@@ -219,13 +222,24 @@ const handleFullscreenChange = () => {
     isFullscreen.value = !!document.fullscreenElement
 }
 
+// 键盘快捷键监听
+const handleKeydown = (event) => {
+    // 检查是否按下了 Ctrl+K (Windows/Linux) 或 Cmd+K (Mac)
+    if ((event.ctrlKey || event.metaKey) && event.key === 'k') {
+        event.preventDefault() // 阻止浏览器默认行为
+        openSearchDialog()
+    }
+}
+
 // 生命周期
 onMounted(() => {
     document.addEventListener('fullscreenchange', handleFullscreenChange)
+    document.addEventListener('keydown', handleKeydown)
 })
 
 onUnmounted(() => {
     document.removeEventListener('fullscreenchange', handleFullscreenChange)
+    document.removeEventListener('keydown', handleKeydown)
 })
 </script>
 
@@ -234,7 +248,7 @@ onUnmounted(() => {
 .header-actions {
     display: flex;
     align-items: center;
-    margin-right: 16px;
+    border-radius: v-bind('token.borderRadius + "px"');
 }
 
 .action-item {
@@ -242,51 +256,51 @@ onUnmounted(() => {
     align-items: center;
     cursor: pointer;
     transition: all 0.2s ease;
-
-    &:hover {
-        opacity: 0.8;
-    }
 }
 
 .search-trigger {
     .search-box {
+        height: 34px;
         display: flex;
         align-items: center;
-        padding: 6px 12px;
-        background: rgba(0, 0, 0, 0.04);
-        border-radius: 6px;
+        padding: 0 8px;
+        border-radius: v-bind('token.borderRadius + "px"');
+        background: v-bind('token.colorFillSecondary');
+        min-width: 150px;
+        opacity: 0.8;
         border: 1px solid transparent;
-        transition: all 0.2s ease;
-        min-width: 200px;
 
         &:hover {
-            background: rgba(0, 0, 0, 0.06);
-            border-color: rgba(0, 0, 0, 0.1);
+            opacity: 1;
+            border: 1px solid v-bind('token.colorBorder');
         }
 
         .search-icon {
-            color: rgba(0, 0, 0, 0.45);
-            margin-right: 8px;
+            color: v-bind('token.colorTextSecondary');
+            font-size: v-bind('token.fontSize + "px"');
         }
 
         .search-text {
+            margin-left: 8px;
             flex: 1;
-            color: rgba(0, 0, 0, 0.45);
-            font-size: 14px;
+            color: v-bind('token.colorTextSecondary');
+            font-size: v-bind('token.fontSize + "px"');
         }
 
         .search-shortcut {
-            color: rgba(0, 0, 0, 0.25);
-            font-size: 12px;
-            padding: 2px 6px;
-            background: rgba(0, 0, 0, 0.06);
-            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            height: 22px;
+            color: v-bind('token.colorTextSecondary');
+            font-size: v-bind('token.fontSize - 2 + "px"');
+            border-radius: v-bind('token.borderRadius + "px"');
+            padding: 6px;
+            background: v-bind('token.colorBgContainer');
+            border: 1px solid v-bind('token.colorBorder');
             font-family: monospace;
         }
     }
 }
-
-
 
 .user-info {
     cursor: pointer;
