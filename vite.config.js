@@ -49,7 +49,7 @@ export default defineConfig(({ command, mode }) => {
         iconDirs: [path.resolve(process.cwd(), "src/assets/icons")],
         symbolId: "icon-[dir]-[name]",
       }),
-      VueDevTools(),
+      // VueDevTools(),
       vitePluginsAutoI18n({
         //支持语言配置需要查看有道翻译文档
         targetLangList: ['en'],

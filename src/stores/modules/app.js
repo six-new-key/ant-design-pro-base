@@ -21,6 +21,10 @@ export const useAppStore = defineStore(
     const currentPageAnimation = ref(
       PAGE_ANIMATION_CONFIG.TYPES.BOUNCE_IN_LEFT
     );
+    
+    // 锁屏相关状态
+    const isScreenLocked = ref(false); // 锁屏状态
+    const lockScreenPassword = ref(''); // 锁屏密码
 
     // Getters
     const isLoading = computed(() => loading.value);
@@ -87,6 +91,39 @@ export const useAppStore = defineStore(
       currentPageAnimation.value = animation;
     };
 
+    // 锁屏相关方法
+    const setLockScreen = async (password) => {
+      if (!password || password.length < 4) {
+        throw new Error('密码长度至少4位');
+      }
+      
+      lockScreenPassword.value = password;
+      isScreenLocked.value = true;
+      
+      // 可以在这里添加额外的锁屏逻辑，比如清除敏感数据等
+      return Promise.resolve();
+    };
+
+    const unlockScreen = async (password) => {
+      if (!password) {
+        return false;
+      }
+      
+      if (password === lockScreenPassword.value) {
+        isScreenLocked.value = false;
+        // 解锁成功后可以选择是否清除密码
+        // lockScreenPassword.value = '';
+        return true;
+      }
+      
+      return false;
+    };
+
+    const clearLockScreen = () => {
+      isScreenLocked.value = false;
+      lockScreenPassword.value = '';
+    };
+
     return {
       // State
       themeMode,
@@ -100,6 +137,8 @@ export const useAppStore = defineStore(
       currentTopMenu,
       tabsShow,
       shouldRefresh,
+      isScreenLocked,
+      lockScreenPassword,
 
       // Getters
       isLoading,
@@ -121,6 +160,9 @@ export const useAppStore = defineStore(
       triggerRefresh,
       resetRefresh,
       setPageAnimation,
+      setLockScreen,
+      unlockScreen,
+      clearLockScreen,
     };
   },
   {
@@ -137,6 +179,7 @@ export const useAppStore = defineStore(
         "tabsShow",
         "currentTopMenu",
         "currentPageAnimation",
+        "lockScreenPassword", // 持久化锁屏密码
       ],
     },
   }

@@ -1,16 +1,19 @@
 <template>
   <div class="layout-manager">
+    <!-- 全局锁屏组件 -->
+    <LockScreen v-if="appStore.isScreenLocked" />
+
     <!-- 布局组件加载完成后渲染 -->
-    <component v-if="isLayoutLoaded && currentLayout" :is="currentLayout" />
+    <component v-if="isLayoutLoaded && currentLayout && !appStore.isScreenLocked" :is="currentLayout" />
     <!-- 加载中状态 -->
-    <div v-else class="layout-loading">
+    <div v-else-if="!appStore.isScreenLocked" class="layout-loading">
       <div class="loading-spinner"></div>
       <p>正在加载布局...</p>
     </div>
 
 
     <!-- 布局切换按钮 -->
-    <div class="layout-switcher-trigger" v-show="!showLayoutDrawer">
+    <div class="layout-switcher-trigger" v-if="!showLayoutDrawer && !appStore.isScreenLocked">
       <a-button type="primary" @click="showLayoutDrawer = true">
         <template #icon>
           <SettingOutlined />
@@ -30,6 +33,7 @@ import { useAppStore } from '@/stores'
 import { getEnabledLayouts, getLayoutConfig, getDefaultLayoutConfig } from '@/utils/layout.config.js'
 import { SettingOutlined } from '@ant-design/icons-vue'
 import AppSettingsDrawer from '@/components/core/AppSettingsDrawer.vue'
+import LockScreen from '@/components/core/LockScreen.vue'
 
 const appStore = useAppStore()
 

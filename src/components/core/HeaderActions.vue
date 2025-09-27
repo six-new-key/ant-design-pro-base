@@ -66,16 +66,29 @@
             <template #overlay>
                 <a-menu @click="handleMenuClick">
                     <a-menu-item key="profile">
-                        <user-outlined />
+                        <template #icon>
+                            <user-outlined />
+                        </template>
                         个人中心
                     </a-menu-item>
                     <a-menu-item key="settings">
-                        <setting-outlined />
+                        <template #icon>
+                            <setting-outlined />
+                        </template>
                         个人设置
                     </a-menu-item>
                     <a-menu-divider />
+                    <a-menu-item key="lock">
+                        <template #icon>
+                            <LockOutlined />
+                        </template>
+                        锁定屏幕
+                    </a-menu-item>
+                    <a-menu-divider />
                     <a-menu-item key="logout">
-                        <logout-outlined />
+                        <template #icon>
+                            <LogoutOutlined />
+                        </template>
                         退出登录
                     </a-menu-item>
                 </a-menu>
@@ -85,6 +98,9 @@
 
     <!-- 搜索对话框组件 -->
     <SearchDialog v-model="searchDialogVisible" />
+
+    <!-- 锁屏对话框组件 -->
+    <LockScreenDialog v-model="lockDialogVisible" />
 </template>
 
 <script setup>
@@ -98,12 +114,14 @@ import {
     FullscreenExitOutlined,
     SyncOutlined,
     GlobalOutlined,
-    SearchOutlined
+    SearchOutlined,
+    LockOutlined
 } from '@ant-design/icons-vue'
 import { getLanguageOptions } from '@/locale'
 import { message, themeChangeWithAnimation } from '@/utils'
 import { useAppStore,useThemeStore } from '@/stores'
 import SearchDialog from './SearchDialog.vue'
+import LockScreenDialog from './LockScreenDialog.vue'
 
 const router = useRouter()
 const appStore = useAppStore()
@@ -123,8 +141,12 @@ const openSearchDialog = () => {
     searchDialogVisible.value = true
 }
 
-const onSearch = (value) => {
-    message.info(`搜索: ${value}`)
+// 锁屏功能
+const lockDialogVisible = ref(false)
+
+// 打开锁屏对话框
+const openLockDialog = () => {
+    lockDialogVisible.value = true
 }
 
 //颜色复杂计算
@@ -171,6 +193,9 @@ const handleMenuClick = ({ key }) => {
             break
         case 'settings':
             router.push('/settings')
+            break
+        case 'lock':
+            openLockDialog()
             break
         case 'logout':
             // 这里应该调用登出逻辑

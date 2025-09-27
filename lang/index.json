@@ -878,5 +878,97 @@
 	"l95aeg5": {
 		"zh-cn": "导航到: ",
 		"en": "Navigate to:"
+	},
+	"tl0cjj6": {
+		"zh-cn": " 锁定屏幕 ",
+		"en": "Lock the screen"
+	},
+	"65tpid8": {
+		"zh-cn": " 》 个人中心 ",
+		"en": "\"Personal Center\""
+	},
+	"4nj0m18": {
+		"zh-cn": "密码长度至少4位",
+		"en": "The password length should be at least 4 characters"
+	},
+	"ecjhv27": {
+		"zh-cn": "请输入锁屏密码",
+		"en": "Please enter the lock screen password"
+	},
+	"i2iu115": {
+		"zh-cn": "屏幕已锁定",
+		"en": "The screen is locked."
+	},
+	"vhgmu88": {
+		"zh-cn": "锁定失败，请重试",
+		"en": "Lock failed. Please try again"
+	},
+	"j6fqzj4": {
+		"zh-cn": "锁定屏幕",
+		"en": "Lock the screen"
+	},
+	"f6s4mi4": {
+		"zh-cn": "用户头像",
+		"en": "User avatar"
+	},
+	"mtpif4": {
+		"zh-cn": " 锁定 ",
+		"en": "Locked"
+	},
+	"fips7y7": {
+		"zh-cn": "请输入解锁密码",
+		"en": "Please enter the unlock password"
+	},
+	"i0e3rh4": {
+		"zh-cn": "解锁成功",
+		"en": "Unlock success"
+	},
+	"yyf1w1a": {
+		"zh-cn": "密码错误，请重新输入",
+		"en": "The password is incorrect. Please re-enter"
+	},
+	"i1md0l8": {
+		"zh-cn": "解锁失败，请重试",
+		"en": "Unlock failed. Please try again"
+	},
+	"jd4srzg9": {
+		"zh-cn": "<div class=\"user-info\" data-v-inspector=\"src/components/core/LockScreen.vue:20:21\" data-v-5eff4b57><div class=\"user-avatar\" data-v-inspector=\"src/components/core/LockScreen.vue:21:25\" data-v-5eff4b57><img src=\"https://api.dicebear.com/7.x/avataaars/svg?seed=Super\" alt=\"用户头像\" data-v-inspector=\"src/components/core/LockScreen.vue:22:29\" data-v-5eff4b57></div><div class=\"user-name\" data-v-inspector=\"src/components/core/LockScreen.vue:24:25\" data-v-5eff4b57>Super</div><div class=\"lock-tip\" data-v-inspector=\"src/components/core/LockScreen.vue:25:25\" data-v-5eff4b57>请输入密码解锁</div></div>",
+		"en": "<div class=\"user-info\" data-v-inspector=\"src/components/core/LockScreen.vue:20:21\" data-v-5eff4b57><div class=\"user-avatar\" data-v-inspector=\"src/components/core/LockScreen.vue:21:25\" data-v-5eff4b57><img SRC = \"https://api.dicebear.com/7.x/avataaars/svg?seed=Super\" Alt = \"avatars\" data-v-inspector=\"src/components/core/LockScreen.vue:22:29\" data-v-5eff4b57></div><div class=\"user-name\" data-v-inspector=\"src/components/core/LockScreen.vue:24:25\" data-v-5eff4b57>Super</div><div class=\"lock-tip\" Data - v - inspector = \"SRC/components/core/LockScreen. Vue:\" when data - v - 5 eff4b57 > please enter the password to unlock < / div > < / div >"
+	},
+	"lguo24": {
+		"zh-cn": " 解锁 ",
+		"en": "Unlock"
+	},
+	"bk965x7x": {
+		"zh-cn": "<div class=\"user-info\" data-v-5eff4b57><div class=\"user-avatar\" data-v-5eff4b57><img src=\"https://api.dicebear.com/7.x/avataaars/svg?seed=Super\" alt=\"用户头像\" data-v-5eff4b57></div><div class=\"user-name\" data-v-5eff4b57>Super</div><div class=\"lock-tip\" data-v-5eff4b57>请输入密码解锁</div></div>",
+		"en": "<div class=\"user-info\" data-v-5eff4b57><div class=\"user-avatar\" data-v-5eff4b57><img SRC = \"https://api.dicebear.com/7.x/avataaars/svg?seed=Super\" Alt = \"avatars\" data - v - 5 eff4b57 > < / div > < div class = \"user - the name\" data-v-5eff4b57>Super</div><div class=\"lock-tip\" data-v-5eff4b57> Please enter the password to unlock </div></div>"
+	},
+	"i0d6uc4": {
+		"zh-cn": "解锁屏幕",
+		"en": "Unlock the screen"
+	},
+	"lg4h9a7": {
+		"zh-cn": "请输入密码解锁",
+		"en": "Please enter the password to unlock"
+	},
+	"2j5veu6": {
+		"zh-cn": "点击屏幕解锁",
+		"en": "Click the screen to unlock"
+	},
+	"iid7444": {
+		"zh-cn": "返回登录",
+		"en": "Return to Login"
+	},
+	"c30egh4": {
+		"zh-cn": "密码错误",
+		"en": "Incorrect password"
+	},
+	"4f8l7ha": {
+		"zh-cn": "解锁失败，请检查密码",
+		"en": "Unlock failed. Please check your password"
+	},
+	"i0cx024": {
+		"zh-cn": "解锁失败",
+		"en": "Unlock failed"
 	}
 }
