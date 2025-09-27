@@ -41,6 +41,8 @@
             />
           </a-space>
         </div>
+        <a-pagination :total="50" show-size-changer />
+         <a-transfer :data-source="[]" show-search :target-keys="[]" :render="item => item.title" />
       </div>
 
       <div>

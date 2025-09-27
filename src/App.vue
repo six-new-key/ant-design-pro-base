@@ -1,19 +1,24 @@
 <template>
-  <a-config-provider :theme="themeConfig">
+  <a-config-provider :theme="themeConfig" :locale="language">
     <router-view />
   </a-config-provider>
 </template>
 
 <script setup>
-import { computed, watch, onMounted } from 'vue'
+import { ref,computed, watch, onMounted } from 'vue'
 import { theme } from 'ant-design-vue'
 import { useAppStore, useThemeStore } from '@/stores'
 import { settings } from './settings'
 import { setNProgressStyle } from '@/utils'
+import { getLocale } from '@/locale'
+import dayjs from 'dayjs'
+import 'dayjs/locale/zh-cn'
+dayjs.locale('zh-cn')
 
 const appStore = useAppStore()
-
 const themeStore = useThemeStore()
+
+const language = ref(getLocale(appStore.language))
 
 // 主题配置
 const themeConfig = computed(() => {
@@ -34,6 +39,12 @@ const themeConfig = computed(() => {
 //监听primaryColorHex
 watch(() => themeStore.primaryColorHex, (newVal) => {
   setNProgressStyle(newVal)
+})
+
+// 监听语言变化
+watch(() => appStore.language, (newVal) => {
+  language.value = getLocale(newVal)
+  dayjs.locale(newVal)
 })
 
 onMounted(() => {

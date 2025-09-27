@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
-import { PAGE_ANIMATION_CONFIG } from '@/utils'
+import { PAGE_ANIMATION_CONFIG } from "@/utils";
 
 export const useAppStore = defineStore(
   "app",
@@ -9,16 +9,18 @@ export const useAppStore = defineStore(
     const themeMode = ref("light"); // 主题模式：light/dark
     const sidebarTheme = ref("dark"); // 侧边栏：light/dark
     const headerTheme = ref("dark"); // 顶部主题：light/dark
-    const language = ref("zh-CN");
+    const language = ref("zh-cn");
     const layout = ref("sidebar"); // 默认布局
     const sidebarCollapsed = ref(false);
     const sidebarFixed = ref(true); // 侧边栏是否固定
     const loading = ref(false);
     const currentTopMenu = ref(""); // 当前选中的顶部菜单
     const tabsShow = ref(true); // 页签是否显示
-    const shouldRefresh = ref(false) // 页面刷新标志
+    const shouldRefresh = ref(false); // 页面刷新标志
     //默认页面切换动画
-    const currentPageAnimation = ref(PAGE_ANIMATION_CONFIG.TYPES.BOUNCE_IN_LEFT)
+    const currentPageAnimation = ref(
+      PAGE_ANIMATION_CONFIG.TYPES.BOUNCE_IN_LEFT
+    );
 
     // Getters
     const isLoading = computed(() => loading.value);
@@ -43,6 +45,8 @@ export const useAppStore = defineStore(
 
     const setLanguage = (newLanguage) => {
       language.value = newLanguage;
+      window.localStorage.setItem("lang", newLanguage);
+      window.location.reload();
     };
 
     const setLayout = (newLayout) => {
@@ -71,17 +75,17 @@ export const useAppStore = defineStore(
 
     // 刷新相关方法
     const triggerRefresh = () => {
-      shouldRefresh.value = true
-    }
+      shouldRefresh.value = true;
+    };
 
     const resetRefresh = () => {
-      shouldRefresh.value = false
-    }
+      shouldRefresh.value = false;
+    };
 
     // 设置页面切换动画
     const setPageAnimation = (animation) => {
-      currentPageAnimation.value = animation
-    }
+      currentPageAnimation.value = animation;
+    };
 
     return {
       // State
@@ -102,7 +106,6 @@ export const useAppStore = defineStore(
       currentLayout,
       currentPageAnimation,
 
-
       // Actions
       setThemeMode,
       setSidebarTheme,
@@ -118,7 +121,6 @@ export const useAppStore = defineStore(
       triggerRefresh,
       resetRefresh,
       setPageAnimation,
-
     };
   },
   {
@@ -134,9 +136,8 @@ export const useAppStore = defineStore(
         "sidebarFixed",
         "tabsShow",
         "currentTopMenu",
-        'currentPageAnimation'
+        "currentPageAnimation",
       ],
     },
   }
 );
-

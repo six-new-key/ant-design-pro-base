@@ -30,11 +30,11 @@
         <a-dropdown arrow placement="bottomRight">
             <template #overlay>
                 <a-menu @click="toggleLanguage">
-                    <a-menu-item key="zh-CN">
-                        简体中文
-                    </a-menu-item>
-                    <a-menu-item key="en-US">
-                        English
+                    <a-menu-item v-for="option in languageOptions" :key="option.key">
+                        <template #icon>
+                            <svg-icon :style="{opacity: appStore.language === option.key ? 1 : 0}" :color="dotColor" :name="option.icon" :width="iconSize" :height="iconSize" />
+                        </template>
+                        {{ option.label }}
                     </a-menu-item>
                 </a-menu>
             </template>
@@ -88,13 +88,19 @@ import {
     SyncOutlined,
     GlobalOutlined
 } from '@ant-design/icons-vue'
+import { getLanguageOptions } from '@/locale'
 import { message, themeChangeWithAnimation } from '@/utils'
-import { useAppStore } from '@/stores'
-import { theme } from 'ant-design-vue'
+import { useAppStore,useThemeStore } from '@/stores'
 
 const router = useRouter()
 const appStore = useAppStore()
+const themeStore = useThemeStore()
 const isFullscreen = ref(false)
+const languageOptions = getLanguageOptions()
+const dotColor = computed(() => themeStore.primaryColorHex)
+const iconSize = computed(() => {
+    return themeStore.baseConfig.fontSize + 8 + 'px'
+})
 
 // 搜索功能
 const onSearch = (value) => {
@@ -133,8 +139,8 @@ const toggleThemeMode = async (e) => {
 }
 
 // 语言切换
-const toggleLanguage = () => {
-    appStore.setLanguage(appStore.language === 'zh-CN' ? 'en-US' : 'zh-CN')
+const toggleLanguage = ({ key }) => {
+    appStore.setLanguage(key)
 }
 
 // 处理用户菜单点击

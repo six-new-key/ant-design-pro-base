@@ -1,3 +1,4 @@
+import vitePluginsAutoI18n, { YoudaoTranslator } from 'vite-auto-i18n-plugin'
 import { defineConfig, loadEnv } from "vite";
 import vue from "@vitejs/plugin-vue";
 import Components from "unplugin-vue-components/vite";
@@ -49,14 +50,15 @@ export default defineConfig(({ command, mode }) => {
         symbolId: "icon-[dir]-[name]",
       }),
       VueDevTools(),
-      // vitePluginsAutoI18n({
-      //   targetLangList: ['en'],
-      //   originLang: 'zh-cn',
-      //   translator: new YoudaoTranslator({
-      //     appId: '6506288d0eeee40d',
-      //     appKey: 'G3BHB83E6EgHaATIcu2HaL2YOhSteSsv'
-      //   })
-      // })
+      vitePluginsAutoI18n({
+        //支持语言配置需要查看有道翻译文档
+        targetLangList: ['en'],
+        originLang: 'zh-cn',
+        translator: new YoudaoTranslator({
+          appId: '6506288d0eeee40d',
+          appKey: 'G3BHB83E6EgHaATIcu2HaL2YOhSteSsv'
+        })
+      })
     ],
     //scss样式配置：global.scss中的变量可以全局使用
     css: {

@@ -1,0 +1,790 @@
+{
+	"4347948": {
+		"zh-cn": "侧边栏/顶栏主题",
+		"en": "Sidebar/top bar theme"
+	},
+	"dure2": {
+		"zh-cn": "中文",
+		"en": "Chinese"
+	},
+	"f6x6rt4": {
+		"zh-cn": "用户登录",
+		"en": "User login"
+	},
+	"wkir6y6": {
+		"zh-cn": "用户登录页面",
+		"en": "User login page"
+	},
+	"c7ysa3": {
+		"zh-cn": "仪表盘",
+		"en": "Dashboard"
+	},
+	"kea083": {
+		"zh-cn": "表单页",
+		"en": "Form page"
+	},
+	"blql0z4": {
+		"zh-cn": "基础表单",
+		"en": "Basic form"
+	},
+	"astop84": {
+		"zh-cn": "分步表单",
+		"en": "Step-by-step form"
+	},
+	"k2alto4": {
+		"zh-cn": "高级表单",
+		"en": "Advanced Form"
+	},
+	"cow9w3": {
+		"zh-cn": "列表页",
+		"en": "List page"
+	},
+	"dow7jl4": {
+		"zh-cn": "查询表格",
+		"en": "Query form"
+	},
+	"dgqg404": {
+		"zh-cn": "标准列表",
+		"en": "Standard list"
+	},
+	"azqlkn4": {
+		"zh-cn": "卡片列表",
+		"en": "Card list"
+	},
+	"d5an1z4": {
+		"zh-cn": "搜索列表",
+		"en": "Search list"
+	},
+	"dbit7l8": {
+		"zh-cn": "搜索列表（文章）",
+		"en": "Search List (Articles)"
+	},
+	"d42ukd8": {
+		"zh-cn": "搜索列表（项目）",
+		"en": "Search list (items)"
+	},
+	"dckfdo8": {
+		"zh-cn": "搜索列表（应用）",
+		"en": "Search List (App)"
+	},
+	"kyz7a3": {
+		"zh-cn": "详情页",
+		"en": "Details Page"
+	},
+	"4kxd9s5": {
+		"zh-cn": "基础详情页",
+		"en": "Basic Details Page"
+	},
+	"haa5x55": {
+		"zh-cn": "高级详情页",
+		"en": "Advanced Details Page"
+	},
+	"j378s3": {
+		"zh-cn": "结果页",
+		"en": "Result page"
+	},
+	"eryyu3": {
+		"zh-cn": "成功页",
+		"en": "Success page"
+	},
+	"dr5cx3": {
+		"zh-cn": "失败页",
+		"en": "Failed page"
+	},
+	"edu4f3": {
+		"zh-cn": "异常页",
+		"en": "Abnormal page"
+	},
+	"t937qf8": {
+		"zh-cn": "403 禁止访问",
+		"en": "403. No access allowed"
+	},
+	"fiahag9": {
+		"zh-cn": "404 页面不存在",
+		"en": "The 404 page does not exist"
+	},
+	"97z8ov9": {
+		"zh-cn": "500 服务器错误",
+		"en": "500 Server error"
+	},
+	"budut3": {
+		"zh-cn": "个人页",
+		"en": "Personal Page"
+	},
+	"a6ttl24": {
+		"zh-cn": "个人中心",
+		"en": "Personal Center"
+	},
+	"a74gu84": {
+		"zh-cn": "个人设置",
+		"en": "Personal Settings"
+	},
+	"i7vzti4": {
+		"zh-cn": "账户管理",
+		"en": "Account management"
+	},
+	"i7o5hj4": {
+		"zh-cn": "账户中心",
+		"en": "Account Center"
+	},
+	"i7ysqp4": {
+		"zh-cn": "账户设置",
+		"en": "Account Settings"
+	},
+	"2g7lef5": {
+		"zh-cn": "图形编辑器",
+		"en": "Graphic editor"
+	},
+	"gx9roj5": {
+		"zh-cn": "流程编辑器",
+		"en": "Process Editor"
+	},
+	"ixspy85": {
+		"zh-cn": "脑图编辑器",
+		"en": "Mind map editor"
+	},
+	"j5lwby7": {
+		"zh-cn": "Koni编辑器",
+		"en": "Koni Editor"
+	},
+	"ie33fx4": {
+		"zh-cn": "路由嵌套",
+		"en": "Routing nesting"
+	},
+	"bdtfqi6": {
+		"zh-cn": "根路径重定向",
+		"en": "Root path redirection"
+	},
+	"ll1ntd9": {
+		"zh-cn": "正在加载布局...",
+		"en": "Loading the layout..."
+	},
+	"fitay3": {
+		"zh-cn": "未命名",
+		"en": "Unnamed"
+	},
+	"i6tg2": {
+		"zh-cn": "明青",
+		"en": "Mingqing"
+	},
+	"eyvqk3": {
+		"zh-cn": "拂晓蓝",
+		"en": "Dawn Blue"
+	},
+	"k26dd3": {
+		"zh-cn": "薄暮紫",
+		"en": "Dusk Purple"
+	},
+	"fkaon3": {
+		"zh-cn": "极光绿",
+		"en": "Aurora Green"
+	},
+	"eyzdt3": {
+		"zh-cn": "拂晓青",
+		"en": "Fu Xiaoqing"
+	},
+	"ffc403": {
+		"zh-cn": "日暮橙",
+		"en": "Sunset Orange"
+	},
+	"e4mez54": {
+		"zh-cn": "法式洋红",
+		"en": "French magenta"
+	},
+	"ac40i44": {
+		"zh-cn": "从左滑入",
+		"en": "Slide in from the left"
+	},
+	"aanjvd4": {
+		"zh-cn": "从右滑入",
+		"en": "Slide in from the right"
+	},
+	"a9sepd4": {
+		"zh-cn": "从下滑入",
+		"en": "From sliding in"
+	},
+	"a9sdyo4": {
+		"zh-cn": "从上滑入",
+		"en": "Slide in from above"
+	},
+	"e7ddy54": {
+		"zh-cn": "淡入淡出",
+		"en": "Fade in and fade out"
+	},
+	"e78z3x4": {
+		"zh-cn": "淡入向上",
+		"en": "Fade into the upward trend"
+	},
+	"e78z3y4": {
+		"zh-cn": "淡入向下",
+		"en": "Fade in downward"
+	},
+	"e7928p4": {
+		"zh-cn": "淡入向左",
+		"en": "Fade to the left"
+	},
+	"e7909y4": {
+		"zh-cn": "淡入向右",
+		"en": "Fade to the right"
+	},
+	"d563r74": {
+		"zh-cn": "放大向下",
+		"en": "Zoom down"
+	},
+	"clkmdr4": {
+		"zh-cn": "弹跳向左",
+		"en": "Jump to the left"
+	},
+	"clkkf04": {
+		"zh-cn": "弹跳向右",
+		"en": "Jump to the right"
+	},
+	"c6ah0m4": {
+		"zh-cn": "左下旋转",
+		"en": "Rotate to the lower left"
+	},
+	"ax45fd4": {
+		"zh-cn": "右下旋转",
+		"en": "Rotate down to the right"
+	},
+	"c6ag9x4": {
+		"zh-cn": "左上旋转",
+		"en": "Rotate to the upper left"
+	},
+	"ax44oo4": {
+		"zh-cn": "右上旋转",
+		"en": "Rotate to the upper right"
+	},
+	"aunf794": {
+		"zh-cn": "光速左入",
+		"en": "Left entry at the speed of light"
+	},
+	"aulqa04": {
+		"zh-cn": "光速右入",
+		"en": "Right entry at the speed of light"
+	},
+	"ggpj614": {
+		"zh-cn": "缩放效果",
+		"en": "Zoom effect"
+	},
+	"clnlpq4": {
+		"zh-cn": "弹跳效果",
+		"en": "Bouncing effect"
+	},
+	"gqm19h4": {
+		"zh-cn": "翻转效果",
+		"en": "Flip effect"
+	},
+	"czwkc64": {
+		"zh-cn": "摆动效果",
+		"en": "Swing effect"
+	},
+	"dewzeb4": {
+		"zh-cn": "果冻效果",
+		"en": "Jelly effect"
+	},
+	"gmcycd4": {
+		"zh-cn": "脉冲效果",
+		"en": "Pulse effect"
+	},
+	"p5h35y5": {
+		"zh-cn": "侧边栏布局",
+		"en": "Sidebar layout"
+	},
+	"gg31rar": {
+		"zh-cn": "传统的左侧边栏 + 右侧内容区域布局，适合管理后台系统",
+		"en": "The traditional layout of the left sidebar and the right content area is suitable for managing the back-end system"
+	},
+	"m4h4vx6": {
+		"zh-cn": "顶部导航布局",
+		"en": "Top navigation layout"
+	},
+	"caus3qo": {
+		"zh-cn": "顶部导航栏 + 下方内容区域布局，适合展示型网站",
+		"en": "The layout of the top navigation bar and the content area below is suitable for display-oriented websites"
+	},
+	"e82p1q4": {
+		"zh-cn": "混合布局",
+		"en": "Mixed layout"
+	},
+	"qlxff0q": {
+		"zh-cn": "顶部导航 + 左侧边栏的混合布局，适合复杂的管理系统",
+		"en": "The hybrid layout of top navigation and left sidebar is suitable for complex management systems"
+	},
+	"awyze04": {
+		"zh-cn": "双列布局",
+		"en": "Double-column layout"
+	},
+	"56k8koq": {
+		"zh-cn": "左侧双列导航布局，第一列显示主菜单，第二列显示子菜单",
+		"en": "The double-column navigation layout on the left shows the main menu in the first column and the sub-menus in the second column"
+	},
+	"vujwb0y": {
+		"zh-cn": " !important; /* 使用主题蓝色 */\n    }\n  ",
+		"en": "! important; /* Use theme blue */\n}"
+	},
+	"garzt14": {
+		"zh-cn": "系统配置",
+		"en": "System configuration"
+	},
+	"c94d574": {
+		"zh-cn": "布局风格",
+		"en": "Layout style"
+	},
+	"on1359a": {
+		"zh-cn": "选择适合您的布局风格",
+		"en": "Choose the layout style that suits you"
+	},
+	"ai2xe34": {
+		"zh-cn": "主题模式",
+		"en": "Theme Mode"
+	},
+	"vpbehxb": {
+		"zh-cn": "选择明亮或暗黑主题模式",
+		"en": "Select the bright or dark theme mode"
+	},
+	"d7fjhq4": {
+		"zh-cn": "明亮模式",
+		"en": "Bright Mode"
+	},
+	"dllktk4": {
+		"zh-cn": "暗黑模式",
+		"en": "Dark Mode"
+	},
+	"kh915o5": {
+		"zh-cn": "深色侧边栏",
+		"en": "Dark sidebar"
+	},
+	"ef1m0q4": {
+		"zh-cn": "深色顶栏",
+		"en": "Dark top bar"
+	},
+	"blsc7b4": {
+		"zh-cn": "基础配置",
+		"en": "Basic configuration"
+	},
+	"d6t6yg4": {
+		"zh-cn": "文字大小",
+		"en": "Text size"
+	},
+	"bk08os4": {
+		"zh-cn": "圆角设置",
+		"en": "Rounded corner setting"
+	},
+	"qlyh2": {
+		"zh-cn": "页签",
+		"en": "TAB"
+	},
+	"gdoi304": {
+		"zh-cn": "线宽风格",
+		"en": "Line width style"
+	},
+	"jr27ty4": {
+		"zh-cn": "页签阴影",
+		"en": "TAB shadow"
+	},
+	"ftd2kz9": {
+		"zh-cn": "启用页签的阴影效果",
+		"en": "Enable the shadow effect of the TAB"
+	},
+	"7sms9d5": {
+		"zh-cn": "系统主题色",
+		"en": "System theme color"
+	},
+	"bwwfnkk": {
+		"zh-cn": "选择系统主题色，支持预设颜色和自定义颜色",
+		"en": "Select the system theme color, supporting preset colors and custom colors"
+	},
+	"jh1ll3": {
+		"zh-cn": "自定义",
+		"en": "\"Custom\""
+	},
+	"juttrh4": {
+		"zh-cn": "页面动效",
+		"en": "Page animations"
+	},
+	"pfmos7b": {
+		"zh-cn": "选择好看有趣的页面动效",
+		"en": "Choose good-looking and interesting page animations"
+	},
+	"7grhuz6": {
+		"zh-cn": "请输入用户名",
+		"en": "Please enter your username"
+	},
+	"2ymdf3h": {
+		"zh-cn": "用户名长度在 3 到 20 个字符",
+		"en": "The length of a username should be between 3 and 20 characters"
+	},
+	"2j9vj05": {
+		"zh-cn": "请输入密码",
+		"en": "Please enter the password."
+	},
+	"gztydng": {
+		"zh-cn": "密码长度在 6 到 20 个字符",
+		"en": "The password length is between 6 and 20 characters"
+	},
+	"liwyeg5": {
+		"zh-cn": "登录成功！",
+		"en": "Login successful!"
+	},
+	"b74ky09": {
+		"zh-cn": "用户名或密码错误！",
+		"en": "The username or password is incorrect!"
+	},
+	"aoepz49": {
+		"zh-cn": "登录失败，请重试！",
+		"en": "Login failed. Please try again!"
+	},
+	"o39mi7a": {
+		"zh-cn": "欢迎登录后台管理系统",
+		"en": "Welcome to log in to the background management system"
+	},
+	"hmxge3": {
+		"zh-cn": "用户名",
+		"en": "User name"
+	},
+	"g9ob2": {
+		"zh-cn": "密码",
+		"en": "Password"
+	},
+	"ifxxda5": {
+		"zh-cn": " 记住我 ",
+		"en": "Remember me"
+	},
+	"ide6e4": {
+		"zh-cn": " 登录 ",
+		"en": "Log in"
+	},
+	"q9q27m6": {
+		"zh-cn": "还没有账号？",
+		"en": "Don't have an account yet?"
+	},
+	"fub0ks4": {
+		"zh-cn": "立即注册",
+		"en": "Register now"
+	},
+	"y5s6v28": {
+		"zh-cn": "测试按钮1点击了",
+		"en": "Test Button 1 has been clicked"
+	},
+	"y5rjvj8": {
+		"zh-cn": "测试按钮2点击了",
+		"en": "Test Button 2 has been clicked"
+	},
+	"pryeo9": {
+		"zh-cn": "欢迎来到仪表盘页面",
+		"en": "Welcome to the dashboard page"
+	},
+	"hn0w13": {
+		"zh-cn": "用户数",
+		"en": "The number of users"
+	},
+	"kv0f13": {
+		"zh-cn": "订单数",
+		"en": "Order quantity"
+	},
+	"edb1874": {
+		"zh-cn": "活跃用户",
+		"en": "Active users"
+	},
+	"bertyr4": {
+		"zh-cn": "图标测试",
+		"en": "Icon testing"
+	},
+	"ycvxyp6": {
+		"zh-cn": " 测试按钮 ",
+		"en": "Test button"
+	},
+	"d6kar7": {
+		"zh-cn": " 测试按钮2 ",
+		"en": "Test Button 2"
+	},
+	"d4vyuk4": {
+		"zh-cn": "搜索: ",
+		"en": "Search"
+	},
+	"wa7a6b6": {
+		"zh-cn": "退出登录成功",
+		"en": "Logout successful"
+	},
+	"ejix2": {
+		"zh-cn": "刷新",
+		"en": "Refresh"
+	},
+	"ecpz2": {
+		"zh-cn": "全屏",
+		"en": "Full screen"
+	},
+	"o4fw3q6": {
+		"zh-cn": " 个人中心 ",
+		"en": "Personal Center"
+	},
+	"nv9v7k6": {
+		"zh-cn": " 个人设置 ",
+		"en": "Personal Settings"
+	},
+	"krw3ws6": {
+		"zh-cn": " 退出登录 ",
+		"en": "Log out"
+	},
+	"d38w74": {
+		"zh-cn": " 刷新 ",
+		"en": "Refresh"
+	},
+	"b14v6a4": {
+		"zh-cn": "取消固定",
+		"en": "Cancel fixed"
+	},
+	"faow2": {
+		"zh-cn": "固定",
+		"en": "Fixed"
+	},
+	"28id8b6": {
+		"zh-cn": " 关闭左侧 ",
+		"en": "Close the left side"
+	},
+	"29ytv26": {
+		"zh-cn": " 关闭右侧 ",
+		"en": "Close the right side"
+	},
+	"2ac37e6": {
+		"zh-cn": " 关闭其他 ",
+		"en": "\"Turn off others"
+	},
+	"2a150a6": {
+		"zh-cn": " 关闭全部 ",
+		"en": "Close all"
+	},
+	"25biey6": {
+		"zh-cn": "刷新中...",
+		"en": "Refreshing..."
+	},
+	"ev022": {
+		"zh-cn": "取消",
+		"en": "Cancel"
+	},
+	"ij5d2": {
+		"zh-cn": "标题",
+		"en": "Title"
+	},
+	"hrlt2": {
+		"zh-cn": "描述",
+		"en": "Description"
+	},
+	"k1e32": {
+		"zh-cn": "状态",
+		"en": "\"Status\""
+	},
+	"jlvf2": {
+		"zh-cn": "激活",
+		"en": "Activate"
+	},
+	"fnl7p3": {
+		"zh-cn": "未激活",
+		"en": "Not activated"
+	},
+	"heqc2": {
+		"zh-cn": "提交",
+		"en": "Submit"
+	},
+	"biyzkw4": {
+		"zh-cn": "基本信息",
+		"en": "Basic information"
+	},
+	"i6i0694": {
+		"zh-cn": "详细配置",
+		"en": "Detailed configuration"
+	},
+	"g3yc2": {
+		"zh-cn": "完成",
+		"en": "Completed"
+	},
+	"jq5lug4": {
+		"zh-cn": "项目名称",
+		"en": "Project Name"
+	},
+	"jq8eom4": {
+		"zh-cn": "项目描述",
+		"en": "Project Description"
+	},
+	"jqcamd4": {
+		"zh-cn": "项目类型",
+		"en": "Project Type"
+	},
+	"1e5c945": {
+		"zh-cn": "Web应用",
+		"en": "Web application"
+	},
+	"fqfs2p4": {
+		"zh-cn": "移动应用",
+		"en": "Mobile application"
+	},
+	"bzkvr3": {
+		"zh-cn": "优先级",
+		"en": "Priority"
+	},
+	"ul41": {
+		"zh-cn": "高",
+		"en": "high"
+	},
+	"ffx1": {
+		"zh-cn": "中",
+		"en": "In the"
+	},
+	"fny1": {
+		"zh-cn": "低",
+		"en": "low"
+	},
+	"piffe77": {
+		"zh-cn": "表单提交成功!",
+		"en": "The form has been submitted successfully!"
+	},
+	"f9ydxkb": {
+		"zh-cn": "您的信息已经成功提交。",
+		"en": "Your information has been successfully submitted."
+	},
+	"btcrz3": {
+		"zh-cn": "上一步",
+		"en": "Previous step"
+	},
+	"btdio3": {
+		"zh-cn": "下一步",
+		"en": "Next step"
+	},
+	"jqcpva4": {
+		"zh-cn": "项目编号",
+		"en": "Project Number"
+	},
+	"cd0ag54": {
+		"zh-cn": "开始日期",
+		"en": "Start date"
+	},
+	"gfhy2u4": {
+		"zh-cn": "结束日期",
+		"en": "End date"
+	},
+	"jq7s7x4": {
+		"zh-cn": "项目成员",
+		"en": "Project member"
+	},
+	"viahf07": {
+		"zh-cn": "请选择项目成员",
+		"en": "Please select the project members"
+	},
+	"glwp2": {
+		"zh-cn": "张三",
+		"en": "Zhang SAN"
+	},
+	"i1ql2": {
+		"zh-cn": "李四",
+		"en": "Li Si"
+	},
+	"k31l2": {
+		"zh-cn": "王五",
+		"en": "Wang Wu"
+	},
+	"ja8tu04": {
+		"zh-cn": "附件上传",
+		"en": "Upload the attachment"
+	},
+	"unjubc6": {
+		"zh-cn": " 点击上传 ",
+		"en": "Click to upload"
+	},
+	"agnaep4": {
+		"zh-cn": "保存草稿",
+		"en": "Save the draft"
+	},
+	"phz52": {
+		"zh-cn": "重置",
+		"en": "Reset"
+	},
+	"eyrn2": {
+		"zh-cn": "名称",
+		"en": "Name"
+	},
+	"ar84e54": {
+		"zh-cn": "创建时间",
+		"en": "Creation time"
+	},
+	"hkxb2": {
+		"zh-cn": "操作",
+		"en": "Operation"
+	},
+	"mw7rg3": {
+		"zh-cn": "项目A",
+		"en": "Project A"
+	},
+	"1bfh678": {
+		"zh-cn": "这是项目A的描述",
+		"en": "This is the description of Project A"
+	},
+	"mw7rh3": {
+		"zh-cn": "项目B",
+		"en": "Project B"
+	},
+	"1bg45q8": {
+		"zh-cn": "这是项目B的描述",
+		"en": "This is the description of Project B"
+	},
+	"2jb6fo5": {
+		"zh-cn": "请输入名称",
+		"en": "Please enter the name"
+	},
+	"2eief25": {
+		"zh-cn": "请选择状态",
+		"en": "Please select the status"
+	},
+	"en402": {
+		"zh-cn": "全部",
+		"en": "All"
+	},
+	"iftp2": {
+		"zh-cn": "查询",
+		"en": "Query"
+	},
+	"htfu2": {
+		"zh-cn": "新建",
+		"en": "Newly built"
+	},
+	"d0w7cq4": {
+		"zh-cn": "批量删除",
+		"en": "Batch deletion"
+	},
+	"mekb2": {
+		"zh-cn": "编辑",
+		"en": "\"Editor"
+	},
+	"eslg2": {
+		"zh-cn": "删除",
+		"en": "Delete"
+	},
+	"gceemt5": {
+		"zh-cn": "列表项目1",
+		"en": "List Item 1"
+	},
+	"sz6j4uc": {
+		"zh-cn": "这是列表项目1的描述信息",
+		"en": "This is the description information of list item 1"
+	},
+	"gceems5": {
+		"zh-cn": "列表项目2",
+		"en": "List Item 2"
+	},
+	"tg85j1c": {
+		"zh-cn": "这是列表项目2的描述信息",
+		"en": "This is the description information of list item 2"
+	},
+	"gceemr5": {
+		"zh-cn": "列表项目3",
+		"en": "List Item 3"
+	},
+	"tx9rx8c": {
+		"zh-cn": "这是列表项目3的描述信息",
+		"en": "This is the description information of list item 3"
+	},
+	"i0122": {
+		"zh-cn": "更多",
+		"en": "More"
+	}
+}
