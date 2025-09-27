@@ -55,35 +55,47 @@
           <template #overlay>
             <a-menu @click="handleMenuClick">
               <a-menu-item key="refresh">
-                <ReloadOutlined />
+                <template #icon>
+                  <ReloadOutlined />
+                </template>
                 刷新
               </a-menu-item>
 
               <a-menu-item key="togglePin" :disabled="tabsStore.activeTab?.path === '/dashboard'">
-                <PushpinOutlined :rotate="-45" v-if="!tabsStore.activeTab?.pinned" />
-                <PushpinFilled :rotate="-45" v-else />
+                <template #icon>
+                  <PushpinOutlined :rotate="-45" v-if="!tabsStore.activeTab?.pinned" />
+                  <PushpinFilled :rotate="-45" v-else />
+                </template>
                 {{ tabsStore.activeTab?.pinned ? '取消固定' : '固定' }}
               </a-menu-item>
 
               <a-menu-divider />
 
               <a-menu-item key="closeLeft" :disabled="menuDisabledStates.closeLeft">
-                <VerticalRightOutlined />
+                <template #icon>
+                  <VerticalRightOutlined />
+                </template>
                 关闭左侧
               </a-menu-item>
 
               <a-menu-item key="closeRight" :disabled="menuDisabledStates.closeRight">
-                <VerticalLeftOutlined />
+                <template #icon>
+                  <VerticalLeftOutlined />
+                </template>
                 关闭右侧
               </a-menu-item>
 
               <a-menu-item key="closeOthers" :disabled="menuDisabledStates.closeOthers">
-                <VerticalAlignMiddleOutlined />
+                <template #icon>
+                  <VerticalAlignMiddleOutlined />
+                </template>
                 关闭其他
               </a-menu-item>
 
               <a-menu-item key="closeAll" :disabled="menuDisabledStates.closeAll">
-                <SwapOutlined />
+                <template #icon>
+                  <SwapOutlined />
+                </template>
                 关闭全部
               </a-menu-item>
             </a-menu>

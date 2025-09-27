@@ -1,9 +1,17 @@
 <template>
-    <!-- 搜索框 -->
-    <!-- <a-input-search placeholder="站内搜索" style="width: 200px; margin-right: 16px" @search="onSearch" /> -->
-
     <a-space :size="15">
-        <!-- 刷新按钮 -->
+        <!-- 搜索框 -->
+        <div class="header-actions">
+            <!-- 搜索 -->
+            <div class="action-item search-trigger" @click="openSearchDialog">
+                <div class="search-box">
+                    <SearchOutlined class="search-icon" />
+                    <span class="search-text">搜索</span>
+                    <span class="search-shortcut">Ctrl K</span>
+                </div>
+            </div>
+        </div>
+
         <a-tooltip title="刷新">
             <a-button type="text" :icon="h(SyncOutlined)" @click="handleRefresh" />
         </a-tooltip>
@@ -74,10 +82,13 @@
             </template>
         </a-dropdown>
     </a-space>
+
+    <!-- 搜索对话框组件 -->
+    <SearchDialog v-model="searchDialogVisible" />
 </template>
 
 <script setup>
-import { computed, h, ref, onMounted, onUnmounted } from 'vue'
+import { computed, h, ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import {
     UserOutlined,
@@ -86,11 +97,13 @@ import {
     FullscreenOutlined,
     FullscreenExitOutlined,
     SyncOutlined,
-    GlobalOutlined
+    GlobalOutlined,
+    SearchOutlined
 } from '@ant-design/icons-vue'
 import { getLanguageOptions } from '@/locale'
 import { message, themeChangeWithAnimation } from '@/utils'
 import { useAppStore,useThemeStore } from '@/stores'
+import SearchDialog from './SearchDialog.vue'
 
 const router = useRouter()
 const appStore = useAppStore()
@@ -103,6 +116,13 @@ const iconSize = computed(() => {
 })
 
 // 搜索功能
+const searchDialogVisible = ref(false)
+
+// 打开搜索对话框
+const openSearchDialog = () => {
+    searchDialogVisible.value = true
+}
+
 const onSearch = (value) => {
     message.info(`搜索: ${value}`)
 }
@@ -185,6 +205,64 @@ onUnmounted(() => {
 </script>
 
 <style scoped lang="scss">
+// 搜索框样式
+.header-actions {
+    display: flex;
+    align-items: center;
+    margin-right: 16px;
+}
+
+.action-item {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+        opacity: 0.8;
+    }
+}
+
+.search-trigger {
+    .search-box {
+        display: flex;
+        align-items: center;
+        padding: 6px 12px;
+        background: rgba(0, 0, 0, 0.04);
+        border-radius: 6px;
+        border: 1px solid transparent;
+        transition: all 0.2s ease;
+        min-width: 200px;
+
+        &:hover {
+            background: rgba(0, 0, 0, 0.06);
+            border-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .search-icon {
+            color: rgba(0, 0, 0, 0.45);
+            margin-right: 8px;
+        }
+
+        .search-text {
+            flex: 1;
+            color: rgba(0, 0, 0, 0.45);
+            font-size: 14px;
+        }
+
+        .search-shortcut {
+            color: rgba(0, 0, 0, 0.25);
+            font-size: 12px;
+            padding: 2px 6px;
+            background: rgba(0, 0, 0, 0.06);
+            border-radius: 3px;
+            font-family: monospace;
+        }
+    }
+}
+
+
+
 .user-info {
     cursor: pointer;
 }

@@ -786,5 +786,97 @@
 	"i0122": {
 		"zh-cn": "更多",
 		"en": "More"
+	},
+	"ead9ly5": {
+		"zh-cn": "卡片标题1",
+		"en": "Card Title 1"
+	},
+	"cx93kua": {
+		"zh-cn": "这是卡片1的描述信息",
+		"en": "This is the description information of Card 1"
+	},
+	"ead9lx5": {
+		"zh-cn": "卡片标题2",
+		"en": "Card Title 2"
+	},
+	"deapz1a": {
+		"zh-cn": "这是卡片2的描述信息",
+		"en": "This is the description information of Card 2"
+	},
+	"ead9lw5": {
+		"zh-cn": "卡片标题3",
+		"en": "Card Title 3"
+	},
+	"dvccd8a": {
+		"zh-cn": "这是卡片3的描述信息",
+		"en": "This is the description information of Card 3"
+	},
+	"2y0eb3a": {
+		"zh-cn": "Vue 3 最佳实践",
+		"en": "Best Practices of Vue 3"
+	},
+	"5cxqhwe": {
+		"zh-cn": "发布于 2024-01-01",
+		"en": "Published on January 1, 2024-01"
+	},
+	"yuqxcg18": {
+		"zh-cn": "这是一篇关于Vue 3最佳实践的文章，介绍了如何使用Composition API...",
+		"en": "This is an article about the best practices of Vue 3, introducing how to use the Composition API..."
+	},
+	"b6box5m": {
+		"zh-cn": "Ant Design Vue 组件库使用指南",
+		"en": "Ant Design Vue Component Library Usage Guide"
+	},
+	"5cxqhxe": {
+		"zh-cn": "发布于 2024-01-02",
+		"en": "Published on January 2, 2024"
+	},
+	"zfyl33z": {
+		"zh-cn": "详细介绍了Ant Design Vue组件库的使用方法和最佳实践...",
+		"en": "The usage methods and best practices of the Ant Design Vue component library were introduced in detail..."
+	},
+	"7ek64j8": {
+		"zh-cn": "请输入搜索关键词",
+		"en": "Please enter the search keywords"
+	},
+	"hpqe2": {
+		"zh-cn": "搜索",
+		"en": "Search"
+	},
+	"qrgt2": {
+		"zh-cn": "页面",
+		"en": "\"Page"
+	},
+	"p1122": {
+		"zh-cn": "这是",
+		"en": "This is"
+	},
+	"1xgdjgd": {
+		"zh-cn": "页面，功能正在开发中...",
+		"en": "The page and functions are under development..."
+	},
+	"iijhd54": {
+		"zh-cn": "返回首页",
+		"en": "Return to the homepage"
+	},
+	"eiq22": {
+		"zh-cn": "分析",
+		"en": "Analysis"
+	},
+	"8m794w7": {
+		"zh-cn": "未找到相关结果",
+		"en": "No relevant results were found"
+	},
+	"m4r284": {
+		"zh-cn": " 选择 ",
+		"en": "\"Choose\""
+	},
+	"d7exy4": {
+		"zh-cn": " 关闭 ",
+		"en": "\"Close"
+	},
+	"l95aeg5": {
+		"zh-cn": "导航到: ",
+		"en": "Navigate to:"
 	}
 }

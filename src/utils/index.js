@@ -9,6 +9,8 @@ export { themeChangeWithAnimation, COLOR_PRESETS, rgbToHex } from './themes.js'
 export { PAGE_ANIMATION_CONFIG, PAGE_ANIMATIONS } from './pageAnimationConfig.js'
 // 进度条
 export { NProgress, initNProgress, configureNProgress, setNProgressStyle } from './nprogress.js'
+// 搜索相关工具函数
+export { getAllMenuItems, searchMenuItems, highlightText } from './searchUtils.js'
 
 
 
