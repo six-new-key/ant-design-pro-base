@@ -3,8 +3,8 @@
         :class="{ 'collapsed': collapsed, 'theme-mode-trigger': appStore.sidebarTheme === 'dark' }">
         <a-button type="text" @click="handleToggleCollapse">
             <template #icon>
-                <DoubleLeftOutlined style="font-size: 10px;" v-if="!collapsed" />
-                <DoubleRightOutlined style="font-size: 10px;" v-else />
+                <AlignRightOutlined style="font-size: 10px;" v-if="!collapsed" />
+                <AlignLeftOutlined style="font-size: 10px;" v-else />
             </template>
         </a-button>
         <a-tooltip v-if="!collapsed" :title="appStore.sidebarFixed ? '取消' : '固定'">
@@ -22,7 +22,7 @@
 import { ref, watch } from 'vue'
 import { useAppStore } from '@/stores'
 import { theme } from 'ant-design-vue'
-import { DoubleLeftOutlined, DoubleRightOutlined, PushpinOutlined, PushpinFilled } from '@ant-design/icons-vue'
+import { AlignLeftOutlined, AlignRightOutlined, PushpinOutlined, PushpinFilled } from '@ant-design/icons-vue'
 
 const appStore = useAppStore()
 const collapsed = ref(appStore.sidebarCollapsed)
