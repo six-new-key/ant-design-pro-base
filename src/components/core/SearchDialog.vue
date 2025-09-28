@@ -6,12 +6,12 @@
             @input="handleSearchInput" @keydown="handleKeydown" size="large" class="search-input"
             :style="{ background: token.colorFillSecondary, padding: '12px' }">
             <template #prefix>
-                <SearchOutlined :style="{ fontSize: token.fontSize + 2 + 'px', opacity: 0.6, marginRight: '6px' }" />
+                <SearchOutlined :style="{ fontSize: token.fontSize + 2 + 'px', opacity: 0.8, marginRight: '6px' }" />
             </template>
             <template #suffix>
                 <div
                     :style="{ background: token.colorBgContainer, borderRadius: token.borderRadius + 'px', padding: '0 10px' }">
-                    <EnterOutlined :style="{ fontSize: token.fontSize - 2 + 'px', opacity: 0.6 }" />
+                    <EnterOutlined :style="{ fontSize: token.fontSize - 2 + 'px', opacity: 0.8 }" />
                 </div>
             </template>
         </a-input>
@@ -200,8 +200,6 @@ const navigateToItem = (item) => {
         margin-bottom: 12px;
         cursor: pointer;
         transition: all 0.2s ease;
-        // border: 1px solid red;
-        // border-radius: 8px;
 
         &:last-child {
             margin-bottom: 0;
@@ -211,7 +209,7 @@ const navigateToItem = (item) => {
             margin-right: 12px;
             display: flex;
             justify-content: center;
-            opacity: 0.6;
+            opacity: 0.8;
         }
 
         .result-content {
@@ -223,13 +221,11 @@ const navigateToItem = (item) => {
         }
 
         .result-action {
-            opacity: 0.6;
+            opacity: 0.8;
             font-size: 12px;
         }
     }
 }
-
-
 
 .wait-search {
     min-height: 160px;
@@ -237,7 +233,7 @@ const navigateToItem = (item) => {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    opacity: 0.6;
+    opacity: 0.8;
 }
 
 .no-results {
@@ -246,14 +242,14 @@ const navigateToItem = (item) => {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    opacity: 0.6;
+    opacity: 0.8;
 }
 
 .search-footer {
     padding: 12px 20px;
     display: flex;
     align-items: center;
-    opacity: 0.6;
+    opacity: 0.8;
 
     .footer-item {
         display: flex;
