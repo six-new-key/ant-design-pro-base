@@ -17,23 +17,30 @@
               'active': tab.path === tabsStore.activeTabPath,
               'pinned': tab.pinned
             }
-          ]" @click="handleTabClick(tab)" 
-             @mouseenter="hoveredTabPath = tab.path"
-             @mouseleave="hoveredTabPath = null">
-            <!-- 页签图标 -->
-            <component v-if="tab.icon" :is="tab.icon" class="tab-icon" />
+          ]" @click="handleTabClick(tab)" @mouseenter="hoveredTabPath = tab.path" @mouseleave="hoveredTabPath = null">
 
-            <!-- 页签标题 -->
-            <span class="tab-title">{{ tab.title }}</span>
+            <!-- 页签内容 -->
+            <div class="tab-content">
+              <!-- 页签图标 -->
+              <div class="tab-favicon">
+                <component v-if="tab.icon" :is="tab.icon" />
+              </div>
 
-            <!-- 固定图标 -->
-            <PushpinOutlined :rotate="-45" v-if="tab.pinned" class="tab-pin-icon" />
+              <!-- 页签标题 -->
+              <span class="tab-title">{{ tab.title }}</span>
 
-            <!-- 关闭按钮 -->
-            <Transition name="tab-close-fade" mode="out-in">
-              <CloseCircleOutlined v-if="tab.closable && !tab.pinned && hoveredTabPath === tab.path" class="tab-close"
-                @click.stop="handleTabClose(tab.path)" />
-            </Transition>
+              <!-- 固定图标 -->
+              <PushpinOutlined :rotate="-45" v-if="tab.pinned" class="tab-pin-icon" />
+
+              <!-- 关闭按钮 -->
+              <Transition name="tab-close-fade" mode="out-in">
+                <div
+                  v-if="tab.closable && !tab.pinned"
+                  class="tab-close" @click.stop="handleTabClose(tab.path)">
+                  <CloseCircleOutlined />
+                </div>
+              </Transition>
+            </div>
           </div>
         </div>
       </div>
@@ -241,7 +248,7 @@ const handleTabClick = (tab) => {
   })
 }
 
-// 滚动到激活的页签
+// 滚动到激活的页签 - 优化Chrome风格
 const scrollToActiveTab = () => {
   if (!tabsScrollArea.value || !tabsList.value) return
 
@@ -263,11 +270,11 @@ const scrollToActiveTab = () => {
   })
 }
 
-// 左滚动按钮点击事件
+// 左滚动按钮点击事件 - 优化滚动距离
 const scrollLeft = () => {
   if (!tabsScrollArea.value) return
 
-  const scrollAmount = 400 // 每次滚动的距离
+  const scrollAmount = 200 // 减少滚动距离，更精确
   const currentScrollLeft = tabsScrollArea.value.scrollLeft
 
   tabsScrollArea.value.scrollTo({
@@ -281,11 +288,11 @@ const scrollLeft = () => {
   }, 300)
 }
 
-// 右滚动按钮点击事件
+// 右滚动按钮点击事件 - 优化滚动距离
 const scrollRight = () => {
   if (!tabsScrollArea.value) return
 
-  const scrollAmount = 400 // 每次滚动的距离
+  const scrollAmount = 200 // 减少滚动距离，更精确
   const currentScrollLeft = tabsScrollArea.value.scrollLeft
   const maxScrollLeft = tabsScrollArea.value.scrollWidth - tabsScrollArea.value.clientWidth
 
@@ -300,19 +307,38 @@ const scrollRight = () => {
   }, 300)
 }
 
-// 页签关闭事件
+// 页签关闭事件 - 添加Chrome风格的关闭动画
 const handleTabClose = (path) => {
-  tabsStore.removeTab(path)
+  // 添加关闭动画效果
+  const tabElement = tabsList.value?.querySelector(`[data-tab="${path}"]`)
+  if (tabElement) {
+    tabElement.style.animation = 'tabCloseAnimation 0.2s ease-out forwards'
 
-  // 如果关闭的是当前页签，需要跳转到新的激活页签
-  if (path === route.path && tabsStore.activeTabPath !== path) {
-    router.push(tabsStore.activeTabPath)
+    setTimeout(() => {
+      tabsStore.removeTab(path)
+
+      // 如果关闭的是当前页签，需要跳转到新的激活页签
+      if (path === route.path && tabsStore.activeTabPath !== path) {
+        router.push(tabsStore.activeTabPath)
+      }
+
+      // 关闭页签后滚动到新的激活页签
+      nextTick(() => {
+        scrollToActiveTab()
+        checkScrollState()
+      })
+    }, 200)
+  } else {
+    // 如果没有找到元素，直接执行关闭逻辑
+    tabsStore.removeTab(path)
+    if (path === route.path && tabsStore.activeTabPath !== path) {
+      router.push(tabsStore.activeTabPath)
+    }
+    nextTick(() => {
+      scrollToActiveTab()
+      checkScrollState()
+    })
   }
-
-  // 关闭页签后滚动到新的激活页签
-  nextTick(() => {
-    scrollToActiveTab()
-  })
 }
 
 // 下拉菜单点击事件
@@ -384,8 +410,10 @@ const handleWheel = (e) => {
   .tabs-container {
     height: 100%;
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     position: relative;
+    padding: 0 12px;
+    background: v-bind('token.colorBgContainer');
 
     .scroll-button {
       position: absolute;
@@ -395,8 +423,6 @@ const handleWheel = (e) => {
       display: flex;
       align-items: center;
       justify-content: center;
-      // background: v-bind('token.colorBgContainer');
-      // background: red;
       border-radius: v-bind('themeStore.baseConfig.borderRadius + "px"');
       cursor: pointer;
       z-index: 10;
@@ -411,7 +437,6 @@ const handleWheel = (e) => {
       &.scroll-right {
         opacity: 0.5;
         right: v-bind('(showScrollButtons === true && canScrollRight === true) ? "48px" : "0"');
-        /* 调整到下拉菜单左侧，为下拉菜单留出空间 */
       }
     }
 
@@ -421,10 +446,9 @@ const handleWheel = (e) => {
       overflow-y: hidden;
       cursor: default;
       height: 100%;
-      padding: 2px 0;
+      padding: 8px 0 0;
       margin-left: v-bind('(showScrollButtons === true && canScrollLeft === true) ? "48px" : "0"');
       margin-right: v-bind('(showScrollButtons === true && canScrollRight === true) ? "48px" : "0"');
-      /* 左侧为左滚动按钮留空间，右侧为右滚动按钮和下拉菜单留空间 */
 
       &:active {
         cursor: grabbing;
@@ -439,37 +463,50 @@ const handleWheel = (e) => {
       scrollbar-width: none;
 
       .tabs-list {
-        display: flex;
-        align-items: center;
-        height: 100%;
-        white-space: nowrap;
-        min-width: max-content;
-        padding: 0 8px;
-      }
+          display: flex;
+          align-items: flex-end;
+          height: 100%;
+          white-space: nowrap;
+          min-width: max-content;
+          gap: 2px;
+        }
 
       .tab-item {
+        position: relative;
+        cursor: pointer;
+        user-select: none;
+        white-space: nowrap;
+        height: 36px;
         display: flex;
         align-items: center;
-        height: $tab-height;
-        padding: 0 12px;
-        cursor: pointer;
-        position: relative;
-        transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
-        margin: 0 2px;
-        border-radius: v-bind('themeStore.baseConfig.borderRadius + "px"');
-        background: transparent;
+        background: v-bind('token.colorBgContainer');
+        color: v-bind('token.colorTextSecondary');
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 1;
+        // margin-top: 4px;
 
-        &:not(.active):not(:has(+ .active)):not(:last-child)::after {
-          content: '';
+        // Chrome页签弧形实现 - 只在激活时显示
+        &::before,
+        &::after {
+          content: "";
           position: absolute;
-          right: 0;
-          top: 30%;
-          transform: translateX(-50%);
-          width: 1px;
-          height: 16px;
-          background: v-bind('token.colorFill');
-          border-radius: 2px;
-          transition: all 0.2s;
+          bottom: 0;
+          width: 12px;
+          height: 12px;
+          background: transparent;
+          z-index: 2;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          opacity: 0;
+        }
+
+        &::before {
+          left: -12px;
+          border-bottom-right-radius: 12px;
+        }
+
+        &::after {
+          right: -12px;
+          border-bottom-left-radius: 12px;
         }
 
         .tab-content {
@@ -477,6 +514,24 @@ const handleWheel = (e) => {
           align-items: center;
           gap: 8px;
           width: 100%;
+          padding: 0 16px;
+          position: relative;
+          z-index: 3;
+        }
+
+        .tab-favicon {
+          width: 16px;
+          height: 16px;
+          border-radius: 3px;
+          background: v-bind('token.colorPrimary');
+          opacity: 0.9;
+          flex-shrink: 0;
+          transition: all 0.2s ease;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 12px;
+          color: white;
         }
 
         .tab-title {
@@ -484,44 +539,80 @@ const handleWheel = (e) => {
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
-          transition: all 0.2s;
+          transition: all 0.2s ease;
+          font-size: 13.5px;
+          font-weight: 500;
         }
 
         .tab-close {
-          transition: all 0.2s;
-          width: 16px;
-          height: 16px;
+          width: 18px;
+          height: 18px;
+          border-radius: 50%;
           display: flex;
           align-items: center;
           justify-content: center;
-          border-radius: 50%;
-          margin-left: 5px;
+          transition: all 0.2s ease;
+          flex-shrink: 0;
           font-size: 12px;
-          color: v-bind('token.colorText');
+          color: v-bind('token.colorTextSecondary');
+          opacity: 0.7;
 
           &:hover {
-            background: v-bind('appStore.themeMode === "dark" ? "rgba(255, 255, 255, 0.06)" : "rgba(0, 0, 0, 0.06)"');
-            color: v-bind('token.colorText');
+            background: v-bind('appStore.themeMode === "dark" ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.1)"');
+            opacity: 1;
+            transform: scale(1.1);
           }
+        }
+
+        .tab-pin-icon {
+          font-size: 12px;
+          margin-left: 4px;
+          transition: all 0.2s;
         }
 
         // 悬停效果
         &:hover {
-          background: v-bind('appStore.themeMode === "dark" ? "rgba(255, 255, 255, 0.06)" : "rgba(0, 0, 0, 0.06)"');
+          background: v-bind('token.colorBgContainer');
+          color: v-bind('token.colorText');
+
+          .tab-favicon {
+            opacity: 1;
+            transform: scale(1.05);
+          }
         }
 
-        // 激活状态
+        // 激活状态 - Chrome风格
         &.active {
-          background: v-bind('token.colorPrimary + "10"');
+          background: v-bind('token.colorPrimary + "20"');
           color: v-bind('token.colorPrimary');
+          z-index: 3;
+          margin-top: 0;
+          height: 40px;
+          border-radius: 10px 10px 0 0;
+          box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.08);
+          transform: translateY(1px);
 
-          // 激活状态下的关闭按钮样式
+          &::before {
+            opacity: 1;
+            box-shadow: 6px 0 0 0 v-bind('token.colorPrimary + "20"');
+          }
+
+          &::after {
+            opacity: 1;
+            box-shadow: -6px 0 0 0 v-bind('token.colorPrimary + "20"');
+          }
+
+          .tab-favicon {
+            opacity: 1;
+            transform: scale(1.05);
+          }
+
+          .tab-title {
+            font-weight: 600;
+          }
+
           .tab-close {
             color: v-bind('token.colorPrimary');
-
-            &:hover {
-              background: v-bind('appStore.themeMode === "dark" ? "rgba(255, 255, 255, 0.06)" : "rgba(0, 0, 0, 0.06)"');
-            }
           }
         }
 
@@ -536,16 +627,6 @@ const handleWheel = (e) => {
               transform: scale(1.1);
             }
           }
-        }
-
-        .tab-icon {
-          margin-right: 4px;
-          font-size: 14px;
-        }
-
-        .tab-pin-icon {
-          font-size: 12px;
-          margin-left: 4px;
         }
       }
 
@@ -572,6 +653,12 @@ const handleWheel = (e) => {
       }
     }
 
+    .tabs-actions {
+      display: flex;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
     .ant-btn {
       border-radius: 0;
       border-left: 1px solid v-bind('token.colorFillSecondary');
@@ -593,6 +680,23 @@ const handleWheel = (e) => {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+// Chrome风格页签关闭动画
+@keyframes tabCloseAnimation {
+  from {
+    opacity: 1;
+    transform: scale(1) translateX(0);
+    max-width: 220px;
+  }
+
+  to {
+    opacity: 0;
+    transform: scale(0.8) translateX(20px);
+    max-width: 0;
+    padding-left: 0;
+    padding-right: 0;
   }
 }
 </style>

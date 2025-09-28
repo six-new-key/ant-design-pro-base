@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>优化版Chrome页签 - 丝滑弧形体验</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Noto Sans SC', system-ui, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .browser-window {
+            width: 100%;
+            max-width: 900px;
+            background: white;
+            border-radius: 12px 12px 0 0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+        }
+        
+        /* 浏览器顶栏控件 */
+        .browser-header {
+            background: #f1f3f4;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .browser-controls {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .control-btn {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            transition: transform 0.2s ease;
+        }
+        
+        .control-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .close { background: #ff5f57; }
+        .minimize { background: #ffbd2e; }
+        .maximize { background: #28ca42; }
+        
+        .address-bar {
+            flex: 1;
+            background: white;
+            height: 36px;
+            border-radius: 20px;
+            padding: 0 16px;
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            color: #444;
+            border: 1px solid #dadce0;
+            transition: all 0.3s ease;
+        }
+        
+        /* 页签容器 */
+        .tabs-container {
+            background: #f1f3f4;
+            padding: 0 12px;
+            display: flex;
+            align-items: flex-end;
+            position: relative;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        
+        .tabs-container::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 0;
+            position: relative;
+            padding-top: 8px;
+        }
+        
+        /* 单个页签样式 */
+        .tab {
+            position: relative;
+            padding: 12px 20px 14px;
+            cursor: pointer;
+            font-size: 13.5px;
+            font-weight: 500;
+            color: #5f6368;
+            background: #e8eaed;
+            border-radius: 10px 10px 0 0;
+            user-select: none;
+            white-space: nowrap;
+            max-width: 220px;
+            min-width: 120px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid transparent;
+            border-bottom: none;
+            z-index: 1;
+            margin-top: 4px;
+            box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .tab:hover {
+            background: #f1f3f4;
+            color: #3c4043;
+        }
+        
+        /* 活动页签 - 关键优化 */
+        .tab.active {
+            background: white;
+            color: #1a73e8;
+            z-index: 3;
+            margin-top: 0;
+            padding-top: 16px;
+            padding-bottom: 16px;
+            box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.08);
+            transform: translateY(1px);
+        }
+        
+        /* 关键优化：所有页签都有弧形，只是颜色不同 */
+        .tab::before,
+        .tab::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            width: 20px;
+            height: 20px;
+            background: transparent;
+            z-index: 2;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .tab::before {
+            left: -20px;
+            border-bottom-right-radius: 20px;
+            box-shadow: 10px 0 0 0 #e8eaed; /* 默认非活动页签颜色 */
+        }
+        
+        .tab::after {
+            right: -20px;
+            border-bottom-left-radius: 20px;
+            box-shadow: -10px 0 0 0 #e8eaed; /* 默认非活动页签颜色 */
+        }
+        
+        /* 悬停状态下的弧形颜色 */
+        .tab:hover::before {
+            box-shadow: 10px 0 0 0 #f1f3f4; /* 悬停颜色 */
+        }
+        
+        .tab:hover::after {
+            box-shadow: -10px 0 0 0 #f1f3f4; /* 悬停颜色 */
+        }
+        
+        /* 活动页签的弧形颜色 */
+        .tab.active::before {
+            box-shadow: 10px 0 0 0 white; /* 活动页签颜色 */
+        }
+        
+        .tab.active::after {
+            box-shadow: -10px 0 0 0 white; /* 活动页签颜色 */
+        }
+        
+        /* 页签内部元素 */
+        .tab-favicon {
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+            background: #1a73e8;
+            opacity: 0.9;
+            flex-shrink: 0;
+            transition: all 0.2s ease;
+        }
+        
+        .tab.active .tab-favicon {
+            opacity: 1;
+            transform: scale(1.05);
+        }
+        
+        .tab-title {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            transition: all 0.2s ease;
+        }
+        
+        .tab.active .tab-title {
+            font-weight: 600;
+        }
+        
+        .tab-close {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: auto;
+            opacity: 0;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+        
+        .tab:hover .tab-close {
+            opacity: 0.7;
+        }
+        
+        .tab-close:hover {
+            background: #dadce0;
+            opacity: 1;
+            transform: scale(1.1);
+        }
+        
+        .tab-close::after {
+            content: "×";
+            font-size: 16px;
+            line-height: 1;
+            color: #5f6368;
+        }
+        
+        /* 新页签按钮 */
+        .new-tab-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            color: #5f6368;
+            font-size: 20px;
+            margin-left: 6px;
+            margin-bottom: 8px;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+        
+        .new-tab-btn:hover {
+            background: #dadce0;
+            color: #3c4043;
+            transform: scale(1.05);
+        }
+        
+        /* 内容区域 */
+        .content-area {
+            padding: 30px;
+            min-height: 400px;
+            background: white;
+            position: relative;
+            z-index: 4;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        .tab-content {
+            display: none;
+            animation: fadeInUp 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        h2 {
+            margin-bottom: 16px;
+            color: #202124;
+            font-weight: 500;
+            font-size: 24px;
+        }
+        
+        p {
+            line-height: 1.6;
+            margin-bottom: 16px;
+            color: #3c4043;
+        }
+        
+        .feature-list {
+            margin: 20px 0;
+            padding-left: 20px;
+        }
+        
+        .feature-list li {
+            margin-bottom: 10px;
+            position: relative;
+        }
+        
+        .feature-list li:before {
+            content: "•";
+            color: #1a73e8;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        
+        @keyframes fadeInUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(15px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+        
+        @keyframes tabClose {
+            from { 
+                opacity: 1;
+                transform: scale(1) translateX(0);
+            }
+            to { 
+                opacity: 0;
+                transform: scale(0.8) translateX(30px);
+            }
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .browser-window {
+                border-radius: 0;
+            }
+            
+            .tab {
+                min-width: 100px;
+                max-width: 160px;
+                padding: 10px 14px 12px;
+            }
+            
+            .tab.active {
+                padding: 14px 14px 14px;
+            }
+            
+            .tab-title {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="browser-window">
+        <div class="browser-header">
+            <div class="browser-controls">
+                <div class="control-btn close"></div>
+                <div class="control-btn minimize"></div>
+                <div class="control-btn maximize"></div>
+            </div>
+            <div class="address-bar" contenteditable="true">https://example.com/smooth-chrome-tabs</div>
+        </div>
+        
+        <div class="tabs-container">
+            <div class="tabs">
+                <div class="tab active" data-tab="overview">
+                    <div class="tab-favicon"></div>
+                    <span class="tab-title">优化版页签</span>
+                    <div class="tab-close"></div>
+                </div>
+                <div class="tab" data-tab="features">
+                    <div class="tab-favicon"></div>
+                    <span class="tab-title">弧形优化</span>
+                    <div class="tab-close"></div>
+                </div>
+                <div class="tab" data-tab="animation">
+                    <div class="tab-favicon"></div>
+                    <span class="tab-title">平滑过渡</span>
+                    <div class="tab-close"></div>
+                </div>
+            </div>
+            <button class="new-tab-btn">+</button>
+        </div>
+        
+        <div class="content-area">
+            <div class="tab-content active" id="overview">
+                <h2>弧形优化版Chrome页签</h2>
+                <p>这个版本重点解决了您提出的两个问题：</p>
+                <ol class="feature-list">
+                    <li><strong>悬停时弧形自然存在</strong> - 所有页签默认都有弧形，只是颜色不同</li>
+                    <li><strong>点击时过渡更自然</strong> - 弧形不是点击后才显示，而是始终存在，只是颜色变化</li>
+                </ol>
+                <p>这种设计让页签的弧形过渡更加自然，不再有突兀感。弧形作为页签的固有部分，只是在不同状态下改变颜色，而不是突然出现或消失。</p>
+            </div>
+            
+            <div class="tab-content" id="features">
+                <h2>弧形优化详解</h2>
+                <p>我们通过以下方式优化了弧形体验：</p>
+                <ul class="feature-list">
+                    <li><strong>固有弧形设计</strong> - 所有页签都带有弧形边缘，只是默认使用与页签相同的颜色</li>
+                    <li><strong>平滑颜色过渡</strong> - 悬停和激活状态只是改变弧形颜色，而不是创建新弧形</li>
+                    <li><strong>一致的动画曲线</strong> - 所有状态变化使用相同的缓动函数，确保视觉一致性</li>
+                    <li><strong>无缝视觉体验</strong> - 弧形不再是"添加"的元素，而是页签固有的形状特征</li>
+                </ul>
+                <p>这种设计哲学更符合Chrome浏览器的实际体验，弧形是页签形状的一部分，而不是装饰元素。</p>
+            </div>
+            
+            <div class="tab-content" id="animation">
+                <h2>平滑过渡效果</h2>
+                <p>为了实现更自然的过渡效果，我们采用了以下策略：</p>
+                <ul class="feature-list">
+                    <li><strong>固有弧形</strong> - 弧形是页签形状的一部分，不是后期添加的装饰</li>
+                    <li><strong>颜色过渡</strong> - 状态变化时只改变弧形颜色，而不是显示/隐藏弧形</li>
+                    <li><strong>统一动画</strong> - 所有状态变化使用相同的动画时长和缓动函数</li>
+                    <li><strong>视觉连续性</strong> - 弧形在不同状态间平滑过渡，没有突兀变化</li>
+                </ul>
+                <p>尝试将鼠标悬停在非活动页签上，观察弧形如何平滑地从灰色变为悬停色。然后点击页签，观察弧形如何平滑过渡到白色。</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabs = document.querySelectorAll('.tab');
+            const contents = document.querySelectorAll('.tab-content');
+            const newTabBtn = document.querySelector('.new-tab-btn');
+            let tabCounter = 3; // 初始页签数量
+            
+            // 初始化页签功能
+            function initTabs() {
+                tabs.forEach(tab => {
+                    // 移除现有事件监听器
+                    tab.replaceWith(tab.cloneNode(true));
+                });
+                
+                // 重新获取页签元素
+                const newTabs = document.querySelectorAll('.tab');
+                
+                newTabs.forEach(tab => {
+                    tab.addEventListener('click', function(e) {
+                        // 防止点击关闭按钮时触发页签切换
+                        if (e.target.classList.contains('tab-close') || 
+                            e.target.parentElement.classList.contains('tab-close')) {
+                            return;
+                        }
+                        
+                        // 移除所有激活状态
+                        newTabs.forEach(t => t.classList.remove('active'));
+                        contents.forEach(c => c.classList.remove('active'));
+                        
+                        // 添加当前激活状态
+                        this.classList.add('active');
+                        const tabId = this.getAttribute('data-tab');
+                        const contentElement = document.getElementById(tabId);
+                        
+                        if (contentElement) {
+                            contentElement.classList.add('active');
+                        }
+                    });
+                    
+                    // 关闭按钮事件
+                    const closeBtn = tab.querySelector('.tab-close');
+                    if (closeBtn) {
+                        closeBtn.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            const tabElement = this.parentElement;
+                            const isActive = tabElement.classList.contains('active');
+                            
+                            // 添加关闭动画
+                            tabElement.style.animation = 'tabClose 0.3s forwards';
+                            
+                            setTimeout(() => {
+                                tabElement.remove();
+                                
+                                // 如果关闭的是活动页签，激活下一个页签
+                                if (isActive) {
+                                    const remainingTabs = document.querySelectorAll('.tab');
+                                    if (remainingTabs.length > 0) {
+                                        remainingTabs[0].click();
+                                    } else {
+                                        // 如果没有页签了，显示空状态
+                                        document.querySelector('.content-area').innerHTML = 
+                                            '<div style="text-align: center; padding: 60px 20px; color: #5f6368;">没有打开的页签</div>';
+                                    }
+                                }
+                            }, 300);
+                        });
+                    }
+                });
+            }
+            
+            // 添加新页签
+            newTabBtn.addEventListener('click', function() {
+                const tabsContainer = document.querySelector('.tabs');
+                tabCounter++;
+                
+                const newTab = document.createElement('div');
+                newTab.className = 'tab';
+                newTab.setAttribute('data-tab', `new-${tabCounter}`);
+                newTab.innerHTML = `
+                    <div class="tab-favicon" style="background: hsl(${Math.random() * 360}, 70%, 60%)"></div>
+                    <span class="tab-title">新页签 ${tabCounter}</span>
+                    <div class="tab-close"></div>
+                `;
+                
+                tabsContainer.appendChild(newTab);
+                initTabs();
+                
+                // 创建对应的内容区域
+                const contentArea = document.querySelector('.content-area');
+                const newContent = document.createElement('div');
+                newContent.className = 'tab-content active';
+                newContent.id = `new-${tabCounter}`;
+                newContent.innerHTML = `
+                    <h2>新页签 ${tabCounter}</h2>
+                    <p>这是您新打开的页签。您可以在这里添加任何内容。</p>
+                    <p>注意观察弧形在悬停和激活状态下的平滑过渡效果。</p>
+                `;
+                
+                // 隐藏所有内容，显示新内容
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                contentArea.appendChild(newContent);
+                
+                // 激活新页签
+                newTab.click();
+            });
+            
+            // 初始化
+            initTabs();
+            
+            // 添加键盘快捷键支持
+            document.addEventListener('keydown', function(e) {
+                // Ctrl+T 打开新页签 (Cmd+T on Mac)
+                if ((e.ctrlKey || e.metaKey) && e.key === 't') {
+                    e.preventDefault();
+                    newTabBtn.click();
+                }
+                
+                // Ctrl+W 关闭当前页签 (Cmd+W on Mac)
+                if ((e.ctrlKey || e.metaKey) && e.key === 'w') {
+                    e.preventDefault();
+                    const activeTab = document.querySelector('.tab.active');
+                    if (activeTab) {
+                        activeTab.querySelector('.tab-close').click();
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
