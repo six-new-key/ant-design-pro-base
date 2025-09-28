@@ -110,6 +110,7 @@ const handleLock = async () => {
 </script>
 
 <style scoped lang="scss">
+
 .lock-dialog-content {
     text-align: center;
     position: relative;

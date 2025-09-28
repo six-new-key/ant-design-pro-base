@@ -2,52 +2,83 @@
     <!-- 搜索对话框 -->
     <a-modal v-model:open="visible" :footer="null" :closable="false" :width="600" @cancel="handleClose">
         <!-- 搜索输入框 -->
-        <a-input ref="searchInputRef" v-model:value="searchQuery" placeholder="搜索页面" :bordered="true"
-            @input="handleSearchInput" @keydown="handleKeydown" size="large" class="search-input">
+        <a-input ref="searchInputRef" v-model:value="searchQuery" placeholder="搜索页面" :bordered="false"
+            @input="handleSearchInput" @keydown="handleKeydown" size="large" class="search-input"
+            :style="{ background: token.colorFillSecondary, padding: '12px' }">
             <template #prefix>
-                <SearchOutlined />
+                <SearchOutlined :style="{ fontSize: token.fontSize + 2 + 'px', opacity: 0.6, marginRight: '6px' }" />
             </template>
             <template #suffix>
-                <EnterOutlined />
+                <div
+                    :style="{ background: token.colorBgContainer, borderRadius: token.borderRadius + 'px', padding: '0 10px' }">
+                    <EnterOutlined :style="{ fontSize: token.fontSize - 2 + 'px', opacity: 0.6 }" />
+                </div>
             </template>
         </a-input>
 
         <!-- 搜索结果 -->
         <div class="search-results" v-if="searchResults.length > 0">
-            <div v-for="(item, index) in searchResults" :key="item.path"
-                :class="['search-result-item', { active: selectedIndex === index }]" @click="navigateToItem(item)"
-                @mouseenter="selectedIndex = index">
+            <div v-for="(item, index) in searchResults" :key="item.path" class="search-result-item"
+                :style="{ background: selectedIndex === index ? token.colorPrimary : token.colorFillTertiary, borderRadius: token.borderRadius + 'px',color: selectedIndex === index ? '#fff' : '' }"
+                @click="navigateToItem(item)" @mouseenter="selectedIndex = index">
                 <div class="result-icon">
                     <component :is="item.icon" v-if="item.icon" />
                     <FileOutlined v-else />
                 </div>
                 <div class="result-content">
                     <div class="result-title" v-html="highlightText(item.title, searchQuery)"></div>
-                    <div class="result-path">{{ item.path }}</div>
+                    <div :style="{ fontSize: token.fontSize - 2 + 'px', color: token.colorTextTertiary }">{{ item.path
+                        }}</div>
                 </div>
                 <div class="result-action">
-                    <EnterOutlined />
+                    <EnterOutlined :style="{ fontSize: token.fontSize - 2 + 'px' }" />
                 </div>
             </div>
+        </div>
+
+        <!-- 未输入搜索关键字提示 -->
+        <div v-else-if="!searchQuery.trim()" class="wait-search">
+            <FileSearchOutlined :style="{ fontSize: token.fontSize + 20 + 'px', marginBottom: '10px' }" />
+            <div>输入'页面'关键字开始搜索吧</div>
         </div>
 
         <!-- 无结果提示 -->
         <div class="no-results" v-else-if="searchQuery.trim() && searchResults.length === 0">
-            <div class="no-results-icon">
-                <SearchOutlined />
-            </div>
+            <FileSearchOutlined :style="{ fontSize: token.fontSize + 20 + 'px', marginBottom: '10px' }" />
             <div class="no-results-text">未找到相关结果</div>
         </div>
 
         <!-- 底部操作提示 -->
-        <div class="search-footer">
-            <div class="search-tips">
-                <span class="tip-item">
-                    <kbd>↑</kbd><kbd>↓</kbd> 选择
-                </span>
-                <span class="tip-item">
-                    <kbd>ESC</kbd> 关闭
-                </span>
+        <div class="search-footer" :style="{ borderTop: '1px solid ' + token.colorBorder }">
+            <div class="footer-item">
+                <div
+                    :style="{ background: token.colorFillSecondary, borderRadius: token.borderRadius + 'px', padding: '0 10px',marginRight:'8px' }">
+                    <EnterOutlined :style="{ fontSize: token.fontSize - 2 + 'px' }" />
+                </div>
+                <span>选择</span>
+            </div>
+            <a-divider type="vertical"
+                :style="{ background: token.colorBorder, height: '16px', margin: '0 20px', marginTop: '3px' }" />
+            <div class="footer-item">
+                <div
+                    :style="{ background: token.colorFillSecondary, borderRadius: token.borderRadius + 'px', padding: '0 10px',marginRight:'8px' }">
+                    <ArrowUpOutlined  :style="{ fontSize: token.fontSize - 2 + 'px' }" />
+                </div>
+                <div
+                    :style="{ background: token.colorFillSecondary, borderRadius: token.borderRadius + 'px', padding: '0 10px',marginRight:'8px' }">
+                    <ArrowDownOutlined  :style="{ fontSize: token.fontSize - 2 + 'px' }" />
+                </div>
+                <span>切换</span>
+            </div>
+            <a-divider type="vertical"
+                :style="{ background: token.colorBorder, height: '16px', margin: '0 20px', marginTop: '3px' }" />
+            <div class="footer-item">
+                <div
+                    :style="{ background: token.colorFillSecondary, borderRadius: token.borderRadius + 'px', padding: '0 8px',marginRight:'8px' }">
+                    <!-- <EnterOutlined :style="{ fontSize: token.fontSize - 2 + 'px' }" /> -->
+                     <span :style="{ fontSize: token.fontSize - 4 + 'px',fontWeight: 'bold' }">ESC</span>
+                </div>
+                <span>退出</span>
             </div>
         </div>
     </a-modal>
@@ -64,6 +95,7 @@ import {
 import { message } from '@/utils'
 import { getAllMenuItems, searchMenuItems, highlightText } from '@/utils'
 import { theme } from 'ant-design-vue'
+import { useAppStore } from "@/stores"
 
 // Props
 const props = defineProps({
@@ -72,6 +104,8 @@ const props = defineProps({
         default: false
     }
 })
+
+const appStore = useAppStore();
 
 const { token } = theme.useToken()
 // Emits
@@ -154,112 +188,76 @@ const navigateToItem = (item) => {
 </script>
 
 <style scoped lang="scss">
-.search-input {
-    padding: 11px;
-    background: v-bind('token.colorPrimary') !important;
-}
-
 .search-results {
     max-height: 400px;
     overflow-y: auto;
-}
+    padding: 20px 0;
 
-.search-result-item {
-    display: flex;
-    align-items: center;
-    padding: 12px 20px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    border-bottom: 1px solid #f5f5f5;
-
-    &:hover,
-    &.active {
-        background: v-bind('token.colorPrimary') !important;
-    }
-
-    &:last-child {
-        border-bottom: none;
-    }
-
-    .result-icon {
-        margin-right: 12px;
-        color: rgba(0, 0, 0, 0.45);
-        font-size: 16px;
-        width: 20px;
+    .search-result-item {
         display: flex;
-        justify-content: center;
-    }
+        align-items: center;
+        padding: 10px 20px;
+        margin-bottom: 12px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        // border: 1px solid red;
+        // border-radius: 8px;
 
-    .result-content {
-        flex: 1;
+        &:last-child {
+            margin-bottom: 0;
+        }
 
-        .result-title {
-            font-size: 14px;
-            color: rgba(0, 0, 0, 0.85);
-            margin-bottom: 2px;
+        .result-icon {
+            margin-right: 12px;
+            display: flex;
+            justify-content: center;
+            opacity: 0.6;
+        }
 
-            :deep(mark) {
-                background: #bae0ff;
-                color: #1890ff;
-                padding: 0;
+        .result-content {
+            flex: 1;
+
+            .result-title {
+                margin-bottom: 2px;
             }
         }
 
-        .result-path {
+        .result-action {
+            opacity: 0.6;
             font-size: 12px;
-            color: rgba(0, 0, 0, 0.45);
         }
     }
+}
 
-    .result-action {
-        color: rgba(0, 0, 0, 0.25);
-        font-size: 12px;
-    }
+
+
+.wait-search {
+    min-height: 160px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    opacity: 0.6;
 }
 
 .no-results {
-    padding: 40px 20px;
-    text-align: center;
-
-    .no-results-icon {
-        font-size: 48px;
-        color: rgba(0, 0, 0, 0.25);
-        margin-bottom: 16px;
-    }
-
-    .no-results-text {
-        color: rgba(0, 0, 0, 0.45);
-        font-size: 14px;
-    }
+    min-height: 160px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    opacity: 0.6;
 }
 
 .search-footer {
-    margin-top: 40px;
     padding: 12px 20px;
-    border-top: 1px solid #f0f0f0;
-    background: #fafafa;
+    display: flex;
+    align-items: center;
+    opacity: 0.6;
 
-    .search-tips {
+    .footer-item {
         display: flex;
-        gap: 16px;
-        font-size: 12px;
-        color: rgba(0, 0, 0, 0.45);
-
-        .tip-item {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-
-            kbd {
-                padding: 2px 6px;
-                background: #fff;
-                border: 1px solid #d9d9d9;
-                border-radius: 3px;
-                font-size: 11px;
-                font-family: monospace;
-                color: rgba(0, 0, 0, 0.65);
-            }
-        }
+        align-items: center;
     }
 }
 </style>

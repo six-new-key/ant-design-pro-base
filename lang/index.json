@@ -974,5 +974,45 @@
 	"d5mowj4": {
 		"zh-cn": "搜索页面",
 		"en": "Search page"
+	},
+	"o120sj8": {
+		"zh-cn": " 还未开始搜索 ",
+		"en": "The search has not started yet"
+	},
+	"8xtwwca": {
+		"zh-cn": "输入关键字开始搜索吧",
+		"en": "Enter the keywords to start the search"
+	},
+	"macl28d": {
+		"zh-cn": "输入‘’’关键字开始搜索吧",
+		"en": "Enter the keyword \"\" to start the search"
+	},
+	"wf5p0ge": {
+		"zh-cn": "输入‘页面’关键字开始搜索吧",
+		"en": "Enter the keyword \"page\" to start the search"
+	},
+	"ul8zn8c": {
+		"zh-cn": "输入''关键字开始搜索吧",
+		"en": "Enter the keyword \"\" to start the search"
+	},
+	"evuqove": {
+		"zh-cn": "输入'页面'关键字开始搜索吧",
+		"en": "Enter the keyword \"page\" to start the search"
+	},
+	"p1j42": {
+		"zh-cn": "选择",
+		"en": "\"Choose\""
+	},
+	"oxyy2": {
+		"zh-cn": "退出",
+		"en": "Exit"
+	},
+	"chflx3": {
+		"zh-cn": "切换 ",
+		"en": "Switch"
+	},
+	"ehx72": {
+		"zh-cn": "切换",
+		"en": "Switch"
 	}
 }
