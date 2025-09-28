@@ -2,8 +2,8 @@
   <div class="tabs-view">
     <div class="tabs-container">
       <!-- 左滚动按钮 -->
-      <div class="scroll-button scroll-left" v-show="showScrollButtons && canScrollLeft" @click="scrollLeft">
-        <a-button type="text">
+      <div class="scroll-button scroll-left" v-show="showScrollButtons" @click="scrollLeft">
+        <a-button type="text" :disabled="!canScrollLeft">
           <LeftOutlined style="font-size: 12px;" />
         </a-button>
       </div>
@@ -17,9 +17,7 @@
               'active': tab.path === tabsStore.activeTabPath,
               'pinned': tab.pinned
             }
-          ]" @click="handleTabClick(tab)" 
-             @mouseenter="hoveredTabPath = tab.path"
-             @mouseleave="hoveredTabPath = null">
+          ]" @click="handleTabClick(tab)" @mouseenter="hoveredTabPath = tab.path" @mouseleave="hoveredTabPath = null">
             <!-- 页签图标 -->
             <component v-if="tab.icon" :is="tab.icon" class="tab-icon" />
 
@@ -30,17 +28,14 @@
             <PushpinOutlined :rotate="-45" v-if="tab.pinned" class="tab-pin-icon" />
 
             <!-- 关闭按钮 -->
-            <Transition name="tab-close-fade" mode="out-in">
-              <CloseCircleOutlined v-if="tab.closable && !tab.pinned && hoveredTabPath === tab.path" class="tab-close"
-                @click.stop="handleTabClose(tab.path)" />
-            </Transition>
+            <CloseCircleOutlined class="tab-close" @click.stop="handleTabClose(tab.path)" />
           </div>
         </div>
       </div>
 
       <!-- 右滚动按钮 -->
-      <div class="scroll-button scroll-right" v-show="showScrollButtons && canScrollRight" @click="scrollRight">
-        <a-button type="text">
+      <div class="scroll-button scroll-right" v-show="showScrollButtons" @click="scrollRight">
+        <a-button type="text" :disabled="!canScrollRight">
           <RightOutlined style="font-size: 12px;" />
         </a-button>
       </div>
@@ -250,17 +245,36 @@ const scrollToActiveTab = () => {
 
   const scrollContainer = tabsScrollArea.value
   const containerWidth = scrollContainer.clientWidth
+  const currentScrollLeft = scrollContainer.scrollLeft
   const tabLeft = activeTabElement.offsetLeft
   const tabWidth = activeTabElement.offsetWidth
+  const tabRight = tabLeft + tabWidth
 
-  // 计算目标滚动位置，让激活的页签显示在容器中间
-  const targetScrollLeft = tabLeft - (containerWidth - tabWidth) / 2
+  // 计算可视区域的边界
+  const visibleLeft = currentScrollLeft
+  const visibleRight = currentScrollLeft + containerWidth
 
-  // 平滑滚动到目标位置
-  scrollContainer.scrollTo({
-    left: Math.max(0, targetScrollLeft),
-    behavior: 'smooth'
-  })
+  // 预留一些边距，避免页签紧贴边缘
+  const margin = 50
+
+  let targetScrollLeft = currentScrollLeft
+
+  // 如果页签在可视区域左侧外面，滚动使其显示在左侧
+  if (tabLeft < visibleLeft) {
+    targetScrollLeft = Math.max(0, tabLeft - margin)
+  }
+  // 如果页签在可视区域右侧外面，滚动使其显示在右侧
+  else if (tabRight > visibleRight) {
+    targetScrollLeft = tabRight - containerWidth + margin
+  }
+
+  // 只有需要滚动时才执行滚动
+  if (targetScrollLeft !== currentScrollLeft) {
+    scrollContainer.scrollTo({
+      left: targetScrollLeft,
+      behavior: 'smooth'
+    })
+  }
 }
 
 // 左滚动按钮点击事件
@@ -395,23 +409,18 @@ const handleWheel = (e) => {
       display: flex;
       align-items: center;
       justify-content: center;
-      // background: v-bind('token.colorBgContainer');
-      // background: red;
       border-radius: v-bind('themeStore.baseConfig.borderRadius + "px"');
       cursor: pointer;
       z-index: 10;
       transition: all 0.2s ease;
 
       &.scroll-left {
-        opacity: 0.5;
         left: 0;
         border-right: 1px solid v-bind('token.colorFillSecondary');
       }
 
       &.scroll-right {
-        opacity: 0.5;
-        right: v-bind('(showScrollButtons === true && canScrollRight === true) ? "48px" : "0"');
-        /* 调整到下拉菜单左侧，为下拉菜单留出空间 */
+        right: v-bind('showScrollButtons ? "48px" : "0"');
       }
     }
 
@@ -422,8 +431,8 @@ const handleWheel = (e) => {
       cursor: default;
       height: 100%;
       padding: 2px 0;
-      margin-left: v-bind('(showScrollButtons === true && canScrollLeft === true) ? "48px" : "0"');
-      margin-right: v-bind('(showScrollButtons === true && canScrollRight === true) ? "48px" : "0"');
+      margin-left: v-bind('showScrollButtons ? "48px" : "0"');
+      margin-right: v-bind('showScrollButtons ? "48px" : "0"');
       /* 左侧为左滚动按钮留空间，右侧为右滚动按钮和下拉菜单留空间 */
 
       &:active {
