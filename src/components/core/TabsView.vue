@@ -413,12 +413,38 @@ const handleOpenNewWindow = (path) => {
 
 // 鼠标滚轮事件
 const handleWheel = (e) => {
+  // 只有在页签溢出时才处理滚轮事件
+  if (!showScrollButtons.value) return
+  
   e.preventDefault()
-  tabsScrollArea.value.scrollLeft += e.deltaY
-  // 滚轮滚动后更新按钮状态
-  nextTick(() => {
-    checkScrollState()
+  
+  const scrollAmount = 400 // 每次滚动的距离
+  const currentScrollLeft = tabsScrollArea.value.scrollLeft
+  const maxScrollLeft = tabsScrollArea.value.scrollWidth - tabsScrollArea.value.clientWidth
+  
+  // 根据滚轮方向决定滚动方向
+  // deltaY > 0 表示向下滚动，对应页签向左滚动
+  // deltaY < 0 表示向上滚动，对应页签向右滚动
+  let targetScrollLeft
+  
+  if (e.deltaY > 0) {
+    // 向左滚动
+    targetScrollLeft = Math.max(0, currentScrollLeft - scrollAmount)
+  } else {
+    // 向右滚动
+    targetScrollLeft = Math.min(maxScrollLeft, currentScrollLeft + scrollAmount)
+  }
+  
+  // 使用平滑滚动
+  tabsScrollArea.value.scrollTo({
+    left: targetScrollLeft,
+    behavior: 'smooth'
   })
+  
+  // 滚轮滚动后更新按钮状态
+  setTimeout(() => {
+    checkScrollState()
+  }, 100)
 }
 
 // 切换布局
