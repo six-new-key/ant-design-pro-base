@@ -1,50 +1,54 @@
 <template>
   <div class="tabs-view">
     <div class="tabs-container">
-      <!-- 左滚动按钮 -->
-      <div class="scroll-button scroll-left" v-show="showScrollButtons" @click="scrollLeft">
-        <a-button type="text" :disabled="!canScrollLeft">
-          <LeftOutlined style="font-size: 12px;" />
+      <!-- 左侧区域 -->
+      <div class="tabs-left-area left-right-common">
+        <!-- 左滚动按钮 -->
+        <a-button type="text" class="custom-btn" :disabled="!canScrollLeft" v-show="showScrollButtons"
+          @click="scrollLeft">
+          <LeftOutlined style="font-size: 10px;" />
         </a-button>
       </div>
 
-      <!-- 页签滚动区域 -->
-      <div class="tabs-scroll-area" ref="tabsScrollArea" @wheel="handleWheel">
-        <div class="tabs-list" ref="tabsList">
-          <div v-for="tab in tabsStore.activeTabs" :key="tab.path" :class="[
-            'tab-item',
-            {
-              'active': tab.path === tabsStore.activeTabPath,
-              'pinned': tab.pinned
-            }
-          ]" @click="handleTabClick(tab)" @mouseenter="hoveredTabPath = tab.path" @mouseleave="hoveredTabPath = null">
-            <!-- 页签图标 -->
-            <component v-if="tab.icon" :is="tab.icon" class="tab-icon" />
+      <!-- 中间区域 - 页签显示区 -->
+      <div class="tabs-center-area">
+        <div class="tabs-scroll-area" ref="tabsScrollArea" @wheel="handleWheel">
+          <div class="tabs-list" ref="tabsList">
+            <div v-for="tab in tabsStore.activeTabs" :key="tab.path" :class="[
+              'tab-item',
+              {
+                'active': tab.path === tabsStore.activeTabPath,
+                'pinned': tab.pinned
+              }
+            ]" @click="handleTabClick(tab)" @mouseenter="hoveredTabPath = tab.path"
+              @mouseleave="hoveredTabPath = null">
+              <!-- 页签图标 -->
+              <component v-if="tab.icon" :is="tab.icon" class="tab-icon" />
 
-            <!-- 页签标题 -->
-            <span class="tab-title">{{ tab.title }}</span>
+              <!-- 页签标题 -->
+              <span class="tab-title">{{ tab.title }}</span>
 
-            <!-- 固定图标 -->
-            <PushpinOutlined :rotate="-45" v-if="tab.pinned" class="tab-pin-icon" />
+              <!-- 固定图标 -->
+              <PushpinOutlined :rotate="-45" v-if="tab.pinned" class="tab-pin-icon" />
 
-            <!-- 关闭按钮 -->
-            <CloseCircleOutlined class="tab-close" @click.stop="handleTabClose(tab.path)" />
+              <!-- 关闭按钮 -->
+              <CloseCircleOutlined v-else class="tab-close" @click.stop="handleTabClose(tab.path)" />
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- 右滚动按钮 -->
-      <div class="scroll-button scroll-right" v-show="showScrollButtons" @click="scrollRight">
-        <a-button type="text" :disabled="!canScrollRight">
-          <RightOutlined style="font-size: 12px;" />
-        </a-button>
-      </div>
+      <!-- 右侧区域 -->
+      <div class="tabs-right-area  left-right-common">
 
-      <!-- 右侧下拉菜单 -->
-      <div class="tabs-actions">
-        <a-dropdown :trigger="['hover']" arrow>
-          <a-button type="text">
-            <DownOutlined style="font-size: 12px;" />
+        <a-button type="text" class="custom-btn" :disabled="!canScrollRight" v-show="showScrollButtons"
+          @click="scrollRight">
+          <RightOutlined style="font-size: 10px;" />
+        </a-button>
+
+        <a-dropdown :trigger="['click']" arrow>
+          <a-button type="text" class="custom-btn">
+            <DownOutlined style="font-size: 10px;" />
           </a-button>
 
           <template #overlay>
@@ -64,7 +68,29 @@
                 {{ tabsStore.activeTab?.pinned ? '取消固定' : '固定' }}
               </a-menu-item>
 
+              <a-menu-item key="fullscreen">
+                <template #icon>
+                  <ExpandOutlined v-if="!appStore.isFullscreen" />
+                  <CompressOutlined v-else />
+                </template>
+                {{ appStore.isFullscreen ? '退出全屏' : '内容全屏' }}
+              </a-menu-item>
+
+              <a-menu-item key="openNewWindow">
+                <template #icon>
+                  <ExportOutlined />
+                </template>
+                新窗口打开
+              </a-menu-item>
+
               <a-menu-divider />
+
+              <a-menu-item key="closeCurrent" :disabled="menuDisabledStates.closeCurrent">
+                <template #icon>
+                  <CloseOutlined />
+                </template>
+                关闭当前
+              </a-menu-item>
 
               <a-menu-item key="closeLeft" :disabled="menuDisabledStates.closeLeft">
                 <template #icon>
@@ -96,6 +122,11 @@
             </a-menu>
           </template>
         </a-dropdown>
+
+        <a-button type="text" class="custom-btn" @click="handleLayoutSwitch">
+          <ExpandOutlined v-if="!appStore.isFullscreen" style="font-size: 10px;" />
+          <CompressOutlined v-else style="font-size: 10px;" />
+        </a-button>
       </div>
     </div>
   </div>
@@ -105,19 +136,6 @@
 import { ref, onMounted, nextTick, watch, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useTabsStore, useAppStore, useThemeStore } from '@/stores'
-import {
-  CloseCircleOutlined,
-  SwapOutlined,
-  DownOutlined,
-  ReloadOutlined,
-  PushpinOutlined,
-  PushpinFilled,
-  VerticalLeftOutlined,
-  VerticalRightOutlined,
-  VerticalAlignMiddleOutlined,
-  LeftOutlined,
-  RightOutlined
-} from '@ant-design/icons-vue'
 import { theme } from 'ant-design-vue'
 
 const router = useRouter()
@@ -199,6 +217,9 @@ const menuDisabledStates = computed(() => {
   const currentIndex = tabsStore.activeTabIndex
   const currentTab = tabsStore.activeTab
 
+  //判断当前页签是否可关闭
+  const isCurrentClosable = currentTab?.closable && !currentTab?.pinned
+
   // 检查左侧是否有可关闭的页签
   const hasClosableLeftTabs = tabsStore.activeTabs
     .slice(0, currentIndex)
@@ -222,7 +243,8 @@ const menuDisabledStates = computed(() => {
     closeLeft: !hasClosableLeftTabs,
     closeRight: !hasClosableRightTabs,
     closeOthers: !hasOtherClosableTabs,
-    closeAll: !hasAnyClosableTabs
+    closeAll: !hasAnyClosableTabs,
+    closeCurrent: !isCurrentClosable
   }
 })
 
@@ -342,8 +364,16 @@ const handleMenuClick = ({ key }) => {
       tabsStore.toggleTabPin(currentPath)
       break
 
-    case 'closeLeft':
-      tabsStore.closeLeftTabs(currentPath)
+    case 'fullscreen':
+      handleLayoutSwitch()
+      break
+
+    case 'openNewWindow':
+      handleOpenNewWindow(currentPath)
+      break
+
+    case 'closeCurrent':
+      tabsStore.removeTab(currentPath)
       nextTick(() => {
         scrollToActiveTab()
       })
@@ -375,6 +405,12 @@ const handleMenuClick = ({ key }) => {
   }
 }
 
+// 打开新窗口
+const handleOpenNewWindow = (path) => {
+  window.open(path, '_blank')
+  tabsStore.closeAllTabs()
+}
+
 // 鼠标滚轮事件
 const handleWheel = (e) => {
   e.preventDefault()
@@ -383,6 +419,21 @@ const handleWheel = (e) => {
   nextTick(() => {
     checkScrollState()
   })
+}
+
+// 切换布局
+// 处理布局切换
+const handleLayoutSwitch = () => {
+  // 如果当前不是全屏布局，先记录当前布局再切换为全屏
+  if (appStore.layout !== 'fullscreen') {
+    appStore.setPrevLayout(appStore.layout) // 假设 store 提供 setPrevLayout 来保存
+    appStore.setLayout('fullscreen')
+    appStore.toggleFullscreen()
+  } else {
+    // 如果当前已是全屏，则恢复之前保存的布局
+    appStore.setLayout(appStore.prevLayout || 'sidebar') // 默认回退 side
+    appStore.toggleFullscreen()
+  }
 }
 </script>
 
@@ -401,194 +452,194 @@ const handleWheel = (e) => {
     align-items: center;
     position: relative;
 
-    .scroll-button {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 35px;
+    .left-right-common {
+      height: 100%;
       display: flex;
       align-items: center;
-      justify-content: center;
-      border-radius: v-bind('themeStore.baseConfig.borderRadius + "px"');
-      cursor: pointer;
-      z-index: 10;
-      transition: all 0.2s ease;
-
-      &.scroll-left {
-        left: 0;
-        border-right: 1px solid v-bind('token.colorFillSecondary');
-      }
-
-      &.scroll-right {
-        right: v-bind('showScrollButtons ? "48px" : "0"');
-      }
+      flex-shrink: 0;
+      min-width: 0;
     }
 
-    .tabs-scroll-area {
+    // 左侧区域
+    .tabs-left-area {
+      box-shadow: v-bind('themeStore.baseConfig.tabShadow ? "4px 0 4px rgba(0, 0, 0, 0.08)" : "none"');
+    }
+
+    // 中间区域 - 页签显示区
+    .tabs-center-area {
       flex: 1;
-      overflow-x: auto;
-      overflow-y: hidden;
-      cursor: default;
-      height: 100%;
-      padding: 2px 0;
-      margin-left: v-bind('showScrollButtons ? "48px" : "0"');
-      margin-right: v-bind('showScrollButtons ? "48px" : "0"');
-      /* 左侧为左滚动按钮留空间，右侧为右滚动按钮和下拉菜单留空间 */
+      min-width: 0;
+      overflow: hidden;
 
-      &:active {
-        cursor: grabbing;
-      }
-
-      // 隐藏滚动条但保持滚动功能
-      &::-webkit-scrollbar {
-        display: none;
-      }
-
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-
-      .tabs-list {
-        display: flex;
-        align-items: center;
+      .tabs-scroll-area {
+        width: 100%;
+        overflow-x: auto;
+        overflow-y: hidden;
+        cursor: default;
         height: 100%;
-        white-space: nowrap;
-        min-width: max-content;
-        padding: 0 8px;
-      }
+        padding: 2px 0;
 
-      .tab-item {
-        display: flex;
-        align-items: center;
-        height: $tab-height;
-        padding: 0 12px;
-        cursor: pointer;
-        position: relative;
-        transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
-        margin: 0 2px;
-        border-radius: v-bind('themeStore.baseConfig.borderRadius + "px"');
-        background: transparent;
-
-        &:not(.active):not(:has(+ .active)):not(:last-child)::after {
-          content: '';
-          position: absolute;
-          right: 0;
-          top: 30%;
-          transform: translateX(-50%);
-          width: 1px;
-          height: 16px;
-          background: v-bind('token.colorFill');
-          border-radius: 2px;
-          transition: all 0.2s;
+        &:active {
+          cursor: grabbing;
         }
 
-        .tab-content {
+        // 隐藏滚动条但保持滚动功能
+        &::-webkit-scrollbar {
+          display: none;
+        }
+
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+
+        .tabs-list {
           display: flex;
           align-items: center;
-          gap: 8px;
-          width: 100%;
-        }
-
-        .tab-title {
-          flex: 1;
+          height: 100%;
           white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          transition: all 0.2s;
+          min-width: max-content;
+          padding: 0 8px;
         }
 
-        .tab-close {
-          transition: all 0.2s;
-          width: 16px;
-          height: 16px;
+        .tab-item {
           display: flex;
           align-items: center;
-          justify-content: center;
-          border-radius: 50%;
-          margin-left: 5px;
-          font-size: 12px;
-          color: v-bind('token.colorText');
+          height: $tab-height;
+          padding: 0 12px;
+          cursor: pointer;
+          position: relative;
+          transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+          margin: 0 2px;
+          border-radius: v-bind('themeStore.baseConfig.borderRadius + "px"');
+          background: transparent;
 
-          &:hover {
-            background: v-bind('appStore.themeMode === "dark" ? "rgba(255, 255, 255, 0.06)" : "rgba(0, 0, 0, 0.06)"');
-            color: v-bind('token.colorText');
-          }
-        }
-
-        // 悬停效果
-        &:hover {
-          background: v-bind('appStore.themeMode === "dark" ? "rgba(255, 255, 255, 0.06)" : "rgba(0, 0, 0, 0.06)"');
-        }
-
-        // 激活状态
-        &.active {
-          background: v-bind('token.colorPrimary + "16"');
-          color: v-bind('token.colorPrimary');
-          border: 1px dashed v-bind('token.colorPrimary');
-
-          // 激活状态下的关闭按钮样式
-          .tab-close {
-            color: v-bind('token.colorPrimary');
-
-            &:hover {
-              background: v-bind('appStore.themeMode === "dark" ? "rgba(255, 255, 255, 0.06)" : "rgba(0, 0, 0, 0.06)"');
-            }
-          }
-        }
-
-        // 固定页签样式
-        &.pinned {
-          .tab-pin-icon {
+          &:not(.active):not(:has(+ .active)):not(:last-child)::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 30%;
+            transform: translateX(-50%);
+            width: 1px;
+            height: 16px;
+            background: v-bind('token.colorFill');
+            border-radius: 2px;
             transition: all 0.2s;
           }
 
-          &:hover {
-            .tab-pin-icon {
-              transform: scale(1.1);
+          .tab-content {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+          }
+
+          .tab-title {
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            transition: all 0.2s;
+          }
+
+          .tab-close {
+            transition: all 0.2s;
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            margin-left: 5px;
+            font-size: 12px;
+            color: v-bind('token.colorText');
+
+            &:hover {
+              background: v-bind('appStore.themeMode === "dark" ? "rgba(255, 255, 255, 0.06)" : "rgba(0, 0, 0, 0.06)"');
+              color: v-bind('token.colorText');
             }
+          }
+
+          // 悬停效果
+          &:hover {
+            background: v-bind('appStore.themeMode === "dark" ? "rgba(255, 255, 255, 0.06)" : "rgba(0, 0, 0, 0.06)"');
+          }
+
+          // 激活状态
+          &.active {
+            background: v-bind('token.colorPrimary + "12"');
+            color: v-bind('token.colorPrimary');
+            border: 1px dashed v-bind('token.colorPrimary');
+
+            // 激活状态下的关闭按钮样式
+            .tab-close {
+              color: v-bind('token.colorPrimary');
+
+              &:hover {
+                background: v-bind('appStore.themeMode === "dark" ? "rgba(255, 255, 255, 0.06)" : "rgba(0, 0, 0, 0.06)"');
+              }
+            }
+          }
+
+          // 固定页签样式
+          &.pinned {
+            .tab-pin-icon {
+              transition: all 0.2s;
+            }
+
+            &:hover {
+              .tab-pin-icon {
+                transform: scale(1.1);
+              }
+            }
+          }
+
+          .tab-icon {
+            margin-right: 4px;
+            font-size: 14px;
+          }
+
+          .tab-pin-icon {
+            font-size: 12px;
+            margin-left: 4px;
           }
         }
 
-        .tab-icon {
-          margin-right: 4px;
-          font-size: 14px;
+        // 关闭按钮动画
+        .tab-close-fade-enter-active,
+        .tab-close-fade-leave-active {
+          transition: all 0.2s ease;
         }
 
-        .tab-pin-icon {
-          font-size: 12px;
-          margin-left: 4px;
+        .tab-close-fade-enter-from {
+          opacity: 0;
+          transform: scale(0.8);
         }
-      }
 
-      // 关闭按钮动画
-      .tab-close-fade-enter-active,
-      .tab-close-fade-leave-active {
-        transition: all 0.2s ease;
-      }
+        .tab-close-fade-leave-to {
+          opacity: 0;
+          transform: scale(0.8);
+        }
 
-      .tab-close-fade-enter-from {
-        opacity: 0;
-        transform: scale(0.8);
-      }
-
-      .tab-close-fade-leave-to {
-        opacity: 0;
-        transform: scale(0.8);
-      }
-
-      .tab-close-fade-enter-to,
-      .tab-close-fade-leave-from {
-        opacity: 1;
-        transform: scale(1);
+        .tab-close-fade-enter-to,
+        .tab-close-fade-leave-from {
+          opacity: 1;
+          transform: scale(1);
+        }
       }
     }
 
-    .ant-btn {
+    // 右侧区域
+    .tabs-right-area {
+      box-shadow: v-bind('themeStore.baseConfig.tabShadow ? "-4px 0 4px rgba(0, 0, 0, 0.08)" : "none"');
+    }
+
+    :where(.custom-btn) {
+      opacity: 0.8;
+      height: 100%;
+      width: 100%;
+      padding: 4px 12px;
       border-radius: 0;
       border-left: 1px solid v-bind('token.colorFillSecondary');
-    }
-
-    .ant-btn:hover {
-      background: none;
+      border-right: 1px solid v-bind('token.colorFillSecondary');
     }
   }
 }

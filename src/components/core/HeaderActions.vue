@@ -20,8 +20,8 @@
         <a-tooltip title="全屏">
             <a-button type="text" @click="toggleFullscreen">
                 <template #icon>
-                    <FullscreenOutlined v-if="!isFullscreen" />
-                    <FullscreenExitOutlined v-else />
+                    <ExpandOutlined v-if="!isFullscreen" />
+                    <CompressOutlined v-else />
                 </template>
             </a-button>
         </a-tooltip>
@@ -49,13 +49,6 @@
             </template>
             <a-button type="text" :icon="h(GlobalOutlined)" />
         </a-dropdown>
-
-        <!-- 通知图标 -->
-        <!-- <a-badge :count="5" style="margin: 0 16px">
-        <a-tooltip title="通知">
-          <bell-outlined class="header-icon" />
-        </a-tooltip>
-      </a-badge> -->
 
         <!-- 用户头像下拉菜单 -->
         <a-dropdown arrow placement="bottomRight">

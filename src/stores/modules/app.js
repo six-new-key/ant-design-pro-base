@@ -11,6 +11,7 @@ export const useAppStore = defineStore(
     const headerTheme = ref("dark"); // 顶部主题：light/dark
     const language = ref("zh-cn");
     const layout = ref("sidebar"); // 默认布局
+    const prevLayout = ref(""); // 上一个布局
     const sidebarCollapsed = ref(false);
     const sidebarFixed = ref(true); // 侧边栏是否固定
     const loading = ref(false);
@@ -21,6 +22,7 @@ export const useAppStore = defineStore(
     const currentPageAnimation = ref(
       PAGE_ANIMATION_CONFIG.TYPES.BOUNCE_IN_LEFT
     );
+    const isFullscreen = ref(false); // 全屏状态
     
     // 锁屏相关状态
     const isScreenLocked = ref(false); // 锁屏状态
@@ -55,6 +57,14 @@ export const useAppStore = defineStore(
 
     const setLayout = (newLayout) => {
       layout.value = newLayout;
+    };
+
+    const setPrevLayout = (prev) => {
+      prevLayout.value = prev;
+    };
+
+    const toggleFullscreen = () => {
+      isFullscreen.value = !isFullscreen.value;
     };
 
     const toggleSidebar = () => {
@@ -131,6 +141,7 @@ export const useAppStore = defineStore(
       headerTheme,
       language,
       layout,
+      prevLayout,
       sidebarCollapsed,
       sidebarFixed,
       loading,
@@ -139,6 +150,7 @@ export const useAppStore = defineStore(
       shouldRefresh,
       isScreenLocked,
       lockScreenPassword,
+      isFullscreen,
 
       // Getters
       isLoading,
@@ -151,6 +163,7 @@ export const useAppStore = defineStore(
       setHeaderTheme,
       setLanguage,
       setLayout,
+      setPrevLayout,
       toggleSidebar,
       setSidebarCollapsed,
       setTabsShow,
@@ -163,6 +176,7 @@ export const useAppStore = defineStore(
       setLockScreen,
       unlockScreen,
       clearLockScreen,
+      toggleFullscreen,
     };
   },
   {
@@ -174,12 +188,14 @@ export const useAppStore = defineStore(
         "headerTheme",
         "language",
         "layout",
+        "prevLayout", // 持久化上一个布局
         "sidebarCollapsed",
         "sidebarFixed",
         "tabsShow",
         "currentTopMenu",
         "currentPageAnimation",
         "lockScreenPassword", // 持久化锁屏密码
+        "isFullscreen", // 持久化全屏状态
       ],
     },
   }
