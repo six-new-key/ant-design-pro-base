@@ -25,4 +25,5 @@ app.use(globalComponent);
 app.use(router)
 app.use(pinia)
 app.use(Vue3ColorPicker)
+
 app.mount('#app')
