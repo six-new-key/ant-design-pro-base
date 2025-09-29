@@ -42,6 +42,11 @@ export const useTabsStore = defineStore('tabs', () => {
       }
       
       tabs.value.push(newTab)
+      
+      // 如果新添加的页签是固定页签，需要重新排序
+      if (newTab.pinned) {
+        sortTabsByPinStatus()
+      }
     }
     
     activeTabPath.value = route.path
@@ -82,7 +87,28 @@ export const useTabsStore = defineStore('tabs', () => {
     if (tab && tab.path !== '/dashboard') { // 首页固定状态不可更改
       tab.pinned = !tab.pinned
       tab.closable = !tab.pinned // 固定的页签不可关闭
+      
+      // 如果页签被设置为固定，自动排到前面
+      if (tab.pinned) {
+        sortTabsByPinStatus()
+      }
     }
+  }
+
+  // 根据固定状态对页签进行排序
+  const sortTabsByPinStatus = () => {
+    tabs.value.sort((a, b) => {
+      // 首页始终在最前面
+      if (a.path === '/dashboard') return -1
+      if (b.path === '/dashboard') return 1
+      
+      // 固定页签排在非固定页签前面
+      if (a.pinned && !b.pinned) return -1
+      if (!a.pinned && b.pinned) return 1
+      
+      // 同类型页签保持原有顺序
+      return 0
+    })
   }
 
   const closeLeftTabs = (targetPath) => {
