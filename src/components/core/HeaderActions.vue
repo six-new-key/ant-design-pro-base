@@ -47,7 +47,11 @@
                     </a-menu-item>
                 </a-menu>
             </template>
-            <a-button type="text" :icon="h(GlobalOutlined)" />
+            <a-button type="text">
+                <template #icon>
+                    <svg-icon name="language" width="17px" height="17px" :color="color" />
+                </template>
+            </a-button>
         </a-dropdown>
 
         <!-- 用户头像下拉菜单 -->
@@ -150,7 +154,7 @@ const color = computed(() => {
     if (appStore.themeMode === 'dark' || (appStore.layout === 'topbar' || appStore.layout === 'mixed') && appStore.headerTheme === 'dark') {
         return '#fff'
     } else {
-        return '#2c2c2c'
+        return '#555555'
     }
 })
 
@@ -159,6 +163,31 @@ const anticonColor = computed(() => {
         return '#fff'
     } else {
         return ''
+    }
+})
+
+// 按钮hover样式
+const btnHoverColor = computed(() => {
+    if (appStore.headerTheme === "dark" && (appStore.layout === 'topbar' || appStore.layout === 'mixed')) {
+        return 'rgba(255,255,255,0.1)'
+    } else {
+        return 'rgba(0,0,0,0.1)'
+    }
+})
+
+const textColor = computed(() => {
+    if (appStore.headerTheme === "dark" && (appStore.layout === 'topbar' || appStore.layout === 'mixed')) {
+        return '#fff'
+    } else {
+        return '#555555'
+    }
+})
+
+const searchBgColor = computed(() => {
+    if (appStore.headerTheme === "dark" && (appStore.layout === 'topbar' || appStore.layout === 'mixed')) {
+        return 'rgba(255,255,255,0.1)'
+    } else {
+        return token.colorFillSecondary
     }
 })
 
@@ -258,7 +287,7 @@ onUnmounted(() => {
         align-items: center;
         padding: 0 8px;
         border-radius: v-bind('token.borderRadius + "px"');
-        background: v-bind('token.colorFillSecondary');
+        background: v-bind('searchBgColor');
         min-width: 150px;
         opacity: 0.8;
         border: 1px solid transparent;
@@ -269,14 +298,14 @@ onUnmounted(() => {
         }
 
         .search-icon {
-            color: v-bind('token.colorTextSecondary');
+            color: v-bind('textColor');
             font-size: v-bind('token.fontSize + "px"');
         }
 
         .search-text {
             margin-left: 8px;
             flex: 1;
-            color: v-bind('token.colorTextSecondary');
+            color: v-bind('textColor');
             font-size: v-bind('token.fontSize + "px"');
         }
 
@@ -299,8 +328,8 @@ onUnmounted(() => {
     cursor: pointer;
 }
 
-.ant-btn:hover {
-    background: v-bind('appStore.headerTheme === "dark" && (appStore.layout === ' topbar' || appStore.layout === ' mixed') ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"');
+.ant-btn:hover{
+    background: v-bind('btnHoverColor');
 }
 
 .anticon {

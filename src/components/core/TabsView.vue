@@ -914,8 +914,8 @@ const contextMenuDisabledStates = computed(() => {
       width: 100%;
       padding: 4px 12px;
       border-radius: 0;
-      border-left: 1px solid v-bind('token.colorFillSecondary');
-      border-right: 1px solid v-bind('token.colorFillSecondary');
+      border-left: 1px solid v-bind('token.colorBorderSecondary');
+      border-right: 1px solid v-bind('token.colorBorderSecondary');
     }
 
     .tabs-fade-move,
