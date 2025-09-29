@@ -35,6 +35,20 @@
                     <div class="card"></div>
                   </div>
                 </div>
+                <div v-else-if="config.key === 'fullscreen'" class="preview-fullscreen">
+                  <div class="fullscreen-content">
+                    <div class="floating-actions-preview">
+                      <div class="floating-btn-preview"></div>
+                      <div class="floating-btn-preview"></div>
+                      <div class="floating-btn-preview"></div>
+                    </div>
+                  </div>
+                </div>
+                <div v-else-if="config.key === 'doublecolumn'" class="preview-doublecolumn">
+                  <div class="first-column"></div>
+                  <div class="second-column"></div>
+                  <div class="content"></div>
+                </div>
               </div>
             </div>
 
@@ -261,11 +275,14 @@ const handleLayoutSwitch = (layoutKey) => {
 
   // 触发父组件的布局切换事件（用于显示加载状态）
   emit('layout-switch', layoutKey)
+
+  handleClose()
 }
 
 // 处理主题模式切换
 const handleThemeModeSwitch = (mode) => {
   appStore.setThemeMode(mode)
+  handleClose()
 }
 
 // 处理侧边栏主题切换
@@ -344,7 +361,7 @@ const handleAnimationChange = (animation) => {
 
 .section {
   margin-bottom: 32px;
-  
+
   &:last-child {
     margin-bottom: 16px;
   }
@@ -380,18 +397,18 @@ const handleAnimationChange = (animation) => {
   position: relative;
   background: #fff;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-  
+
   &:hover {
     border-color: #4096ff;
     box-shadow: 0 4px 12px rgba(64, 150, 255, 0.15);
     transform: translateY(-2px);
   }
-  
+
   &.active {
     border-color: #4096ff;
     background: linear-gradient(135deg, #f6ffed 0%, #f0f9ff 100%);
     box-shadow: 0 4px 16px rgba(64, 150, 255, 0.2);
-    
+
     .layout-name {
       color: #1890ff;
       font-weight: 600;
@@ -411,7 +428,7 @@ const handleAnimationChange = (animation) => {
   overflow: hidden;
   background: #fafafa;
   position: relative;
-  
+
   &::after {
     content: '';
     position: absolute;
@@ -419,7 +436,7 @@ const handleAnimationChange = (animation) => {
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.2) 100%);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.2) 100%);
     pointer-events: none;
   }
 }
@@ -428,12 +445,12 @@ const handleAnimationChange = (animation) => {
 .preview-sidebar {
   display: flex;
   height: 100%;
-  
+
   .sidebar {
     width: 22px;
     background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
     position: relative;
-    
+
     &::after {
       content: '';
       position: absolute;
@@ -441,18 +458,18 @@ const handleAnimationChange = (animation) => {
       left: 6px;
       right: 6px;
       height: 2px;
-      background: rgba(255,255,255,0.6);
+      background: rgba(255, 255, 255, 0.6);
       border-radius: 1px;
     }
   }
-  
+
   .content {
     flex: 1;
     background: #fff;
     margin: 6px;
     border-radius: 4px;
     position: relative;
-    
+
     &::before {
       content: '';
       position: absolute;
@@ -470,12 +487,12 @@ const handleAnimationChange = (animation) => {
   display: flex;
   flex-direction: column;
   height: 100%;
-  
+
   .topbar {
     height: 14px;
     background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
     position: relative;
-    
+
     &::after {
       content: '';
       position: absolute;
@@ -484,18 +501,18 @@ const handleAnimationChange = (animation) => {
       transform: translateY(-50%);
       width: 20px;
       height: 2px;
-      background: rgba(255,255,255,0.6);
+      background: rgba(255, 255, 255, 0.6);
       border-radius: 1px;
     }
   }
-  
+
   .content {
     flex: 1;
     background: #fff;
     margin: 6px;
     border-radius: 4px;
     position: relative;
-    
+
     &::before {
       content: '';
       position: absolute;
@@ -513,21 +530,21 @@ const handleAnimationChange = (animation) => {
   display: flex;
   flex-direction: column;
   height: 100%;
-  
+
   .topbar {
     height: 12px;
     background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
   }
-  
+
   .main {
     display: flex;
     flex: 1;
-    
+
     .sidebar {
       width: 18px;
       background: linear-gradient(135deg, #52c41a 0%, #389e0d 100%);
     }
-    
+
     .content {
       flex: 1;
       background: #fff;
@@ -544,7 +561,7 @@ const handleAnimationChange = (animation) => {
   background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
   border-radius: 4px;
   position: relative;
-  
+
   &::before {
     content: '';
     position: absolute;
@@ -565,18 +582,130 @@ const handleAnimationChange = (animation) => {
   justify-content: center;
   height: 100%;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  
+
   .card-container {
     width: 80%;
     height: 70%;
-    
+
     .card {
       width: 100%;
       height: 100%;
       background: rgba(255, 255, 255, 0.95);
       border-radius: 6px;
       backdrop-filter: blur(10px);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+  }
+}
+
+/* 全屏布局预览 */
+.preview-fullscreen {
+  display: flex;
+  height: 100%;
+  background: linear-gradient(135deg, #000 0%, #1a1a1a 100%);
+  position: relative;
+
+  .fullscreen-content {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #f0f2f5 0%, #ffffff 100%);
+    border-radius: 4px;
+    margin: 2px;
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 30px;
+      height: 2px;
+      background: #d9d9d9;
+      border-radius: 1px;
+    }
+  }
+
+  .floating-actions-preview {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    .floating-btn-preview {
+      width: 6px;
+      height: 6px;
+      background: #1890ff;
+      border-radius: 50%;
+      opacity: 0.8;
+
+      &:nth-child(2) {
+        background: #52c41a;
+      }
+
+      &:nth-child(3) {
+        background: #faad14;
+      }
+    }
+  }
+}
+
+/* 双列布局预览 */
+.preview-doublecolumn {
+  display: flex;
+  height: 100%;
+
+  .first-column {
+    width: 12px;
+    background: linear-gradient(135deg, #722ed1 0%, #531dab 100%);
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 6px;
+      left: 3px;
+      right: 3px;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.6);
+      border-radius: 0.5px;
+    }
+  }
+
+  .second-column {
+    width: 16px;
+    background: linear-gradient(135deg, #13c2c2 0%, #08979c 100%);
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 6px;
+      left: 3px;
+      right: 3px;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.6);
+      border-radius: 0.5px;
+    }
+  }
+
+  .content {
+    flex: 1;
+    background: #fff;
+    margin: 6px;
+    border-radius: 4px;
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 6px;
+      left: 6px;
+      right: 6px;
+      height: 1px;
+      background: #f0f0f0;
     }
   }
 }
@@ -636,18 +765,18 @@ const handleAnimationChange = (animation) => {
   position: relative;
   background: #fff;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-  
+
   &:hover {
     border-color: #4096ff;
     box-shadow: 0 4px 12px rgba(64, 150, 255, 0.15);
     transform: translateY(-2px);
   }
-  
+
   &.active {
     border-color: #4096ff;
     background: linear-gradient(135deg, #f6ffed 0%, #f0f9ff 100%);
     box-shadow: 0 4px 16px rgba(64, 150, 255, 0.2);
-    
+
     .theme-mode-name {
       color: #1890ff;
       font-weight: 600;
@@ -669,13 +798,13 @@ const handleAnimationChange = (animation) => {
 
 .light-preview {
   background: #ffffff;
-  
+
   .preview-header {
     height: 20px;
     background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
     border-bottom: 1px solid #e8e8e8;
     position: relative;
-    
+
     &::after {
       content: '';
       position: absolute;
@@ -688,14 +817,14 @@ const handleAnimationChange = (animation) => {
       border-radius: 1px;
     }
   }
-  
+
   .preview-body {
     flex: 1;
     background: #ffffff;
     margin: 6px;
     border-radius: 4px;
     position: relative;
-    
+
     &::before {
       content: '';
       position: absolute;
@@ -710,13 +839,13 @@ const handleAnimationChange = (animation) => {
 
 .dark-preview {
   background: #1f1f1f;
-  
+
   .preview-header {
     height: 20px;
     background: linear-gradient(135deg, #141414 0%, #0f0f0f 100%);
     border-bottom: 1px solid #303030;
     position: relative;
-    
+
     &::after {
       content: '';
       position: absolute;
@@ -729,14 +858,14 @@ const handleAnimationChange = (animation) => {
       border-radius: 1px;
     }
   }
-  
+
   .preview-body {
     flex: 1;
     background: #262626;
     margin: 6px;
     border-radius: 4px;
     position: relative;
-    
+
     &::before {
       content: '';
       position: absolute;
@@ -782,11 +911,11 @@ const handleAnimationChange = (animation) => {
   padding: 16px 0;
   border-bottom: 1px solid #f5f5f5;
   transition: all 0.2s ease;
-  
+
   &:last-child {
     border-bottom: none;
   }
-  
+
   &:hover {
     background: rgba(24, 144, 255, 0.02);
     margin: 0 -16px;
@@ -828,11 +957,11 @@ const handleAnimationChange = (animation) => {
   padding: 16px 0;
   border-bottom: 1px solid #f5f5f5;
   transition: all 0.2s ease;
-  
+
   &:last-child {
     border-bottom: none;
   }
-  
+
   &:hover {
     background: rgba(24, 144, 255, 0.02);
     margin: 0 -16px;
@@ -863,7 +992,7 @@ const handleAnimationChange = (animation) => {
 /* 主题色选择器样式 */
 .setting-section {
   margin-bottom: 32px;
-  
+
   &:last-child {
     margin-bottom: 16px;
   }
@@ -907,12 +1036,12 @@ const handleAnimationChange = (animation) => {
   align-items: center;
   justify-content: center;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  
+
   &:hover {
     transform: scale(1.1);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   }
-  
+
   &.active {
     border-color: #fff;
     box-shadow: 0 0 0 3px #1890ff, 0 4px 12px rgba(0, 0, 0, 0.2);
@@ -924,7 +1053,7 @@ const handleAnimationChange = (animation) => {
   color: #fff;
   font-size: 14px;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-  filter: drop-shadow(0 1px 1px rgba(0,0,0,0.3));
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.3));
 }
 
 /* 自定义颜色选择器样式 */
@@ -974,19 +1103,19 @@ const handleAnimationChange = (animation) => {
   position: relative;
   min-height: 60px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-  
+
   &:hover {
     border-color: #4096ff;
     background: #f0f9ff;
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(64, 150, 255, 0.15);
   }
-  
+
   &.active {
     border-color: #4096ff;
     background: linear-gradient(135deg, #f6ffed 0%, #f0f9ff 100%);
     box-shadow: 0 4px 16px rgba(64, 150, 255, 0.2);
-    
+
     .animation-label {
       color: #1890ff;
       font-weight: 600;
@@ -1040,7 +1169,7 @@ const handleAnimationChange = (animation) => {
 :deep(.ant-drawer-header) {
   border-bottom: 1px solid #f0f0f0;
   padding: 16px 24px;
-  
+
   .ant-drawer-title {
     font-size: 16px;
     font-weight: 600;
@@ -1068,11 +1197,11 @@ const handleAnimationChange = (animation) => {
 :deep(.ant-input-number) {
   border-radius: 6px;
   border-color: #d9d9d9;
-  
+
   &:hover {
     border-color: #4096ff;
   }
-  
+
   &:focus,
   &.ant-input-number-focused {
     border-color: #4096ff;

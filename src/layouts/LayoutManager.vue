@@ -7,10 +7,8 @@
     <component v-if="isLayoutLoaded && currentLayout && !appStore.isScreenLocked" :is="currentLayout" />
     <!-- 加载中状态 -->
     <div v-else-if="!appStore.isScreenLocked" class="layout-loading">
-      <div class="loading-spinner"></div>
-      <p>正在加载布局...</p>
+      <a-spin size="large" tip="正在加载新布局..." />
     </div>
-
 
     <!-- 布局切换按钮 -->
     <div class="layout-switcher-trigger" v-if="!showLayoutDrawer && !appStore.isScreenLocked">
@@ -157,21 +155,10 @@ defineExpose({
 
 .layout-loading {
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
   height: 100vh;
-  background: #eee;
-}
-
-.loading-spinner {
-  width: 40px;
-  height: 40px;
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #1890ff;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin-bottom: 16px;
+  width: 100%;
 }
 
 @keyframes spin {

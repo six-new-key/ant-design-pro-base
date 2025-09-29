@@ -1014,5 +1014,33 @@
 	"ehx72": {
 		"zh-cn": "切换",
 		"en": "Switch"
+	},
+	"anm37o4": {
+		"zh-cn": "全屏布局",
+		"en": "Full-screen layout"
+	},
+	"jwt6vvn": {
+		"zh-cn": "沉浸式全屏内容展示布局，适合专注阅读和内容展示",
+		"en": "Immersive full-screen content display layout, suitable for focused reading and content presentation"
+	},
+	"oxvu2": {
+		"zh-cn": "返回",
+		"en": "Return"
+	},
+	"e55m2": {
+		"zh-cn": "主页",
+		"en": "\"Home Page"
+	},
+	"ogvk2": {
+		"zh-cn": "设置",
+		"en": "\"Settings"
+	},
+	"fr3uq37": {
+		"zh-cn": "正在加载新布局",
+		"en": "A new layout is being loaded"
+	},
+	"4db4xpa": {
+		"zh-cn": "正在加载新布局...",
+		"en": "Loading a new layout..."
 	}
 }

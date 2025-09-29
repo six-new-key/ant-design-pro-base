@@ -43,6 +43,14 @@ export const layoutConfigs = [
     description: '左侧双列导航布局，第一列显示主菜单，第二列显示子菜单',
     enabled: true,
     order: 4
+  },
+  {
+    name: '全屏布局',
+    key: 'fullscreen',
+    component: () => import('@/layouts/fullscreen/FullscreenLayout.vue'),
+    description: '沉浸式全屏内容展示布局，适合专注阅读和内容展示',
+    enabled: true,
+    order: 5
   }
   // 新增布局只需在此数组中添加配置即可
   // {

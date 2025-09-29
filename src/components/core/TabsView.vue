@@ -521,8 +521,9 @@ const handleWheel = (e) => {
 
         // 激活状态
         &.active {
-          background: v-bind('token.colorPrimary + "10"');
+          background: v-bind('token.colorPrimary + "16"');
           color: v-bind('token.colorPrimary');
+          border: 1px dashed v-bind('token.colorPrimary');
 
           // 激活状态下的关闭按钮样式
           .tab-close {
