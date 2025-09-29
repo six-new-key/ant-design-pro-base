@@ -22,8 +22,8 @@
                   'active': tab.path === tabsStore.activeTabPath,
                   'pinned': tab.pinned
                 }
-              ]" @click="handleTabClick(tab)" @mouseenter="hoveredTabPath = tab.path"
-                @mouseleave="hoveredTabPath = null">
+              ]" @click="handleTabClick(tab)" @contextmenu="handleTabRightClick($event, tab)"
+                @mouseenter="hoveredTabPath = tab.path" @mouseleave="hoveredTabPath = null">
                 <!-- 页签图标 -->
                 <component v-if="tab.icon" :is="tab.icon" class="tab-icon" />
 
@@ -132,11 +132,92 @@
         </a-button>
       </div>
     </div>
+
+    <!-- 右键菜单 -->
+    <a-dropdown v-model:visible="contextMenuVisible" :trigger="[]" :overlayStyle="{
+      position: 'fixed',
+      left: contextMenuPosition.x + 'px',
+      top: contextMenuPosition.y + 'px',
+      zIndex: 9999
+    }">
+      <div style="position: fixed; pointer-events: none;"></div>
+
+      <template #overlay>
+        <a-menu @click="handleContextMenuClick">
+          <a-menu-item key="refresh">
+            <template #icon>
+              <ReloadOutlined />
+            </template>
+            刷新
+          </a-menu-item>
+
+          <a-menu-item key="togglePin" :disabled="contextMenuTab?.path === '/dashboard'">
+            <template #icon>
+              <PushpinOutlined :rotate="-45" v-if="!contextMenuTab?.pinned" />
+              <PushpinFilled :rotate="-45" v-else />
+            </template>
+            {{ contextMenuTab?.pinned ? '取消固定' : '固定' }}
+          </a-menu-item>
+
+          <a-menu-item key="fullscreen">
+            <template #icon>
+              <ExpandOutlined v-if="!appStore.isFullscreen" />
+              <CompressOutlined v-else />
+            </template>
+            {{ appStore.isFullscreen ? '退出全屏' : '内容全屏' }}
+          </a-menu-item>
+
+          <a-menu-item key="openNewWindow">
+            <template #icon>
+              <ExportOutlined />
+            </template>
+            新窗口打开
+          </a-menu-item>
+
+          <a-menu-divider />
+
+          <a-menu-item key="closeCurrent" :disabled="contextMenuDisabledStates.closeCurrent">
+            <template #icon>
+              <CloseOutlined />
+            </template>
+            关闭当前
+          </a-menu-item>
+
+          <a-menu-item key="closeLeft" :disabled="contextMenuDisabledStates.closeLeft">
+            <template #icon>
+              <VerticalRightOutlined />
+            </template>
+            关闭左侧
+          </a-menu-item>
+
+          <a-menu-item key="closeRight" :disabled="contextMenuDisabledStates.closeRight">
+            <template #icon>
+              <VerticalLeftOutlined />
+            </template>
+            关闭右侧
+          </a-menu-item>
+
+          <a-menu-item key="closeOthers" :disabled="contextMenuDisabledStates.closeOthers">
+            <template #icon>
+              <VerticalAlignMiddleOutlined />
+            </template>
+            关闭其他
+          </a-menu-item>
+
+          <a-menu-item key="closeAll" :disabled="contextMenuDisabledStates.closeAll">
+            <template #icon>
+              <SwapOutlined />
+            </template>
+            关闭全部
+          </a-menu-item>
+        </a-menu>
+      </template>
+    </a-dropdown>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick, watch, computed } from 'vue'
+import { ref, onMounted, nextTick, watch, computed, onUnmounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useTabsStore, useAppStore, useThemeStore } from '@/stores'
 import { theme } from 'ant-design-vue'
@@ -160,6 +241,11 @@ const hoveredTabPath = ref(null)
 const showScrollButtons = ref(false)
 const canScrollLeft = ref(false)
 const canScrollRight = ref(false)
+
+// 右键菜单状态
+const contextMenuVisible = ref(false)
+const contextMenuTab = ref(null)
+const contextMenuPosition = ref({ x: 0, y: 0 })
 
 // 拖拽相关
 const draggableTabsList = computed({
@@ -202,7 +288,7 @@ const checkScrollState = () => {
   canScrollRight.value = scrollLeft < (scrollWidth - clientWidth - 1)
 }
 
-// 初始化
+// 监听全局点击事件，点击其他地方时隐藏菜单
 onMounted(() => {
   tabsStore.initTabs()
   // 添加当前路由为页签
@@ -218,6 +304,16 @@ onMounted(() => {
       tabsScrollArea.value.addEventListener('scroll', checkScrollState)
     }
   })
+
+  // 添加全局事件监听
+  document.addEventListener('click', hideContextMenu)
+  document.addEventListener('contextmenu', hideContextMenu)
+})
+
+// 组件卸载时移除事件监听
+onUnmounted(() => {
+  document.removeEventListener('click', hideContextMenu)
+  document.removeEventListener('contextmenu', hideContextMenu)
 })
 
 // 监听路由变化
@@ -406,6 +502,13 @@ const handleMenuClick = ({ key }) => {
       })
       break
 
+    case 'closeLeft':
+      tabsStore.closeLeftTabs(currentPath)
+      nextTick(() => {
+        scrollToActiveTab()
+      })
+      break
+
     case 'closeRight':
       tabsStore.closeRightTabs(currentPath)
       nextTick(() => {
@@ -488,6 +591,148 @@ const handleLayoutSwitch = () => {
     appStore.toggleFullscreen()
   }
 }
+
+// 右键菜单处理
+const handleTabRightClick = (event, tab) => {
+  event.preventDefault()
+  event.stopPropagation()
+
+  // 设置右键菜单的目标页签
+  contextMenuTab.value = tab
+
+  // 设置菜单位置
+  contextMenuPosition.value = {
+    x: event.clientX,
+    y: event.clientY
+  }
+
+  // 显示菜单
+  contextMenuVisible.value = true
+}
+
+// 隐藏右键菜单
+const hideContextMenu = () => {
+  contextMenuVisible.value = false
+}
+
+// 右键菜单点击事件
+const handleContextMenuClick = ({ key }) => {
+  const targetPath = contextMenuTab.value?.path
+
+  if (!targetPath) return
+
+  switch (key) {
+    case 'refresh':
+      // 如果右键的是当前页签，则刷新
+      if (targetPath === tabsStore.activeTabPath) {
+        appStore.triggerRefresh()
+      } else {
+        // 如果不是当前页签，先切换到该页签再刷新
+        tabsStore.setActiveTab(targetPath)
+        router.push(targetPath)
+        nextTick(() => {
+          appStore.triggerRefresh()
+        })
+      }
+      break
+
+    case 'togglePin':
+      tabsStore.toggleTabPin(targetPath)
+      break
+
+    case 'fullscreen':
+      // 如果右键的不是当前页签，先切换到该页签
+      if (targetPath !== tabsStore.activeTabPath) {
+        tabsStore.setActiveTab(targetPath)
+        router.push(targetPath)
+      }
+      handleLayoutSwitch()
+      break
+
+    case 'openNewWindow':
+      handleOpenNewWindow(targetPath)
+      break
+
+    case 'closeCurrent':
+      tabsStore.removeTab(targetPath)
+      nextTick(() => {
+        scrollToActiveTab()
+      })
+      break
+
+    case 'closeLeft':
+      tabsStore.closeLeftTabs(targetPath)
+      nextTick(() => {
+        scrollToActiveTab()
+      })
+      break
+
+    case 'closeRight':
+      tabsStore.closeRightTabs(targetPath)
+      nextTick(() => {
+        scrollToActiveTab()
+      })
+      break
+
+    case 'closeOthers':
+      tabsStore.closeOtherTabs(targetPath)
+      nextTick(() => {
+        scrollToActiveTab()
+      })
+      break
+
+    case 'closeAll':
+      tabsStore.closeAllTabs()
+      if (tabsStore.activeTabPath !== targetPath) {
+        router.push(tabsStore.activeTabPath)
+      }
+      nextTick(() => {
+        scrollToActiveTab()
+      })
+      break
+  }
+
+  // 隐藏菜单
+  contextMenuVisible.value = false
+}
+
+// 计算右键菜单项的禁用状态
+const contextMenuDisabledStates = computed(() => {
+  if (!contextMenuTab.value) return {}
+
+  const targetTab = contextMenuTab.value
+  const targetIndex = tabsStore.activeTabs.findIndex(tab => tab.path === targetTab.path)
+
+  // 判断目标页签是否可关闭
+  const isTargetClosable = targetTab?.closable && !targetTab?.pinned
+
+  // 检查目标页签左侧是否有可关闭的页签
+  const hasClosableLeftTabs = tabsStore.activeTabs
+    .slice(0, targetIndex)
+    .some(tab => tab.closable && !tab.pinned)
+
+  // 检查目标页签右侧是否有可关闭的页签
+  const hasClosableRightTabs = tabsStore.activeTabs
+    .slice(targetIndex + 1)
+    .some(tab => tab.closable && !tab.pinned)
+
+  // 检查是否有其他可关闭的页签
+  const hasOtherClosableTabs = tabsStore.activeTabs
+    .filter(tab => tab.path !== targetTab?.path)
+    .some(tab => tab.closable && !tab.pinned)
+
+  // 检查是否有任何可关闭的页签
+  const hasAnyClosableTabs = tabsStore.activeTabs
+    .some(tab => tab.closable && !tab.pinned)
+
+  return {
+    closeLeft: !hasClosableLeftTabs,
+    closeRight: !hasClosableRightTabs,
+    closeOthers: !hasOtherClosableTabs,
+    closeAll: !hasAnyClosableTabs,
+    closeCurrent: !isTargetClosable
+  }
+})
 </script>
 
 <style scoped lang="scss">
