@@ -179,7 +179,7 @@ const textColor = computed(() => {
     if (appStore.headerTheme === "dark" && (appStore.layout === 'topbar' || appStore.layout === 'mixed')) {
         return '#fff'
     } else {
-        return '#555555'
+        return token.value.colorTextSecondary
     }
 })
 
@@ -187,7 +187,7 @@ const searchBgColor = computed(() => {
     if (appStore.headerTheme === "dark" && (appStore.layout === 'topbar' || appStore.layout === 'mixed')) {
         return 'rgba(255,255,255,0.1)'
     } else {
-        return token.colorFillSecondary
+        return token.value.colorFillSecondary
     }
 })
 
@@ -294,7 +294,6 @@ onUnmounted(() => {
 
         &:hover {
             opacity: 1;
-            border: 1px solid v-bind('token.colorBorder');
         }
 
         .search-icon {
@@ -328,7 +327,7 @@ onUnmounted(() => {
     cursor: pointer;
 }
 
-.ant-btn:hover{
+.ant-btn:hover {
     background: v-bind('btnHoverColor');
 }
 
