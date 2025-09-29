@@ -13,28 +13,31 @@
       <!-- 中间区域 - 页签显示区 -->
       <div class="tabs-center-area">
         <div class="tabs-scroll-area" ref="tabsScrollArea" @wheel="handleWheel">
-          <div class="tabs-list" ref="tabsList">
-            <div v-for="tab in tabsStore.activeTabs" :key="tab.path" :class="[
-              'tab-item',
-              {
-                'active': tab.path === tabsStore.activeTabPath,
-                'pinned': tab.pinned
-              }
-            ]" @click="handleTabClick(tab)" @mouseenter="hoveredTabPath = tab.path"
-              @mouseleave="hoveredTabPath = null">
-              <!-- 页签图标 -->
-              <component v-if="tab.icon" :is="tab.icon" class="tab-icon" />
+          <VueDraggable v-model="draggableTabsList" class="tabs-list" ref="tabsList" direction="horizontal"
+            :animation="200" :filter="'.pinned'" :prevent-on-filter="true" @start="onDragStart" @end="onDragEnd">
+            <TransitionGroup name="tabs-fade" type="transition">
+              <div v-for="tab in tabsStore.activeTabs" :key="tab.path" :class="[
+                'tab-item',
+                {
+                  'active': tab.path === tabsStore.activeTabPath,
+                  'pinned': tab.pinned
+                }
+              ]" @click="handleTabClick(tab)" @mouseenter="hoveredTabPath = tab.path"
+                @mouseleave="hoveredTabPath = null">
+                <!-- 页签图标 -->
+                <component v-if="tab.icon" :is="tab.icon" class="tab-icon" />
 
-              <!-- 页签标题 -->
-              <span class="tab-title">{{ tab.title }}</span>
+                <!-- 页签标题 -->
+                <span class="tab-title">{{ tab.title }}</span>
 
-              <!-- 固定图标 -->
-              <PushpinOutlined :rotate="-45" v-if="tab.pinned" class="tab-pin-icon" />
+                <!-- 固定图标 -->
+                <PushpinOutlined :rotate="-45" v-if="tab.pinned" class="tab-pin-icon" />
 
-              <!-- 关闭按钮 -->
-              <CloseCircleOutlined v-else class="tab-close" @click.stop="handleTabClose(tab.path)" />
-            </div>
-          </div>
+                <!-- 关闭按钮 -->
+                <CloseCircleOutlined v-else class="tab-close" @click.stop="handleTabClose(tab.path)" />
+              </div>
+            </TransitionGroup>
+          </VueDraggable>
         </div>
       </div>
 
@@ -137,6 +140,7 @@ import { ref, onMounted, nextTick, watch, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useTabsStore, useAppStore, useThemeStore } from '@/stores'
 import { theme } from 'ant-design-vue'
+import { VueDraggable } from 'vue-draggable-plus'
 
 const router = useRouter()
 const route = useRoute()
@@ -156,6 +160,29 @@ const hoveredTabPath = ref(null)
 const showScrollButtons = ref(false)
 const canScrollLeft = ref(false)
 const canScrollRight = ref(false)
+
+// 拖拽相关
+const draggableTabsList = computed({
+  get: () => tabsStore.activeTabs,
+  set: (newOrder) => {
+    tabsStore.reorderTabs(newOrder)
+  }
+})
+
+// 拖拽事件处理
+const onDragStart = (evt) => {
+  // 拖拽开始时的处理
+  console.log('拖拽开始:', evt)
+}
+
+const onDragEnd = (evt) => {
+  // 拖拽结束时的处理
+  console.log('拖拽结束:', evt)
+  // 拖拽结束后重新检查滚动状态
+  nextTick(() => {
+    checkScrollState()
+  })
+}
 
 // 检查滚动状态
 const checkScrollState = () => {
@@ -415,18 +442,18 @@ const handleOpenNewWindow = (path) => {
 const handleWheel = (e) => {
   // 只有在页签溢出时才处理滚轮事件
   if (!showScrollButtons.value) return
-  
+
   e.preventDefault()
-  
+
   const scrollAmount = 400 // 每次滚动的距离
   const currentScrollLeft = tabsScrollArea.value.scrollLeft
   const maxScrollLeft = tabsScrollArea.value.scrollWidth - tabsScrollArea.value.clientWidth
-  
+
   // 根据滚轮方向决定滚动方向
   // deltaY > 0 表示向下滚动，对应页签向左滚动
   // deltaY < 0 表示向上滚动，对应页签向右滚动
   let targetScrollLeft
-  
+
   if (e.deltaY > 0) {
     // 向左滚动
     targetScrollLeft = Math.max(0, currentScrollLeft - scrollAmount)
@@ -434,13 +461,13 @@ const handleWheel = (e) => {
     // 向右滚动
     targetScrollLeft = Math.min(maxScrollLeft, currentScrollLeft + scrollAmount)
   }
-  
+
   // 使用平滑滚动
   tabsScrollArea.value.scrollTo({
     left: targetScrollLeft,
     behavior: 'smooth'
   })
-  
+
   // 滚轮滚动后更新按钮状态
   setTimeout(() => {
     checkScrollState()
@@ -628,28 +655,6 @@ const handleLayoutSwitch = () => {
             margin-left: 4px;
           }
         }
-
-        // 关闭按钮动画
-        .tab-close-fade-enter-active,
-        .tab-close-fade-leave-active {
-          transition: all 0.2s ease;
-        }
-
-        .tab-close-fade-enter-from {
-          opacity: 0;
-          transform: scale(0.8);
-        }
-
-        .tab-close-fade-leave-to {
-          opacity: 0;
-          transform: scale(0.8);
-        }
-
-        .tab-close-fade-enter-to,
-        .tab-close-fade-leave-from {
-          opacity: 1;
-          transform: scale(1);
-        }
       }
     }
 
@@ -667,19 +672,22 @@ const handleLayoutSwitch = () => {
       border-left: 1px solid v-bind('token.colorFillSecondary');
       border-right: 1px solid v-bind('token.colorFillSecondary');
     }
-  }
-}
 
-// 动画效果
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(4px);
-  }
+    .tabs-fade-move,
+    .tabs-fade-enter-active,
+    .tabs-fade-leave-active {
+      transition: all 0.5s cubic-bezier(0.55, 0, 0.1, 1);
+    }
 
-  to {
-    opacity: 1;
-    transform: translateY(0);
+    .tabs-fade-enter-from,
+    .tabs-fade-leave-to {
+      opacity: 0;
+      transform: scaleY(0.01) translate(30px, 0);
+    }
+
+    .tabs-fade-leave-active {
+      position: absolute;
+    }
   }
 }
 </style>

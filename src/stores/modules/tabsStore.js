@@ -45,7 +45,7 @@ export const useTabsStore = defineStore('tabs', () => {
       
       // 如果新添加的页签是固定页签，需要重新排序
       if (newTab.pinned) {
-        sortTabsByPinStatus()
+        reorderTabs(tabs.value)
       }
     }
     
@@ -90,25 +90,34 @@ export const useTabsStore = defineStore('tabs', () => {
       
       // 如果页签被设置为固定，自动排到前面
       if (tab.pinned) {
-        sortTabsByPinStatus()
+        reorderTabs(tabs.value)
       }
     }
   }
 
-  // 根据固定状态对页签进行排序
-  const sortTabsByPinStatus = () => {
-    tabs.value.sort((a, b) => {
-      // 首页始终在最前面
-      if (a.path === '/dashboard') return -1
-      if (b.path === '/dashboard') return 1
-      
-      // 固定页签排在非固定页签前面
-      if (a.pinned && !b.pinned) return -1
-      if (!a.pinned && b.pinned) return 1
-      
-      // 同类型页签保持原有顺序
-      return 0
+  // 重新排序标签页（拖拽后调用）
+  const reorderTabs = (newOrder) => {
+    // 分离固定和非固定标签页
+    const pinnedTabs = []
+    const unpinnedTabs = []
+    
+    newOrder.forEach(tab => {
+      if (tab.pinned) {
+        pinnedTabs.push(tab)
+      } else {
+        unpinnedTabs.push(tab)
+      }
     })
+    
+    // 确保仪表盘始终在第一位
+    const dashboardIndex = pinnedTabs.findIndex(tab => tab.path === '/dashboard')
+    if (dashboardIndex > 0) {
+      const dashboard = pinnedTabs.splice(dashboardIndex, 1)[0]
+      pinnedTabs.unshift(dashboard)
+    }
+    
+    // 重新组合：固定标签页在前，非固定标签页在后
+    tabs.value = [...pinnedTabs, ...unpinnedTabs]
   }
 
   const closeLeftTabs = (targetPath) => {
@@ -183,7 +192,8 @@ export const useTabsStore = defineStore('tabs', () => {
     closeRightTabs,
     closeOtherTabs,
     closeAllTabs,
-    initTabs
+    initTabs,
+    reorderTabs
   }
 }, {
   persist: {
