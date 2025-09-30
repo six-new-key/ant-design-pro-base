@@ -4,6 +4,7 @@
  * 支持多种动态背景类型：优美流动、模糊渐变、背景光、抽象曲线、模糊圆点
  */
 
+import { generate } from '@ant-design/colors'
 import { isDynamicBgLoaded, getLoadedBgTypes } from './dynamicBgLoader'
 
 // 动态背景类型配置
@@ -16,14 +17,34 @@ export const DYNAMIC_BG_TYPES = {
 }
 
 /**
- * 根据主题色生成渐变色数组 - 占位符
+ * 根据主题色生成渐变色数组
  * @param {string} primaryColor - 主题色 (hex格式)
  * @returns {Array} 渐变色数组
  */
 export function generateThemeColors(primaryColor = '#1890ff') {
-  console.log('主题色生成功能待实现', primaryColor)
-  // 返回默认颜色
-  return ["#9FCFFF","#6BA3FA","#3667F0","#284CE0","#9FCFFF","#6BA3FA"]
+  try {
+    // 使用 Ant Design 的颜色生成算法
+    const colors = generate(primaryColor)
+    
+    // 选择合适的色阶用于渐变背景
+    // 通常选择中等深度的颜色 (索引 2-6 对应色阶 3-7)
+    const themeColors = [
+      colors[2], // 较浅
+      colors[3], // 中浅  
+      colors[4], // 中等
+      colors[5], // 中深
+      colors[6], // 较深
+      colors[2]  // 循环回到较浅色，形成平滑过渡
+    ]
+    
+    console.log(`Generated theme colors from ${primaryColor}:`, themeColors)
+    return themeColors
+    
+  } catch (error) {
+    console.warn('Failed to generate theme colors, using default:', error)
+    // 如果生成失败，返回默认的蓝色系渐变
+    return ["#9FCFFF","#6BA3FA","#3667F0","#284CE0","#1F3A93","#9FCFFF"]
+  }
 }
 
 // 默认配置

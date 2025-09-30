@@ -160,14 +160,16 @@ import { useRouter } from 'vue-router'
 import { theme } from 'ant-design-vue'
 import { message } from '@/utils'
 import { settings } from '@/settings'
-import { createDynamicBg, destroyDynamicBg, dynamicBgManager } from '@/utils'
-import { useLoginStore } from '@/stores/modules/login'
+import { createDynamicBg, destroyDynamicBg, dynamicBgManager, generateThemeColors } from '@/utils'
+import { useLoginStore ,useThemeStore} from '@/stores'
 
 // 使用 Ant Design Vue 的 design token
 const { token } = theme.useToken()
 
 // 使用登录状态管理
 const loginStore = useLoginStore()
+// 使用主题状态管理
+const themeStore = useThemeStore()
 
 const router = useRouter()
 const loading = ref(false)
@@ -276,15 +278,18 @@ const handleLanguageChange = ({ key }) => {
 const initDynamicBackground = () => {
   destroyDynamicBackground()
   if (loginStore.isDynamicBackground) {
-    // 使用默认颜色
-    const defaultColors = ["#9FCFFF","#6BA3FA","#3667F0","#284CE0","#9FCFFF","#6BA3FA"]
+    // 根据当前主题色生成渐变色数组
+    const primaryColor = themeStore.primaryColorHex
+    const themeColors = generateThemeColors(primaryColor)
+    
+    console.log('Using theme colors for dynamic background:', themeColors)
     
     // 使用管理器创建动态背景
     dynamicBgInstance = dynamicBgManager.create(
       'login-dynamic-bg',
       loginStore.selectedDynamicBg,
       {
-        colors: defaultColors,
+        colors: themeColors,
         loop: true
       }
     )
@@ -294,12 +299,33 @@ const initDynamicBackground = () => {
 // 切换动态背景类型
 const switchDynamicBgType = (bgType) => {
   if (loginStore.isDynamicBackground && dynamicBgInstance) {
-    const defaultColors = ["#9FCFFF","#6BA3FA","#3667F0","#284CE0","#9FCFFF","#6BA3FA"]
+    // 根据当前主题色生成渐变色数组
+    const primaryColor = themeStore.primaryColorHex
+    const themeColors = generateThemeColors(primaryColor)
+    
     dynamicBgInstance = dynamicBgManager.switchType(
       'login-dynamic-bg',
       bgType,
       {
-        colors: defaultColors,
+        colors: themeColors,
+        loop: true
+      }
+    )
+  }
+}
+
+// 添加主题色更新函数
+const updateDynamicBgColors = (newPrimaryColor) => {
+  if (loginStore.isDynamicBackground && dynamicBgInstance) {
+    const themeColors = generateThemeColors(newPrimaryColor)
+    console.log('Updating dynamic background colors:', themeColors)
+    
+    // 使用新颜色重新创建背景
+    dynamicBgInstance = dynamicBgManager.switchType(
+      'login-dynamic-bg',
+      loginStore.selectedDynamicBg,
+      {
+        colors: themeColors,
         loop: true
       }
     )
@@ -318,6 +344,14 @@ watch(() => loginStore.backgroundMode, (newVal) => {
 watch(() => loginStore.selectedDynamicBg, (newBgType) => {
   if (loginStore.isDynamicBackground) {
     switchDynamicBgType(newBgType)
+  }
+})
+
+// 监听主题色变化，自动更新动态背景色彩
+watch(() => themeStore.primaryColorHex, (newPrimaryColor) => {
+  if (loginStore.isDynamicBackground && dynamicBgInstance) {
+    console.log('Theme color changed, updating dynamic background:', newPrimaryColor)
+    updateDynamicBgColors(newPrimaryColor)
   }
 })
 
@@ -369,7 +403,7 @@ onUnmounted(() => {
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
+  height: 100vh;
   z-index: 0;
 }
 
