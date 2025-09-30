@@ -1,4 +1,8 @@
 import '../lang/index.js'
+import { loadDynamicBgLibraries } from '@/utils'
+
+// 加载动态背景库
+loadDynamicBgLibraries();
 import { createApp } from 'vue'
 import '@/style/index.scss'
 import App from './App.vue'

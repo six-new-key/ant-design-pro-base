@@ -121,6 +121,7 @@ import { useAppStore, useThemeStore } from '@/stores'
 import SearchDialog from './SearchDialog.vue'
 import LockScreenDialog from './LockScreenDialog.vue'
 import { theme } from 'ant-design-vue'
+import { Modal } from 'ant-design-vue'
 
 const router = useRouter()
 const appStore = useAppStore()
@@ -224,10 +225,33 @@ const handleMenuClick = ({ key }) => {
             break
         case 'logout':
             // 这里应该调用登出逻辑
-            message.success('退出登录成功')
-            router.push('/login')
+            handleLogout()
             break
     }
+}
+
+// 返回登录
+const handleLogout = () => {
+
+    // 确认退出登录
+    Modal.confirm({
+        title: '确认退出登录吗？',
+        okText: '确定',
+        okType: 'primary',
+        centered: true,
+        onOk: () => {
+            // 这里应该调用登出逻辑
+            // 重置登录状态
+            localStorage.removeItem('isLoggedIn')
+            localStorage.removeItem('username')
+
+            sessionStorage.removeItem('isLoggedIn')
+            sessionStorage.removeItem('username')
+
+            message.success('退出登录成功')
+            router.push('/login')
+        }
+    })
 }
 
 // 全屏切换

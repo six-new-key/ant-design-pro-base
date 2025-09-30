@@ -24,3 +24,4 @@ export default pinia
 export { useAppStore } from './modules/app'
 export { useThemeStore } from './modules/theme'
 export { useTabsStore } from './modules/tabsStore'
+export { useLoginStore } from './modules/login'

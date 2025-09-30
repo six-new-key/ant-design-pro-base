@@ -1066,5 +1066,149 @@
 	"anzdff4": {
 		"zh-cn": "内容全屏",
 		"en": "Full screen content"
+	},
+	"n8ks08e": {
+		"zh-cn": " 您的浏览器不支持视频播放 ",
+		"en": "Your browser does not support video playback"
+	},
+	"wsnp4e8": {
+		"zh-cn": "确认退出登录吗？",
+		"en": "Are you sure you are logging out?"
+	},
+	"kzjg2": {
+		"zh-cn": "确定",
+		"en": "\"Sure\""
+	},
+	"bdb1pq9": {
+		"zh-cn": "请输入用户名和密码",
+		"en": "Please enter your username and password"
+	},
+	"fcewjt4": {
+		"zh-cn": "登录成功",
+		"en": "Login successful"
+	},
+	"fcdpse4": {
+		"zh-cn": "登录失败",
+		"en": "Login failed"
+	},
+	"kulhu3": {
+		"zh-cn": "记住我",
+		"en": "Remember me"
+	},
+	"koca2": {
+		"zh-cn": "登录",
+		"en": "Log in"
+	},
+	"atzvi44": {
+		"zh-cn": "动态背景",
+		"en": "Dynamic background"
+	},
+	"e8fviz4": {
+		"zh-cn": "渐变动画",
+		"en": "Gradient animation"
+	},
+	"jhwbu34": {
+		"zh-cn": "静态背景",
+		"en": "Static background"
+	},
+	"gept2": {
+		"zh-cn": "左侧",
+		"en": "On the left"
+	},
+	"g4g82": {
+		"zh-cn": "居中",
+		"en": "In the middle"
+	},
+	"epsk2": {
+		"zh-cn": "右侧",
+		"en": "Right side"
+	},
+	"qxpgkp7": {
+		"zh-cn": "🇨🇳 中文",
+		"en": "🇨🇳"
+	},
+	"e8nn574": {
+		"zh-cn": "渐变背景",
+		"en": "Gradient background"
+	},
+	"fs68tu4": {
+		"zh-cn": "科技背景",
+		"en": "\"Technological background\""
+	},
+	"gv3h674": {
+		"zh-cn": "自然背景",
+		"en": "Natural background"
+	},
+	"aich314": {
+		"zh-cn": "优美流动",
+		"en": "Graceful flow"
+	},
+	"38ptbb6": {
+		"zh-cn": "流体动画效果",
+		"en": "Fluid animation effect"
+	},
+	"dwp9ht4": {
+		"zh-cn": "模糊渐变",
+		"en": "Blurred gradient"
+	},
+	"qmrg4b6": {
+		"zh-cn": "渐变模糊效果",
+		"en": "Gradient blur effect"
+	},
+	"jd0g63": {
+		"zh-cn": "背景光",
+		"en": "Background light"
+	},
+	"xdyms75": {
+		"zh-cn": "环境光效果",
+		"en": "Ambient light effect"
+	},
+	"d1eekx4": {
+		"zh-cn": "抽象曲线",
+		"en": "Abstract curve"
+	},
+	"q3i2a46": {
+		"zh-cn": "抽象几何动画",
+		"en": "Abstract Geometric animation"
+	},
+	"dwli4c4": {
+		"zh-cn": "模糊圆点",
+		"en": "Blurred dot"
+	},
+	"739bu86": {
+		"zh-cn": "圆点模糊效果",
+		"en": "Dot blur effect"
+	},
+	"vt49qnc": {
+		"zh-cn": " 欢迎登录后台管理系统 ",
+		"en": "Welcome to log in to the background management system"
+	},
+	"y3ouj28": {
+		"zh-cn": " 还没有账号？ ",
+		"en": "Don't have an account yet?"
+	},
+	"9150pg6": {
+		"zh-cn": " 立即注册 ",
+		"en": "Register now"
+	},
+	"n9uy2": {
+		"zh-cn": "薄暮",
+		"en": "Dusk"
+	},
+	"jmna2": {
+		"zh-cn": "火山",
+		"en": "Volcano"
+	},
+	"hw892": {
+		"zh-cn": "日暮",
+		"en": "Sunset"
+	},
+	"fm37g3": {
+		"zh-cn": "极客蓝",
+		"en": "Geek Blue"
+	},
+	"pfbu2": {
+		"zh-cn": "酱紫",
+		"en": "Soy sauce purple"
 	}
 }

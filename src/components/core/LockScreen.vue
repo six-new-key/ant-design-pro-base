@@ -1,9 +1,9 @@
 <template>
-    <div class="lock-screen-overlay">
+    <div class="lock-screen-overlay" id="screen-box">
         <!-- 背景 -->
-        <div class="lock-screen-bg">
+        <!-- <div class="lock-screen-bg">
             <div class="bg-blur"></div>
-        </div>
+        </div> -->
 
         <!-- 底部信息 -->
         <div class="lock-screen-footer">
@@ -17,14 +17,12 @@
 
     <!-- 解锁对话框 - 移到外层 -->
     <a-modal v-model:open="showUnlockDialog" title="解锁屏幕" :closable="false" :maskClosable="false" :keyboard="false"
-        centered :width="400" :footer="null">
-        <!-- 用户信息 -->
+        centered :width="400" :footer="null" :mask="false">
         <div class="dialog-user-info">
             <a-avatar :size="80" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Vben" alt="用户头像" />
             <div class="user-name">Super</div>
         </div>
 
-        <!-- 密码输入 -->
         <a-form ref="formRef" :model="formData" :rules="rules" @finish="handleUnlock">
             <a-form-item name="unlockPassword">
                 <a-input-password v-model:value="formData.unlockPassword" placeholder="请输入解锁密码" size="large"
@@ -36,7 +34,7 @@
                 </a-button>
             </a-form-item>
             <a-form-item>
-                <a-button type="link" @click="handleCancel" block>返回登录</a-button>
+                <a-button type="link" @click="handleReturnLogin" block>返回登录</a-button>
             </a-form-item>
         </a-form>
     </a-modal>
@@ -44,6 +42,7 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted, nextTick, reactive } from 'vue'
+import { createBlurGradientBg, destroyBlurGradientBg } from '@/utils'
 import { message } from '@/utils'
 import { useAppStore } from '@/stores'
 import router from '@/router'
@@ -71,6 +70,7 @@ const rules = {
     ]
 }
 
+let gradientBg = null
 // 时间更新定时器
 let timeTimer = null
 
@@ -99,7 +99,7 @@ const updateTime = () => {
 }
 
 // 返回登录
-const handleCancel = () => {
+const handleReturnLogin = () => {
     // 清除锁屏状态和密码
     appStore.clearLockScreen()
 
@@ -154,6 +154,7 @@ const handleUnlock = async () => {
 
 // 组件挂载
 onMounted(() => {
+    gradientBg = createBlurGradientBg('screen-box')
     initTime()
     // 对焦到密码输入框
     passwordInputRef.value?.focus()
@@ -161,6 +162,9 @@ onMounted(() => {
 
 // 组件卸载时清理定时器
 onUnmounted(() => {
+    if (gradientBg) {
+        destroyBlurGradientBg(gradientBg)
+    }
     if (timeTimer) {
         clearInterval(timeTimer)
         timeTimer = null
@@ -177,29 +181,30 @@ onUnmounted(() => {
     justify-content: center;
     align-items: center;
     overflow: hidden;
+    color: #284CE0;
 }
 
-.lock-screen-bg {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-image: url('@/assets/image/lock.jpg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+// .lock-screen-bg {
+//     position: absolute;
+//     top: 0;
+//     left: 0;
+//     right: 0;
+//     bottom: 0;
+//     background-image: url('@/assets/image/bg.png');
+//     background-size: cover;
+//     background-position: center;
+//     background-repeat: no-repeat;
 
-    // .bg-blur {
-    //     position: absolute;
-    //     top: 0;
-    //     left: 0;
-    //     right: 0;
-    //     bottom: 0;
-    //     background: rgba(0, 0, 0, 0.4);
-    //     backdrop-filter: blur(4px);
-    // }
-}
+//     .bg-blur {
+//         position: absolute;
+//         top: 0;
+//         left: 0;
+//         right: 0;
+//         bottom: 0;
+//         background: rgba(0, 0, 0, 0.4);
+//         backdrop-filter: blur(4px);
+//     }
+// }
 
 .lock-screen-footer {
     position: absolute;
