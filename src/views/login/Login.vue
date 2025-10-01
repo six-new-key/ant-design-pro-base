@@ -10,7 +10,7 @@
     <!-- 功能控制区 -->
     <div class="control-panel">
       <!-- 背景模式切换 -->
-      <a-dropdown placement="bottomRight" :trigger="['click']">
+      <a-dropdown placement="bottomRight" :trigger="['hover']">
         <a-button type="text" size="large" :style="{ color: token.colorTextSecondary }">
           <template #icon>
             <bg-colors-outlined />
@@ -102,52 +102,108 @@
     <div :class="loginStore.formContainerClass">
       <div class="login-box">
         <div class="login-header">
-          <img src="/vite.svg" alt="logo" class="logo" />
-          <h1 class="title" :style="{ color: token.colorText }">
-            Ant Design Pro
+          <h1 class="welcome-title" :style="{ color: token.colorText }">
+            欢迎回来 👋
           </h1>
-          <p class="subtitle" :style="{ color: token.colorTextSecondary }">
-            欢迎登录后台管理系统
+          <p class="welcome-subtitle" :style="{ color: token.colorTextSecondary }">
+            请输入您的账户信息以开始管理您的项目
           </p>
         </div>
 
-        <a-form :model="formData" :rules="rules" @finish="handleLogin" class="login-form">
+        <a-form :model="formData" :rules="rules">
+          <!-- 用户名输入框 -->
           <a-form-item name="username">
-            <a-input v-model:value="formData.username" size="large" placeholder="用户名">
-              <template #prefix>
-                <user-outlined />
-              </template>
+            <a-input v-model:value="formData.username" size="large" placeholder="vben">
             </a-input>
           </a-form-item>
 
+          <!-- 密码输入框 -->
           <a-form-item name="password">
-            <a-input-password v-model:value="formData.password" size="large" placeholder="密码">
-              <template #prefix>
-                <lock-outlined />
-              </template>
+            <a-input-password v-model:value="formData.password" size="large" placeholder="......">
             </a-input-password>
           </a-form-item>
 
-          <a-form-item>
-            <a-checkbox v-model:checked="formData.remember">
-              记住我
-            </a-checkbox>
+          <!-- 滑块验证 -->
+          <a-form-item name="captcha">
+            <drag-verify ref="dragVerify" :height="39.6" :width="368.4" :background="token.colorFillSecondary"
+              :progressBarBg="token.colorSuccess + '90'" :handlerBg="token.colorBgContainer" :textSize="token.fontSize - 2 + 'px'" :textColor="token.colorText"
+              :radius="token.borderRadius + 'px'" v-model:isPassing="isPassing" text="请按住滑块拖动" successText="验证通过">
+            </drag-verify>
           </a-form-item>
 
+          <!-- 记住账号和忘记密码 -->
           <a-form-item>
-            <a-button type="primary" html-type="submit" size="large" :loading="loading" class="login-button">
+            <div class="options-row">
+              <a-checkbox v-model:checked="formData.remember">
+                记住账号
+              </a-checkbox>
+              <a-button type="link">
+                忘记密码?
+              </a-button>
+            </div>
+          </a-form-item>
+
+          <!-- 登录按钮 -->
+          <a-form-item>
+            <a-button type="primary" @click="handleLogin" size="large" :loading="loading" block>
               登录
             </a-button>
           </a-form-item>
         </a-form>
 
+        <!-- 登录方式选择 -->
+        <div class="login-tabs">
+          <a-button type="text" class="tab-button">
+            手机号登录
+          </a-button>
+          <a-button type="text" class="tab-button">
+            扫码登录
+          </a-button>
+        </div>
+
+        <!-- 其他登录方式 -->
+        <div class="other-login">
+          <a-divider>其他登录方式</a-divider>
+          <div class="social-login">
+            <a-button type="text" shape="circle">
+              <template #icon>
+                <WechatOutlined />
+              </template>
+            </a-button>
+            <a-button type="text" shape="circle">
+              <template #icon>
+                <AlipayCircleOutlined />
+              </template>
+            </a-button>
+            <a-button type="text" shape="circle">
+              <template #icon>
+                <QqOutlined />
+              </template>
+            </a-button>
+            <a-button type="text" shape="circle">
+              <template #icon>
+                <github-outlined />
+              </template>
+            </a-button>
+            <a-button type="text" shape="circle">
+              <template #icon>
+                <TaobaoCircleOutlined />
+              </template>
+            </a-button>
+            <a-button type="text" shape="circle">
+              <template #icon>
+                <DingdingOutlined />
+              </template>
+            </a-button>
+          </div>
+        </div>
+
+        <!-- 注册链接 -->
         <div class="login-footer">
-          <p :style="{ color: token.colorTextSecondary }">
-            还没有账号？
-            <a href="#" :style="{ color: token.colorPrimary }">
-              立即注册
-            </a>
-          </p>
+          <span>还没有账号？</span>
+          <a-button type="link">
+            创建账号
+          </a-button>
         </div>
       </div>
     </div>
@@ -160,11 +216,14 @@ import { useRouter } from 'vue-router'
 import { theme } from 'ant-design-vue'
 import { message } from '@/utils'
 import { settings } from '@/settings'
-import { createDynamicBg, destroyDynamicBg, dynamicBgManager, generateThemeColors } from '@/utils'
-import { useLoginStore ,useThemeStore} from '@/stores'
+import { dynamicBgManager, generateThemeColors } from '@/utils'
+import { useLoginStore, useThemeStore } from '@/stores'
+import DragVerify from '@/components/custom/DragVerify.vue'
 
 // 使用 Ant Design Vue 的 design token
 const { token } = theme.useToken()
+
+const isPassing = ref(false)
 
 // 使用登录状态管理
 const loginStore = useLoginStore()
@@ -177,20 +236,38 @@ let dynamicBgInstance = null
 
 // 登录表单数据
 const formData = reactive({
+  userType: 'Super',
   username: 'admin',
   password: '123456',
+  captcha: false, // 滑块验证状态
   remember: false
 })
 
+// 登录类型
+const loginType = ref('account')
+
 // 表单验证规则
 const rules = computed(() => ({
+  userType: [
+    { required: true, message: '请选择用户类型', trigger: 'change' }
+  ],
   username: [
-    { required: true, message: '请输入用户名', trigger: 'blur' },
-    { min: 3, max: 20, message: '用户名长度在 3 到 20 个字符', trigger: 'blur' }
+    { required: true, message: '请输入用户名', trigger: 'blur' }
   ],
   password: [
     { required: true, message: '请输入密码', trigger: 'blur' },
-    { min: 6, max: 20, message: '密码长度在 6 到 20 个字符', trigger: 'blur' }
+    { min: 6, message: '密码长度不能少于6位', trigger: 'blur' }
+  ],
+  captcha: [
+    {
+      validator: (rule, value) => {
+        if (!value) {
+          return Promise.reject('请完成滑块验证')
+        }
+        return Promise.resolve()
+      },
+      trigger: 'change'
+    }
   ]
 }))
 
@@ -281,9 +358,9 @@ const initDynamicBackground = () => {
     // 根据当前主题色生成渐变色数组
     const primaryColor = themeStore.primaryColorHex
     const themeColors = generateThemeColors(primaryColor)
-    
+
     console.log('Using theme colors for dynamic background:', themeColors)
-    
+
     // 使用管理器创建动态背景
     dynamicBgInstance = dynamicBgManager.create(
       'login-dynamic-bg',
@@ -302,7 +379,7 @@ const switchDynamicBgType = (bgType) => {
     // 根据当前主题色生成渐变色数组
     const primaryColor = themeStore.primaryColorHex
     const themeColors = generateThemeColors(primaryColor)
-    
+
     dynamicBgInstance = dynamicBgManager.switchType(
       'login-dynamic-bg',
       bgType,
@@ -319,7 +396,7 @@ const updateDynamicBgColors = (newPrimaryColor) => {
   if (loginStore.isDynamicBackground && dynamicBgInstance) {
     const themeColors = generateThemeColors(newPrimaryColor)
     console.log('Updating dynamic background colors:', themeColors)
-    
+
     // 使用新颜色重新创建背景
     dynamicBgInstance = dynamicBgManager.switchType(
       'login-dynamic-bg',
@@ -376,7 +453,7 @@ onUnmounted(() => {
 })
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .login-container {
   min-height: 100vh;
   position: relative;
@@ -421,15 +498,16 @@ onUnmounted(() => {
   box-shadow: v-bind('token.boxShadow');
   backdrop-filter: blur(10px);
   border: 1px solid v-bind('token.colorBorder');
-}
+  animation: fadeInDown 0.3s ease-out;
 
-.control-panel .ant-btn {
-  border: none;
-  box-shadow: none;
-}
+  .ant-btn {
+    border: none;
+    box-shadow: none;
 
-.control-panel .ant-btn:hover {
-  background: v-bind('token.colorBgTextHover');
+    &:hover {
+      background: v-bind('token.colorBgTextHover');
+    }
+  }
 }
 
 /* 背景选项样式 */
@@ -439,10 +517,10 @@ onUnmounted(() => {
   gap: 8px;
   flex-direction: column;
   align-items: flex-start;
-}
 
-.bg-option span {
-  font-weight: 500;
+  span {
+    font-weight: 500;
+  }
 }
 
 .bg-description {
@@ -488,137 +566,100 @@ onUnmounted(() => {
 
 /* 登录框 */
 .login-box {
+  user-select: none;
   width: 100%;
-  max-width: 400px;
+  max-width: 450px;
+  // background: transparent;
   background: v-bind('token.colorBgContainer');
-  border-radius: v-bind('token.borderRadiusLG + "px"');
-  padding: 40px;
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(6px);
+  //阴影
+  box-shadow: 0 0 10px rgba(0, 0, 0,0.2);
+  border-radius: v-bind('token.borderRadius + 30 + "px"');
+  padding: 20px 40px;
   border: 1px solid v-bind('token.colorBorder');
-  box-shadow: v-bind('token.boxShadowSecondary');
   transition: all 0.3s ease;
-}
+  animation: fadeInUp 0.6s ease-out;
 
-.dark-theme .login-box {
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(20px);
-}
-
-/* 登录头部 */
-.login-header {
-  text-align: center;
-  margin-bottom: 32px;
-}
-
-.logo {
-  width: 64px;
-  height: 64px;
-  margin-bottom: 16px;
-}
-
-.title {
-  font-size: 28px;
-  font-weight: 600;
-  margin: 0 0 8px 0;
-  transition: color 0.3s ease;
-}
-
-.subtitle {
-  font-size: 14px;
-  margin: 0;
-  transition: color 0.3s ease;
-}
-
-/* 登录表单 */
-.login-form {
-  margin-bottom: 24px;
-}
-
-.login-button {
-  width: 100%;
-  height: 44px;
-  font-size: 16px;
-  font-weight: 500;
-}
-
-/* 登录底部 */
-.login-footer {
-  text-align: center;
-  font-size: 14px;
-}
-
-.login-footer a {
-  text-decoration: none;
-  transition: color 0.3s ease;
-}
-
-.login-footer a:hover {
-  text-decoration: underline;
-}
-
-/* 响应式设计 */
-@media (max-width: 768px) {
-  .control-panel {
-    top: 10px;
-    right: 10px;
-    gap: 4px;
-    padding: 4px;
+  :where(.ant-form-item) {
+    margin-bottom: 18px;
   }
 
-  .form-position-left {
-    padding-left: 5%;
+  /* 登录头部 */
+  .login-header {
+    text-align: left;
+    margin-bottom: 26px;
+
+    .welcome-title {
+      font-size: v-bind('token.fontSize + 14 + "px"');
+      font-weight: 600;
+      margin: 0 0 8px 0;
+      line-height: 1.2;
+    }
+
+    .welcome-subtitle {
+      font-size: v-bind('token.fontSize + "px"');
+      margin: 0;
+      line-height: 1.4;
+    }
   }
 
-  .form-position-right {
-    padding-right: 5%;
+  /* 登录表单 */
+  .options-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+
+    .ant-btn {
+      padding: 0;
+      margin: 0;
+    }
   }
 
-  .login-box {
-    padding: 24px;
-    margin: 0 16px;
-  }
-
-  .title {
-    font-size: 24px;
-  }
-}
-
-@media (max-width: 480px) {
-  .control-panel {
-    position: relative;
-    top: auto;
-    right: auto;
-    margin: 10px;
+  .login-tabs {
+    display: flex;
     justify-content: center;
+    gap: 32px;
+
+    .tab-button {
+      border: 1px solid v-bind('token.colorBorder');
+      width: 50%;
+    }
   }
 
-  .login-form-container {
-    padding: 10px;
+  .other-login {
+
+    .ant-divider {
+      opacity: 0.7;
+      margin: 10px 0;
+      font-size: v-bind('token.fontSize - 2 + "px"');
+    }
+
+    .social-login {
+      display: flex;
+      justify-content: center;
+      // gap: 2px;
+    }
   }
 
-  .form-position-left,
-  .form-position-right {
-    justify-content: center;
-    padding-left: 0;
-    padding-right: 0;
+  .login-footer {
+    text-align: center;
+    margin-top: 10px;
+
+    span {
+      opacity: 0.8;
+      font-size: v-bind('token.fontSize + "px"');
+      color: v-bind('token.colorText');
+    }
+
+    .ant-btn {
+      padding: 0;
+      margin: 0;
+    }
   }
-}
-
-/* 暗黑主题适配 */
-.dark-theme {
-  background: #0f0f0f;
-}
-
-.dark-theme .control-panel {
-  background: rgba(0, 0, 0, 0.8);
-  border-color: rgba(255, 255, 255, 0.1);
 }
 
 /* 动画效果 */
-.login-box {
-  animation: fadeInUp 0.6s ease-out;
-}
-
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -629,10 +670,6 @@ onUnmounted(() => {
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-.control-panel {
-  animation: fadeInDown 0.6s ease-out;
 }
 
 @keyframes fadeInDown {

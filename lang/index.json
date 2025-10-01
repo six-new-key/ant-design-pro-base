@@ -1210,5 +1210,145 @@
 	"pfbu2": {
 		"zh-cn": "酱紫",
 		"en": "Soy sauce purple"
+	},
+	"qcv8dp6": {
+		"zh-cn": " 欢迎回来 ",
+		"en": "Welcome back"
+	},
+	"rld5lqk": {
+		"zh-cn": " 请输入您的账户信息以开始管理您的项目 ",
+		"en": "Please enter your account information to start managing your project"
+	},
+	"il44g34": {
+		"zh-cn": "选择组织",
+		"en": "Select an organization"
+	},
+	"rjfne37": {
+		"zh-cn": "请按住滑块拖动",
+		"en": "Please hold down the slider and drag"
+	},
+	"3o0q6o6": {
+		"zh-cn": " 记住账号 ",
+		"en": "Remember the account"
+	},
+	"xfie5w5": {
+		"zh-cn": "忘记密码?",
+		"en": "Forgot password?"
+	},
+	"shgaim5": {
+		"zh-cn": "手机号登录",
+		"en": "Login with mobile phone number"
+	},
+	"cx12uo4": {
+		"zh-cn": "扫码登录",
+		"en": "Scan the code to log in"
+	},
+	"v1a1806": {
+		"zh-cn": "其他登录方式",
+		"en": "Other login methods"
+	},
+	"arefbk4": {
+		"zh-cn": "创建账号",
+		"en": "Create an account"
+	},
+	"2eg6iu5": {
+		"zh-cn": "请选择组织",
+		"en": "Please select an organization"
+	},
+	"vhgvmj9": {
+		"zh-cn": " 欢迎回来 👋 ",
+		"en": "Welcome back 👋"
+	},
+	"vkl7en6": {
+		"zh-cn": "选择用户类型",
+		"en": "Select the user type"
+	},
+	"7b32n16": {
+		"zh-cn": "请输入验证码",
+		"en": "Please enter the verification code"
+	},
+	"1lyolw7": {
+		"zh-cn": " 忘记密码？ ",
+		"en": "Forgot password?"
+	},
+	"cucczi7": {
+		"zh-cn": " 手机号登录 ",
+		"en": "Login with mobile phone number"
+	},
+	"alaysw6": {
+		"zh-cn": " 扫码登录 ",
+		"en": "Scan the code to log in"
+	},
+	"v9g6288": {
+		"zh-cn": " 其他登录方式 ",
+		"en": "Other login methods"
+	},
+	"6ep6a86": {
+		"zh-cn": " 创建账号 ",
+		"en": "Create an account"
+	},
+	"yzjyba7": {
+		"zh-cn": "请选择用户类型",
+		"en": "Please select the user type"
+	},
+	"sua2rea": {
+		"zh-cn": "密码长度不能少于6位",
+		"en": "The password length must not be less than 6 characters"
+	},
+	"pxabvl6": {
+		"zh-cn": "验证码已刷新",
+		"en": "The verification code has been refreshed"
+	},
+	"72b4s77": {
+		"zh-cn": "请滑动滑块验证",
+		"en": "Please slide the slider to verify"
+	},
+	"9hegdm7": {
+		"zh-cn": "请完成滑块验证",
+		"en": "Please complete the slider verification"
+	},
+	"k2omx04": {
+		"zh-cn": "验证成功",
+		"en": "Verification successful"
+	},
+	"tgazdw8": {
+		"zh-cn": "验证失败，请重试",
+		"en": "Verification failed. Please try again"
+	},
+	"gz30v65": {
+		"zh-cn": "验证已重置",
+		"en": "Verification has been reset."
+	},
+	"f5bkbc9": {
+		"zh-cn": "请拖动滑块完成验证",
+		"en": "Please drag the slider to complete the verification"
+	},
+	"1tcupw6": {
+		"zh-cn": " 验证成功 ",
+		"en": "Verification successful"
+	},
+	"mluml8a": {
+		"zh-cn": " 验证失败，请重试 ",
+		"en": "Verification failed. Please try again"
+	},
+	"k2wswy4": {
+		"zh-cn": "验证通过",
+		"en": "Verification passed"
+	},
+	"1mborm6": {
+		"zh-cn": " 验证通过 ",
+		"en": "Verification passed"
+	},
+	"pnnxwr6": {
+		"zh-cn": " 注册账号 ",
+		"en": "Register an account"
+	},
+	"ia2hkj6": {
+		"zh-cn": " 忘记密码 ",
+		"en": "Forget the password"
+	},
+	"1krbw47": {
+		"zh-cn": " 忘记密码? ",
+		"en": "Forgot password?"
 	}
 }
