@@ -1,5 +1,5 @@
 <template>
-  <div class="login-container" :class="containerClass">
+  <div class="login-container">
     <!-- 静态背景 -->
     <div v-if="loginStore.isStaticBackground" class="static-background"
       :style="{ backgroundImage: `url(${loginStore.currentBackgroundUrl})` }"></div>
@@ -7,9 +7,16 @@
     <!-- 动态背景容器 -->
     <div v-if="loginStore.isDynamicBackground" id="login-dynamic-bg" class="dynamic-background"></div>
 
+    <!-- Logo区域 -->
+    <div class="logo-container">
+      <DingdingOutlined :style="{ color: token.colorPrimary, fontSize: '44px' }" />
+      <div class="logo-text">
+        {{ settings.projectName }}
+      </div>
+    </div>
+
     <!-- 功能控制区 -->
     <div class="control-panel">
-      <!-- 背景模式切换 -->
       <a-dropdown placement="bottomRight" :trigger="['hover']">
         <a-button type="text" size="large" :style="{ color: token.colorTextSecondary }">
           <template #icon>
@@ -40,8 +47,7 @@
         </template>
       </a-dropdown>
 
-      <!-- 表单位置调整 -->
-      <a-dropdown v-if="loginStore.isStaticBackground" placement="bottomRight" :trigger="['click']">
+      <a-dropdown v-if="loginStore.isStaticBackground" placement="bottomRight" :trigger="['hover']">
         <a-button type="text" size="large" :style="{ color: token.colorTextSecondary }">
           <template #icon>
             <layout-outlined />
@@ -71,14 +77,12 @@
         </template>
       </a-dropdown>
 
-      <!-- 主题模式切换 - 占位符 -->
       <a-button type="text" size="large" :style="{ color: token.colorTextSecondary }" @click="toggleTheme">
         <template #icon>
-          <sun-outlined />
+          <PlayCircleOutlined />
         </template>
       </a-button>
 
-      <!-- 语言切换 - 占位符 -->
       <a-dropdown placement="bottomRight" :trigger="['click']">
         <a-button type="text" size="large" :style="{ color: token.colorTextSecondary }">
           <template #icon>
@@ -125,9 +129,10 @@
 
           <!-- 滑块验证 -->
           <a-form-item name="captcha">
-            <drag-verify ref="dragVerify" :height="39.6" :width="368.4" :background="token.colorFillSecondary"
-              :progressBarBg="token.colorSuccess + '90'" :handlerBg="token.colorBgContainer" :textSize="token.fontSize - 2 + 'px'" :textColor="token.colorText"
-              :radius="token.borderRadius + 'px'" v-model:isPassing="isPassing" text="请按住滑块拖动" successText="验证通过">
+            <drag-verify ref="dragVerify" :height="39.6" :width="438.4" :background="token.colorFillSecondary"
+              :progressBarBg="token.colorSuccess + '90'" :handlerBg="token.colorBgContainer"
+              :textSize="token.fontSize - 2 + 'px'" :textColor="token.colorText" :radius="token.borderRadius + 'px'"
+              v-model:isPassing="isPassing" text="请按住滑块拖动" successText="验证通过">
             </drag-verify>
           </a-form-item>
 
@@ -163,7 +168,7 @@
 
         <!-- 其他登录方式 -->
         <div class="other-login">
-          <a-divider>其他登录方式</a-divider>
+          <a-divider :style="{ borderColor: token.colorBorder }">其他登录方式</a-divider>
           <div class="social-login">
             <a-button type="text" shape="circle">
               <template #icon>
@@ -204,6 +209,9 @@
           <a-button type="link">
             创建账号
           </a-button>
+          <div class="copyright">
+            Copyright © 2025 Ant Design Pro
+          </div>
         </div>
       </div>
     </div>
@@ -224,6 +232,13 @@ import DragVerify from '@/components/custom/DragVerify.vue'
 const { token } = theme.useToken()
 
 const isPassing = ref(false)
+const open = ref(false)
+
+// 处理测试点击事件
+const handleTestClick = () => {
+  console.log('测试点击事件')
+  open.value = !open.value
+}
 
 // 使用登录状态管理
 const loginStore = useLoginStore()
@@ -270,17 +285,6 @@ const rules = computed(() => ({
     }
   ]
 }))
-
-// 容器样式类
-const containerClass = computed(() => {
-  const classes = []
-  if (loginStore.isStaticBackground) {
-    classes.push('static-mode')
-  } else {
-    classes.push('dynamic-mode')
-  }
-  return classes.join(' ')
-})
 
 // 处理登录
 const handleLogin = async () => {
@@ -455,6 +459,7 @@ onUnmounted(() => {
 
 <style lang="scss" scoped>
 .login-container {
+  width: 100%;
   min-height: 100vh;
   position: relative;
   overflow: hidden;
@@ -484,29 +489,41 @@ onUnmounted(() => {
   z-index: 0;
 }
 
+/* Logo区域 */
+.logo-container {
+  position: fixed;
+  top: 14px;
+  left: 10px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+
+  .logo-text {
+    margin-left: 10px;
+    font-size: 24px;
+    font-weight: 600;
+    color: v-bind('token.colorText');
+  }
+}
+
 /* 功能控制区 */
 .control-panel {
   position: fixed;
-  top: 20px;
-  right: 20px;
+  top: 14px;
+  right: 10px;
   z-index: 1000;
   display: flex;
   gap: 8px;
-  padding: 8px;
+  // padding: 8px;
   background: v-bind('token.colorBgContainer');
-  border-radius: v-bind('token.borderRadius + "px"');
-  box-shadow: v-bind('token.boxShadow');
-  backdrop-filter: blur(10px);
+  // border-radius: v-bind('token.borderRadius + "px"');
+  // backdrop-filter: blur(10px);
   border: 1px solid v-bind('token.colorBorder');
   animation: fadeInDown 0.3s ease-out;
+  border-radius: 50px;
 
   .ant-btn {
-    border: none;
-    box-shadow: none;
-
-    &:hover {
-      background: v-bind('token.colorBgTextHover');
-    }
+    border-radius: 50px;
   }
 }
 
@@ -545,14 +562,13 @@ onUnmounted(() => {
   min-height: 100vh;
   display: flex;
   align-items: center;
-  padding: 20px;
   transition: all 0.3s ease;
 }
 
 /* 表单位置样式 */
 .form-position-left {
   justify-content: flex-start;
-  padding-left: 10%;
+  padding-left: 0;
 }
 
 .form-position-center {
@@ -561,28 +577,33 @@ onUnmounted(() => {
 
 .form-position-right {
   justify-content: flex-end;
-  padding-right: 10%;
+  padding-right: 0;
 }
 
 /* 登录框 */
 .login-box {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
   user-select: none;
   width: 100%;
-  max-width: 450px;
+  max-width: 520px;
+  height: 100vh;
   // background: transparent;
   background: v-bind('token.colorBgContainer');
   backdrop-filter: blur(6px);
   //阴影
-  box-shadow: 0 0 10px rgba(0, 0, 0,0.2);
-  border-radius: v-bind('token.borderRadius + 30 + "px"');
-  padding: 20px 40px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  // border-radius: v-bind('token.borderRadius + 30 + "px"');
+  padding: 0 40px 10px 40px;
+  // align-items: center;
   border: 1px solid v-bind('token.colorBorder');
   transition: all 0.3s ease;
   animation: fadeInUp 0.6s ease-out;
 
-  :where(.ant-form-item) {
-    margin-bottom: 18px;
-  }
+  // :where(.ant-form-item) {
+  //   margin-bottom: 18px;
+  // }
 
   /* 登录头部 */
   .login-header {
@@ -590,8 +611,9 @@ onUnmounted(() => {
     margin-bottom: 26px;
 
     .welcome-title {
-      font-size: v-bind('token.fontSize + 14 + "px"');
-      font-weight: 600;
+      font-size: v-bind('token.fontSize + 20 + "px"');
+      opacity: 0.9;
+      font-weight: bold;
       margin: 0 0 8px 0;
       line-height: 1.2;
     }
@@ -631,7 +653,6 @@ onUnmounted(() => {
 
     .ant-divider {
       opacity: 0.7;
-      margin: 10px 0;
       font-size: v-bind('token.fontSize - 2 + "px"');
     }
 
@@ -655,6 +676,12 @@ onUnmounted(() => {
     .ant-btn {
       padding: 0;
       margin: 0;
+    }
+
+    .copyright {
+      margin-top: 16px;
+      font-size: v-bind('token.fontSize - 3 + "px"');
+      color: v-bind('token.colorTextSecondary');
     }
   }
 }
