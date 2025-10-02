@@ -22,14 +22,22 @@ export const loadDynamicBgLibraries = async () => {
     { name: 'BlurDotBg', path: '/src/assets/js/BlurDotBg.min.js' }
   ];
   
+  // 通过 import.meta.glob 预声明所有可能的动态库，便于 Vite 构建期分析
+  const moduleLoaders = import.meta.glob('/src/assets/js/*.min.js');
+  
   // 逐个加载库并保存到全局对象
   for (const lib of bgLibraries) {
     try {
       // 临时保存已有的类
       const existingClasses = { ...window.Color4Bg };
       
-      // 动态导入库
-      await import(lib.path);
+      // 使用预声明的模块加载器来按需导入，避免 Vite 动态导入分析失败
+      const loader = moduleLoaders[lib.path];
+      if (typeof loader === 'function') {
+        await loader();
+      } else {
+        console.warn(`Module loader not found for ${lib.name} at ${lib.path}`);
+      }
       
       // 恢复之前的类并添加新类
       Object.assign(window.Color4Bg, existingClasses);

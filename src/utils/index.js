@@ -33,8 +33,6 @@ export {
   DYNAMIC_BG_TYPES
 } from './buildGradientBg.js'
 
-
-
 // 为了兼容性，也导出大写版本
 export { default as Message } from './message.js'
 export { default as Notification } from './notification.js'
