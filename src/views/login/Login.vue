@@ -25,7 +25,7 @@
     <div v-if="loginStore.formPosition !== 'center' && loginStore.backgroundMode === 'static'"
       :class="{ 'logo-position-left': loginStore.formPosition === 'left', 'logo-position-right': loginStore.formPosition === 'right' }">
       <div class="logo-svg">
-        <svg-icon name="logo_4" width="380px" height="380px" />
+        <svg-icon name="logo_position" width="380px" height="380px" />
       </div>
       <div class="description">
         <h2>开箱即用的大型中后台管理系统</h2>
