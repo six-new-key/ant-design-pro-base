@@ -1350,5 +1350,33 @@
 	"1krbw47": {
 		"zh-cn": " 忘记密码? ",
 		"en": "Forgot password?"
+	},
+	"ahgyeie": {
+		"zh-cn": "开箱即用的大型中后台管理系统",
+		"en": "A large-scale middle and back-end management system ready to use out of the box"
+	},
+	"48tflch": {
+		"zh-cn": "工程化、高性能、跨组件库的前端模版",
+		"en": "Engineering-oriented, high-performance, cross-component library front-end templates"
+	},
+	"hil7d3": {
+		"zh-cn": "玻璃态",
+		"en": "Glassy state"
+	},
+	"b2optf6": {
+		"zh-cn": "玻璃质感效果",
+		"en": "Glass texture effect"
+	},
+	"jktewr4": {
+		"zh-cn": "非玻璃态",
+		"en": "Non-glassy state"
+	},
+	"346od96": {
+		"zh-cn": "普通背景效果",
+		"en": "Ordinary background effect"
+	},
+	"hyhv014": {
+		"zh-cn": "视觉风格",
+		"en": "Visual style"
 	}
 }

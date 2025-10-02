@@ -2,10 +2,16 @@
   <div class="login-container">
     <!-- 静态背景 -->
     <div v-if="loginStore.isStaticBackground" class="static-background"
-      :style="{ backgroundImage: `url(${loginStore.currentBackgroundUrl})` }"></div>
+      :style="appStore.themeMode === 'dark' ? { background: token.colorBgContainer } : { backgroundImage: `url(${loginStore.currentBackgroundUrl})` }">
+    </div>
 
     <!-- 动态背景容器 -->
-    <div v-if="loginStore.isDynamicBackground" id="login-dynamic-bg" class="dynamic-background"></div>
+    <div v-if="loginStore.isDynamicBackground && appStore.themeMode !== 'dark'" id="login-dynamic-bg"
+      class="dynamic-background">
+    </div>
+
+    <div v-if="appStore.themeMode == 'dark'" class="dynamic-background" :style="{ background: token.colorBgContainer }">
+    </div>
 
     <!-- Logo区域 -->
     <div class="logo-container">
@@ -15,61 +21,92 @@
       </div>
     </div>
 
+    <!-- Logo左侧或右侧区域 -->
+    <div v-if="loginStore.formPosition !== 'center' && loginStore.backgroundMode === 'static'"
+      :class="{ 'logo-position-left': loginStore.formPosition === 'left', 'logo-position-right': loginStore.formPosition === 'right' }">
+      <div class="logo-svg">
+        <svg-icon name="logo_4" width="380px" height="380px" />
+      </div>
+      <div class="description">
+        <h2>开箱即用的大型中后台管理系统</h2>
+        <span>工程化、高性能、跨组件库的前端模版</span>
+      </div>
+    </div>
+
     <!-- 功能控制区 -->
     <div class="control-panel">
-      <a-dropdown placement="bottomRight" :trigger="['hover']">
-        <a-button type="text" size="large" :style="{ color: token.colorTextSecondary }">
+      <a-dropdown placement="bottomRight">
+        <a-button size="large" type="text" :style="{ color: token.colorTextSecondary }">
           <template #icon>
-            <bg-colors-outlined />
+            <bg-colors-outlined style="font-size: 14px;" />
           </template>
         </a-button>
         <template #overlay>
           <a-menu @click="handleBackgroundModeChange">
-            <a-sub-menu key="dynamic" title="动态背景">
+            <a-sub-menu
+              :style="{ background: loginStore.backgroundMode === 'dynamic' ? token.colorPrimary + 20 : '', borderRadius: token.borderRadius + 'px' }"
+              key="dynamic" title="动态背景">
               <a-menu-item v-for="bg in loginStore.dynamicBackgrounds" :key="`dynamic-${bg.id}`"
                 @click="handleDynamicBgChange(bg.id)">
-                <div class="bg-option">
-                  <span>{{ bg.name }}</span>
-                  <small class="bg-description">{{ bg.description }}</small>
-                </div>
+                <template #icon>
+                  <svg-icon :style="{ opacity: loginStore.selectedDynamicBg === bg.id ? 1 : 0 }" :color="dotColor"
+                    name="dot" :width="iconSize" :height="iconSize" />
+                </template>
+                <span>{{ bg.name }}</span>
               </a-menu-item>
             </a-sub-menu>
-            <a-sub-menu key="static" title="静态背景">
+            <a-sub-menu
+              :style="{ background: loginStore.backgroundMode === 'static' ? token.colorPrimary + 20 : '', borderRadius: token.borderRadius + 'px' }"
+              key="static" title="静态背景">
               <a-menu-item v-for="bg in loginStore.staticBackgrounds" :key="`static-${bg.id}`"
                 @click="handleStaticBgChange(bg.id)">
-                <div class="bg-option">
-                  <div class="bg-preview" :style="{ backgroundImage: `url(${bg.preview})` }"></div>
-                  <span>{{ bg.name }}</span>
-                </div>
+                <template #icon>
+                  <svg-icon :style="{ opacity: loginStore.selectedStaticBg === bg.id ? 1 : 0 }" :color="dotColor"
+                    name="dot" :width="iconSize" :height="iconSize" />
+                </template>
+                <span>{{ bg.name }}</span>
+              </a-menu-item>
+            </a-sub-menu>
+            <a-sub-menu key="visualQuality" title="视觉风格">
+              <a-menu-item v-for="bg in loginStore.visualQualities" :key="bg.id"
+                @click="handleVisualQualityChange(bg.id)">
+                <template #icon>
+                  <svg-icon :style="{ opacity: loginStore.selectedVisualQuality === bg.id ? 1 : 0 }" :color="dotColor"
+                    name="dot" :width="iconSize" :height="iconSize" />
+                </template>
+                <span>{{ bg.name }}</span>
               </a-menu-item>
             </a-sub-menu>
           </a-menu>
         </template>
       </a-dropdown>
 
-      <a-dropdown v-if="loginStore.isStaticBackground" placement="bottomRight" :trigger="['hover']">
-        <a-button type="text" size="large" :style="{ color: token.colorTextSecondary }">
+      <a-dropdown v-if="loginStore.isStaticBackground" placement="bottomRight">
+        <a-button size="large" type="text" :style="{ color: token.colorTextSecondary }">
           <template #icon>
-            <layout-outlined />
+            <layout-outlined style="font-size: 14px;" />
           </template>
         </a-button>
         <template #overlay>
           <a-menu @click="handleFormPositionChange">
             <a-menu-item key="left">
               <template #icon>
-                <align-left-outlined />
+                <svg-icon :style="{ opacity: loginStore.formPosition === 'left' ? 1 : 0 }" :color="dotColor" name="dot"
+                  :width="iconSize" :height="iconSize" />
               </template>
               <span>左侧</span>
             </a-menu-item>
             <a-menu-item key="center">
               <template #icon>
-                <align-center-outlined />
+                <svg-icon :style="{ opacity: loginStore.formPosition === 'center' ? 1 : 0 }" :color="dotColor"
+                  name="dot" :width="iconSize" :height="iconSize" />
               </template>
               <span>居中</span>
             </a-menu-item>
             <a-menu-item key="right">
               <template #icon>
-                <align-right-outlined />
+                <svg-icon :style="{ opacity: loginStore.formPosition === 'right' ? 1 : 0 }" :color="dotColor" name="dot"
+                  :width="iconSize" :height="iconSize" />
               </template>
               <span>右侧</span>
             </a-menu-item>
@@ -77,25 +114,34 @@
         </template>
       </a-dropdown>
 
-      <a-button type="text" size="large" :style="{ color: token.colorTextSecondary }" @click="toggleTheme">
+      <a-button size="large" type="text" @click="toggleThemeMode" :style="{ color: token.colorTextSecondary }">
         <template #icon>
-          <PlayCircleOutlined />
+          <svg-icon :name="appStore.themeMode === 'dark' ? 'sun' : 'moon'" width="16px" height="16px"
+            :color="token.colorTextSecondary" />
         </template>
       </a-button>
 
-      <a-dropdown placement="bottomRight" :trigger="['click']">
-        <a-button type="text" size="large" :style="{ color: token.colorTextSecondary }">
+      <a-dropdown placement="bottomRight">
+        <a-button size="large" type="text" :style="{ color: token.colorTextSecondary }">
           <template #icon>
-            <global-outlined />
+            <svg-icon name="language" width="16px" height="16px" :color="color" />
           </template>
         </a-button>
         <template #overlay>
           <a-menu @click="handleLanguageChange">
-            <a-menu-item key="zh-CN">
-              <span>🇨🇳 中文</span>
+            <a-menu-item key="zh-cn">
+              <template #icon>
+                <svg-icon :style="{ opacity: appStore.language === 'zh-cn' ? 1 : 0 }" :color="dotColor" name="dot"
+                  :width="iconSize" :height="iconSize" />
+              </template>
+              <span>中文</span>
             </a-menu-item>
-            <a-menu-item key="en-US">
-              <span>🇺🇸 English</span>
+            <a-menu-item key="en">
+              <template #icon>
+                <svg-icon :style="{ opacity: appStore.language === 'en' ? 1 : 0 }" :color="dotColor" name="dot"
+                  :width="iconSize" :height="iconSize" />
+              </template>
+              <span>English</span>
             </a-menu-item>
           </a-menu>
         </template>
@@ -129,7 +175,7 @@
 
           <!-- 滑块验证 -->
           <a-form-item name="captcha">
-            <drag-verify ref="dragVerify" :height="39.6" :width="438.4" :background="token.colorFillSecondary"
+            <drag-verify ref="dragVerify" :height="39.6" :width="438.4" :background="token.colorFillTertiary"
               :progressBarBg="token.colorSuccess + '90'" :handlerBg="token.colorBgContainer"
               :textSize="token.fontSize - 2 + 'px'" :textColor="token.colorText" :radius="token.borderRadius + 'px'"
               v-model:isPassing="isPassing" text="请按住滑块拖动" successText="验证通过">
@@ -222,28 +268,34 @@
 import { ref, reactive, onMounted, onUnmounted, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { theme } from 'ant-design-vue'
-import { message } from '@/utils'
+import { message, themeChangeWithAnimation } from '@/utils'
 import { settings } from '@/settings'
 import { dynamicBgManager, generateThemeColors } from '@/utils'
-import { useLoginStore, useThemeStore } from '@/stores'
+import { useLoginStore, useThemeStore, useAppStore } from '@/stores'
 import DragVerify from '@/components/custom/DragVerify.vue'
 
 // 使用 Ant Design Vue 的 design token
 const { token } = theme.useToken()
 
 const isPassing = ref(false)
-const open = ref(false)
-
-// 处理测试点击事件
-const handleTestClick = () => {
-  console.log('测试点击事件')
-  open.value = !open.value
-}
-
+const appStore = useAppStore()
 // 使用登录状态管理
 const loginStore = useLoginStore()
 // 使用主题状态管理
 const themeStore = useThemeStore()
+
+//颜色复杂计算
+const color = computed(() => {
+  if (appStore.themeMode === 'dark') {
+    return '#fff'
+  } else {
+    return '#555555'
+  }
+})
+const dotColor = computed(() => themeStore.primaryColorHex)
+const iconSize = computed(() => {
+  return themeStore.baseConfig.fontSize + 8 + 'px'
+})
 
 const router = useRouter()
 const loading = ref(false)
@@ -257,9 +309,6 @@ const formData = reactive({
   captcha: false, // 滑块验证状态
   remember: false
 })
-
-// 登录类型
-const loginType = ref('account')
 
 // 表单验证规则
 const rules = computed(() => ({
@@ -284,6 +333,22 @@ const rules = computed(() => ({
       trigger: 'change'
     }
   ]
+}))
+
+//登录容器计算
+const loginContainerStyle = computed(() => ({
+  width: loginStore.formPosition === 'left' ? '600px' : '520px',
+  padding: loginStore.formPosition === 'center' || loginStore.backgroundMode === 'dynamic' ? '20px 40px' : loginStore.formPosition === 'left' ? '80px' : '80px 40px',
+  height: loginStore.formPosition === 'center' || loginStore.backgroundMode === 'dynamic' ? 'auto' : '100vh',
+  borderRadius: loginStore.formPosition === 'center' || loginStore.backgroundMode === 'dynamic' ? token.value.borderRadius + 30 + 'px' : '0px',
+  marginBottomItem: loginStore.formPosition === 'center' || loginStore.backgroundMode === 'dynamic' ? '18px' : '24px',
+  background: loginStore.formPosition === 'center' || loginStore.backgroundMode === 'dynamic' ? (loginStore.selectedVisualQuality === 'glass' ? 'transparent' : token.value.colorBgContainer) : token.value.colorBgContainer,
+  boxShadow: loginStore.formPosition === 'center' || loginStore.backgroundMode === 'dynamic' ? (loginStore.selectedVisualQuality === 'glass' ? '0 0 10px rgba(0, 0, 0, 0.2)' : 'none') : 'none',
+  // border: loginStore.formPosition === 'center' || loginStore.backgroundMode === 'dynamic' ? '1px solid ' + token.value.colorBorder : 'none',
+}))
+
+const controlPanelStyle = computed(() => ({
+  background: appStore.themeMode === 'dark' ? token.value.colorFillTertiary : loginStore.backgroundMode === 'dynamic' ? '#fff' : loginStore.formPosition === 'right' ? token.value.colorFillTertiary : '#fff',
 }))
 
 // 处理登录
@@ -340,19 +405,28 @@ const handleStaticBgChange = (bgId) => {
   destroyDynamicBackground()
 }
 
+// 处理视觉风格切换
+const handleVisualQualityChange = (bgId) => {
+  loginStore.setVisualQuality(bgId)
+}
+
 // 处理表单位置切换
 const handleFormPositionChange = ({ key }) => {
   loginStore.setFormPosition(key)
 }
 
-// 主题切换 - 占位符
-const toggleTheme = () => {
-  console.log('主题切换功能待实现')
+// 主题切换
+const toggleThemeMode = (e) => {
+  themeChangeWithAnimation(e, () => {
+    appStore.setThemeMode(appStore.themeMode === 'dark' ? 'light' : 'dark')
+  }, {
+    themeMode: appStore.themeMode === 'dark' ? 'light' : 'dark'
+  })
 }
 
 // 语言切换 - 占位符
 const handleLanguageChange = ({ key }) => {
-  console.log('语言切换功能待实现', key)
+  appStore.setLanguage(key)
 }
 
 // 初始化动态背景
@@ -436,6 +510,15 @@ watch(() => themeStore.primaryColorHex, (newPrimaryColor) => {
   }
 })
 
+//监听主题变化
+watch(() => appStore.themeMode, (newVal) => {
+  if (loginStore.isDynamicBackground && newVal !== 'dark') {
+    setTimeout(() => {
+      initDynamicBackground()
+    }, 300)
+  }
+})
+
 // 销毁动态背景
 const destroyDynamicBackground = () => {
   if (dynamicBgInstance) {
@@ -455,6 +538,8 @@ onMounted(() => {
 onUnmounted(() => {
   destroyDynamicBackground()
 })
+
+
 </script>
 
 <style lang="scss" scoped>
@@ -492,7 +577,7 @@ onUnmounted(() => {
 /* Logo区域 */
 .logo-container {
   position: fixed;
-  top: 14px;
+  top: 20px;
   left: 10px;
   z-index: 1000;
   display: flex;
@@ -500,59 +585,71 @@ onUnmounted(() => {
 
   .logo-text {
     margin-left: 10px;
-    font-size: 24px;
+    font-size: v-bind('token.fontSize + 8 + "px"');
     font-weight: 600;
     color: v-bind('token.colorText');
+    opacity: 0.8;
   }
 }
+
+.logo-position-left {
+  position: fixed;
+  top: 22%;
+  right: 20%;
+  z-index: 1;
+
+  .logo-svg {
+    animation: float 2s ease-in-out infinite;
+  }
+}
+
+.logo-position-right {
+  position: fixed;
+  top: 22%;
+  left: 20%;
+  z-index: 1;
+
+  .logo-svg {
+    animation: float 2s ease-in-out infinite;
+  }
+}
+
+.description {
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  h2 {
+    opacity: 0.8;
+    font-size: v-bind('token.fontSize + 10 + "px"');
+    color: v-bind('token.colorText');
+  }
+
+  span {
+    color: v-bind('token.colorText');
+    opacity: 0.7;
+    font-size: v-bind('token.fontSize + "px"');
+  }
+}
+
 
 /* 功能控制区 */
 .control-panel {
   position: fixed;
-  top: 14px;
-  right: 10px;
+  top: 20px;
+  right: 0;
   z-index: 1000;
   display: flex;
-  gap: 8px;
-  // padding: 8px;
-  background: v-bind('token.colorBgContainer');
-  // border-radius: v-bind('token.borderRadius + "px"');
-  // backdrop-filter: blur(10px);
-  border: 1px solid v-bind('token.colorBorder');
+  background: v-bind('controlPanelStyle.background');
+  border-top-left-radius: 50px;
+  border-bottom-left-radius: 50px;
+  backdrop-filter: blur(10px);
   animation: fadeInDown 0.3s ease-out;
-  border-radius: 50px;
 
   .ant-btn {
     border-radius: 50px;
   }
-}
-
-/* 背景选项样式 */
-.bg-option {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-direction: column;
-  align-items: flex-start;
-
-  span {
-    font-weight: 500;
-  }
-}
-
-.bg-description {
-  color: v-bind('token.colorTextSecondary');
-  font-size: 12px;
-  line-height: 1.2;
-}
-
-.bg-preview {
-  width: 24px;
-  height: 16px;
-  border-radius: 4px;
-  background-size: cover;
-  background-position: center;
-  border: 1px solid v-bind('token.colorBorder');
 }
 
 /* 登录表单容器 */
@@ -582,28 +679,32 @@ onUnmounted(() => {
 
 /* 登录框 */
 .login-box {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
   user-select: none;
   width: 100%;
-  max-width: 520px;
-  height: 100vh;
-  // background: transparent;
-  background: v-bind('token.colorBgContainer');
-  backdrop-filter: blur(6px);
+  max-width: v-bind('loginContainerStyle.width');
+  height: v-bind('loginContainerStyle.height');
+  background: v-bind('loginContainerStyle.background');
+  backdrop-filter: blur(4px);
   //阴影
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  // border-radius: v-bind('token.borderRadius + 30 + "px"');
-  padding: 0 40px 10px 40px;
-  // align-items: center;
+  box-shadow: v-bind('loginContainerStyle.boxShadow');
+  border-radius: v-bind('loginContainerStyle.borderRadius');
+  padding: v-bind('loginContainerStyle.padding');
+  // border: v-bind('loginContainerStyle.border');
   border: 1px solid v-bind('token.colorBorder');
   transition: all 0.3s ease;
   animation: fadeInUp 0.6s ease-out;
 
-  // :where(.ant-form-item) {
-  //   margin-bottom: 18px;
-  // }
+  :where(.ant-form-item) {
+    margin-bottom: v-bind('loginContainerStyle.marginBottomItem');
+  }
+
+  :where(.ant-input) {
+    background: transparent;
+  }
+
+  :where(.ant-input-password) {
+    background: transparent;
+  }
 
   /* 登录头部 */
   .login-header {
@@ -707,6 +808,21 @@ onUnmounted(() => {
 
   to {
     opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 上下浮动动画 */
+@keyframes float {
+  0% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
+
+  100% {
     transform: translateY(0);
   }
 }

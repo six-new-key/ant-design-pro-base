@@ -11,12 +11,7 @@ export const useLoginStore = defineStore('login', () => {
   const formPosition = ref('right') // 'left' | 'center' | 'right'
   const selectedStaticBg = ref('bg1') // 'bg1' | 'bg2' | 'bg3'
   const selectedDynamicBg = ref(DYNAMIC_BG_TYPES.AESTHETIC_FLUID) // 动态背景类型
-  
-  // 主题模式 - 占位符
-  // const themeMode = ref('light') // 'light' | 'dark'
-  
-  // 语言设置 - 占位符
-  // const language = ref('zh-cn') // 'zh-cn' | 'en-us'
+  const selectedVisualQuality = ref('non-glass') // 'glass' | 'non-glass'
   
   // 静态背景图片列表
   const staticBackgrounds = ref([
@@ -24,19 +19,16 @@ export const useLoginStore = defineStore('login', () => {
       id: 'bg1',
       name: '渐变背景',
       url: loginBg1,
-      preview: loginBg1
     },
     {
       id: 'bg2', 
       name: '科技背景',
       url: loginBg2,
-      preview: loginBg2
     },
     {
       id: 'bg3',
       name: '自然背景', 
       url: loginBg3,
-      preview: loginBg3
     }
   ])
   
@@ -45,27 +37,34 @@ export const useLoginStore = defineStore('login', () => {
     {
       id: DYNAMIC_BG_TYPES.AESTHETIC_FLUID,
       name: '优美流动',
-      description: '流体动画效果'
     },
     {
       id: DYNAMIC_BG_TYPES.BLUR_GRADIENT,
       name: '模糊渐变',
-      description: '渐变模糊效果'
     },
     {
       id: DYNAMIC_BG_TYPES.AMBIENT_LIGHT,
       name: '背景光',
-      description: '环境光效果'
     },
     {
       id: DYNAMIC_BG_TYPES.ABSTRACT_SHAPE,
       name: '抽象曲线',
-      description: '抽象几何动画'
     },
     {
       id: DYNAMIC_BG_TYPES.BLUR_DOT,
       name: '模糊圆点',
-      description: '圆点模糊效果'
+    }
+  ])
+
+  //视觉质感风格，玻璃态和非玻璃态
+  const visualQualities = ref([
+    {
+      id: 'glass',
+      name: '玻璃态'
+    },
+    {
+      id: 'non-glass',
+      name: '非玻璃态'
     }
   ])
   
@@ -137,8 +136,6 @@ export const useLoginStore = defineStore('login', () => {
     formPosition.value = 'right'
     selectedStaticBg.value = 'bg1'
     selectedDynamicBg.value = DYNAMIC_BG_TYPES.AESTHETIC_FLUID
-    // themeMode.value = 'light'
-    // language.value = 'zh-cn'
   }
   
   // 获取当前配置的摘要
@@ -149,9 +146,12 @@ export const useLoginStore = defineStore('login', () => {
       selectedStaticBg: selectedStaticBg.value,
       selectedDynamicBg: selectedDynamicBg.value,
       currentBackgroundUrl: currentBackgroundUrl.value
-      // themeMode: themeMode.value,
-      // language: language.value,
     }
+  }
+
+  // 视觉质感风格切换
+  const setVisualQuality = (quality) => {
+    selectedVisualQuality.value = quality
   }
   
   return {
@@ -162,6 +162,8 @@ export const useLoginStore = defineStore('login', () => {
     selectedDynamicBg,
     staticBackgrounds,
     dynamicBackgrounds,
+    visualQualities,
+    selectedVisualQuality,
     
     // Computed
     currentBackgroundUrl,
@@ -177,7 +179,8 @@ export const useLoginStore = defineStore('login', () => {
     setThemeMode, // 占位符
     setLanguage, // 占位符
     resetToDefaults,
-    getCurrentConfig
+    getCurrentConfig,
+    setVisualQuality,
   }
 }, {
   persist: {
@@ -186,9 +189,8 @@ export const useLoginStore = defineStore('login', () => {
       'backgroundMode',
       'formPosition',
       'selectedStaticBg',
-      'selectedDynamicBg'
-      // 'themeMode',
-      // 'language'
+      'selectedDynamicBg',
+      'selectedVisualQuality'
     ]
   }
 })
