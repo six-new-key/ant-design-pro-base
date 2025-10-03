@@ -3,7 +3,7 @@ import { ref, computed } from 'vue'
 import loginBg1 from '@/assets/image/login-bg-1.png'
 import loginBg2 from '@/assets/image/login-bg-2.png'
 import loginBg3 from '@/assets/image/login-bg-3.png'
-import { DYNAMIC_BG_TYPES } from '@/utils/buildGradientBg'
+import { DYNAMIC_BG_TYPES } from '@/utils'
 
 export const useLoginStore = defineStore('login', () => {
   // 状态定义

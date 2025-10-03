@@ -123,7 +123,7 @@ export function destroyDynamicBg(instance) {
  * 动态背景管理器类
  * 提供更高级的管理功能，支持多种背景类型
  */
-export class DynamicBgManager {
+class DynamicBgManager {
   constructor() {
     this.instances = new Map()
   }
@@ -177,10 +177,10 @@ export class DynamicBgManager {
    * 销毁指定的动态背景实例
    * @param {string} domId - DOM 元素的 ID
    */
-  destroy(domId) {
+  async destroy(domId) {
     const instanceData = this.instances.get(domId)
     if (instanceData) {
-      destroyDynamicBg(instanceData.instance)
+      await destroyDynamicBg(instanceData.instance)
       this.instances.delete(domId)
     }
   }
@@ -188,9 +188,9 @@ export class DynamicBgManager {
   /**
    * 销毁所有动态背景实例
    */
-  destroyAll() {
+  async destroyAll() {
     for (const [domId, instanceData] of this.instances) {
-      destroyDynamicBg(instanceData.instance)
+      await destroyDynamicBg(instanceData.instance) 
     }
     this.instances.clear()
   }
@@ -228,22 +228,11 @@ export class DynamicBgManager {
 // 创建全局管理器实例
 export const dynamicBgManager = new DynamicBgManager()
 
-// 兼容性导出
-export const blurGradientBgManager = dynamicBgManager
-export const createBlurGradientBg = createDynamicBg
-export const destroyBlurGradientBg = destroyDynamicBg
-export const BlurGradientBgManager = DynamicBgManager
 
 export default {
   createDynamicBg,
   destroyDynamicBg,
-  DynamicBgManager,
   dynamicBgManager,
   generateThemeColors,
-  DYNAMIC_BG_TYPES,
-  // 兼容性导出
-  createBlurGradientBg,
-  destroyBlurGradientBg,
-  BlurGradientBgManager,
-  blurGradientBgManager
+  DYNAMIC_BG_TYPES
 }

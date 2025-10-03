@@ -1,8 +1,6 @@
 import '../lang/index.js'
 import { loadDynamicBgLibraries } from '@/utils'
 
-// 加载动态背景库
-loadDynamicBgLibraries();
 import { createApp } from 'vue'
 import '@/style/index.scss'
 import App from './App.vue'
@@ -18,12 +16,13 @@ import globalComponent from "@/plugins" //引入自定义插件用来注册全�
 import 'animate.css' // 引入动画库
 
 const app = createApp(App)
-
 //注册图标组件
 Object.keys(antIcons).forEach((key) => {
   app.component(key, antIcons[key]);
 });
 
+// 加载动态背景库
+await loadDynamicBgLibraries();
 //注册全局组件插件
 app.use(globalComponent);
 app.use(router)

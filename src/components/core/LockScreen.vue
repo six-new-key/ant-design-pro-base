@@ -42,13 +42,15 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted, nextTick, reactive } from 'vue'
-import { createBlurGradientBg, destroyBlurGradientBg } from '@/utils'
+import { dynamicBgManager, generateThemeColors } from '@/utils'
 import { message } from '@/utils'
-import { useAppStore } from '@/stores'
+import { useAppStore, useLoginStore, useThemeStore } from '@/stores'
 import router from '@/router'
 
 // Store
 const appStore = useAppStore()
+const loginStore = useLoginStore()
+const themeStore = useThemeStore()
 
 // 响应式数据
 const isUnlocking = ref(false)
@@ -70,7 +72,7 @@ const rules = {
     ]
 }
 
-let gradientBg = null
+let dynamicBgInstance = null
 // 时间更新定时器
 let timeTimer = null
 
@@ -152,9 +154,32 @@ const handleUnlock = async () => {
     }
 }
 
+// 初始化动态背景
+const initDynamicBackground = async () => {
+    // 根据当前主题色生成渐变色数组
+    const primaryColor = themeStore.primaryColorHex
+    const themeColors = generateThemeColors(primaryColor)
+
+    // 使用管理器创建动态背景
+    dynamicBgInstance = dynamicBgManager.create(
+        'screen-box',
+        loginStore.selectedDynamicBg,
+        {
+            colors: themeColors,
+            loop: true
+        }
+    )
+}
+
+// 销毁动态背景
+const destroyDynamicBackground = async () => {
+    await dynamicBgManager.destroy('screen-box')
+    dynamicBgInstance = null
+}
+
 // 组件挂载
 onMounted(() => {
-    gradientBg = createBlurGradientBg('screen-box')
+    initDynamicBackground()
     initTime()
     // 对焦到密码输入框
     passwordInputRef.value?.focus()
@@ -162,9 +187,7 @@ onMounted(() => {
 
 // 组件卸载时清理定时器
 onUnmounted(() => {
-    if (gradientBg) {
-        destroyBlurGradientBg(gradientBg)
-    }
+    destroyDynamicBackground()
     if (timeTimer) {
         clearInterval(timeTimer)
         timeTimer = null

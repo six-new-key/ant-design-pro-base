@@ -42,7 +42,7 @@
           </template>
         </a-button>
         <template #overlay>
-          <a-menu @click="handleBackgroundModeChange">
+          <a-menu>
             <a-sub-menu
               :style="{ background: loginStore.backgroundMode === 'dynamic' ? token.colorPrimary + 20 : '', borderRadius: token.borderRadius + 'px' }"
               key="dynamic" title="动态背景">
@@ -268,9 +268,8 @@
 import { ref, reactive, onMounted, onUnmounted, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { theme } from 'ant-design-vue'
-import { message, themeChangeWithAnimation } from '@/utils'
+import { message, themeChangeWithAnimation, dynamicBgManager, generateThemeColors } from '@/utils'
 import { settings } from '@/settings'
-import { dynamicBgManager, generateThemeColors } from '@/utils'
 import { useLoginStore, useThemeStore, useAppStore } from '@/stores'
 import DragVerify from '@/components/custom/DragVerify.vue'
 
@@ -303,7 +302,6 @@ let dynamicBgInstance = null
 
 // 登录表单数据
 const formData = reactive({
-  userType: 'Super',
   username: 'admin',
   password: '123456',
   captcha: false, // 滑块验证状态
@@ -384,25 +382,16 @@ const handleLogin = async () => {
   }
 }
 
-// 处理背景模式切换
-const handleBackgroundModeChange = ({ key }) => {
-  // 这个函数现在主要用于处理菜单点击事件
-  // 具体的背景切换由 handleDynamicBgChange 和 handleStaticBgChange 处理
-}
-
 // 处理动态背景切换
 const handleDynamicBgChange = (bgId) => {
   loginStore.setBackgroundMode('dynamic')
   loginStore.setSelectedDynamicBg(bgId)
-  destroyDynamicBackground()
-  initDynamicBackground()
 }
 
 // 处理静态背景切换
 const handleStaticBgChange = (bgId) => {
   loginStore.setBackgroundMode('static')
   loginStore.setSelectedStaticBg(bgId)
-  destroyDynamicBackground()
 }
 
 // 处理视觉风格切换
@@ -430,30 +419,28 @@ const handleLanguageChange = ({ key }) => {
 }
 
 // 初始化动态背景
-const initDynamicBackground = () => {
-  destroyDynamicBackground()
-  if (loginStore.isDynamicBackground) {
-    // 根据当前主题色生成渐变色数组
-    const primaryColor = themeStore.primaryColorHex
-    const themeColors = generateThemeColors(primaryColor)
+const initDynamicBackground = async () => {
+  // 先销毁已有的动态背景
+  await destroyDynamicBackground()
 
-    console.log('Using theme colors for dynamic background:', themeColors)
+  // 根据当前主题色生成渐变色数组
+  const primaryColor = themeStore.primaryColorHex
+  const themeColors = generateThemeColors(primaryColor)
 
-    // 使用管理器创建动态背景
-    dynamicBgInstance = dynamicBgManager.create(
-      'login-dynamic-bg',
-      loginStore.selectedDynamicBg,
-      {
-        colors: themeColors,
-        loop: true
-      }
-    )
-  }
+  // 使用管理器创建动态背景
+  dynamicBgInstance = dynamicBgManager.create(
+    'login-dynamic-bg',
+    loginStore.selectedDynamicBg,
+    {
+      colors: themeColors,
+      loop: true
+    }
+  )
 }
 
 // 切换动态背景类型
 const switchDynamicBgType = (bgType) => {
-  if (loginStore.isDynamicBackground && dynamicBgInstance) {
+  if (loginStore.isDynamicBackground) {
     // 根据当前主题色生成渐变色数组
     const primaryColor = themeStore.primaryColorHex
     const themeColors = generateThemeColors(primaryColor)
@@ -473,7 +460,6 @@ const switchDynamicBgType = (bgType) => {
 const updateDynamicBgColors = (newPrimaryColor) => {
   if (loginStore.isDynamicBackground && dynamicBgInstance) {
     const themeColors = generateThemeColors(newPrimaryColor)
-    console.log('Updating dynamic background colors:', themeColors)
 
     // 使用新颜色重新创建背景
     dynamicBgInstance = dynamicBgManager.switchType(
@@ -487,25 +473,22 @@ const updateDynamicBgColors = (newPrimaryColor) => {
   }
 }
 
-//监听登录状态变化
-watch(() => loginStore.backgroundMode, (newVal) => {
-  if (newVal) {
-    //刷新浏览器
-    window.location.reload()
-  }
-})
-
 // 监听动态背景类型变化
 watch(() => loginStore.selectedDynamicBg, (newBgType) => {
-  if (loginStore.isDynamicBackground) {
-    switchDynamicBgType(newBgType)
+  switchDynamicBgType(newBgType)
+})
+
+watch(() => loginStore.isDynamicBackground, (newIsDynamicBg) => {
+  if (newIsDynamicBg) {
+    setTimeout(() => {
+      initDynamicBackground()
+    }, 4)
   }
 })
 
 // 监听主题色变化，自动更新动态背景色彩
 watch(() => themeStore.primaryColorHex, (newPrimaryColor) => {
   if (loginStore.isDynamicBackground && dynamicBgInstance) {
-    console.log('Theme color changed, updating dynamic background:', newPrimaryColor)
     updateDynamicBgColors(newPrimaryColor)
   }
 })
@@ -515,31 +498,25 @@ watch(() => appStore.themeMode, (newVal) => {
   if (loginStore.isDynamicBackground && newVal !== 'dark') {
     setTimeout(() => {
       initDynamicBackground()
-    }, 300)
+    }, 4)
   }
 })
 
 // 销毁动态背景
-const destroyDynamicBackground = () => {
-  if (dynamicBgInstance) {
-    dynamicBgManager.destroy('login-dynamic-bg')
-    dynamicBgInstance = null
-  }
+const destroyDynamicBackground = async () => {
+  await dynamicBgManager.destroy('login-dynamic-bg')
+  dynamicBgInstance = null
 }
 
 // 组件挂载时初始化
 onMounted(() => {
-  if (loginStore.isDynamicBackground) {
-    initDynamicBackground()
-  }
+  initDynamicBackground()
 })
 
 // 组件卸载时清理
 onUnmounted(() => {
   destroyDynamicBackground()
 })
-
-
 </script>
 
 <style lang="scss" scoped>
