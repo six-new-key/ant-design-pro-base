@@ -1,8 +1,11 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import loginBg1 from '@/assets/image/login-bg-1.png'
-import loginBg2 from '@/assets/image/login-bg-2.png'
-import loginBg3 from '@/assets/image/login-bg-3.png'
+import loginBg1 from '@/assets/image/login-1.png'
+import loginBg2 from '@/assets/image/login-2.png'
+import loginBg3 from '@/assets/image/login-3.png'
+import loginBg4 from '@/assets/image/login-4.png'
+import loginBg5 from '@/assets/image/login-5.png'
+import loginBg6 from '@/assets/image/login-6.png'
 import { DYNAMIC_BG_TYPES } from '@/utils'
 
 export const useLoginStore = defineStore('login', () => {
@@ -17,18 +20,33 @@ export const useLoginStore = defineStore('login', () => {
   const staticBackgrounds = ref([
     {
       id: 'bg1',
-      name: '渐变背景',
+      name: '薄荷清晨',
       url: loginBg1,
     },
     {
       id: 'bg2', 
-      name: '科技背景',
+      name: '焦糖日落',
       url: loginBg2,
     },
     {
       id: 'bg3',
-      name: '自然背景', 
+      name: '星空絮语', 
       url: loginBg3,
+    },
+    {
+      id: 'bg4',
+      name: '复古唱片',
+      url: loginBg4,
+    },
+    {
+      id: 'bg5',
+      name: '樱花雾雨',
+      url: loginBg5,
+    },
+    {
+      id: 'bg6',
+      name: '森系苔藓',
+      url: loginBg6,
     }
   ])
   
@@ -39,12 +57,16 @@ export const useLoginStore = defineStore('login', () => {
       name: '优美流动',
     },
     {
-      id: DYNAMIC_BG_TYPES.BLUR_GRADIENT,
-      name: '模糊渐变',
+      id: DYNAMIC_BG_TYPES.CHAOS_WAVES,
+      name: '混沌波浪',
     },
     {
-      id: DYNAMIC_BG_TYPES.AMBIENT_LIGHT,
-      name: '背景光',
+      id: DYNAMIC_BG_TYPES.SWIRLING_CURVES,
+      name: '卷卷曲线',
+    },
+    {
+      id: DYNAMIC_BG_TYPES.BLUR_GRADIENT,
+      name: '模糊渐变',
     },
     {
       id: DYNAMIC_BG_TYPES.ABSTRACT_SHAPE,

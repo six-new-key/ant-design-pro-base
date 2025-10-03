@@ -15,9 +15,10 @@ export const loadDynamicBgLibraries = async () => {
   
   // 动态背景库文件列表
   const bgLibraries = [
-    { name: 'BlurGradientBg', path: '/src/assets/js/BlurGradientBg.min.js' },
     { name: 'AestheticFluidBg', path: '/src/assets/js/AestheticFluidBg.min.js' },
-    { name: 'AmbientLightBg', path: '/src/assets/js/AmbientLightBg.min.js' },
+    { name: 'ChaosWavesBg', path: '/src/assets/js/ChaosWavesBg.min.js' },
+    { name: 'SwirlingCurvesBg', path: '/src/assets/js/SwirlingCurvesBg.min.js' },
+    { name: 'BlurGradientBg', path: '/src/assets/js/BlurGradientBg.min.js' },
     { name: 'AbstractShapeBg', path: '/src/assets/js/AbstractShapeBg.min.js' },
     { name: 'BlurDotBg', path: '/src/assets/js/BlurDotBg.min.js' }
   ];

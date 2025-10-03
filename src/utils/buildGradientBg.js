@@ -10,8 +10,9 @@ import { isDynamicBgLoaded, getLoadedBgTypes } from './dynamicBgLoader'
 // 动态背景类型配置
 export const DYNAMIC_BG_TYPES = {
   AESTHETIC_FLUID: 'AestheticFluidBg',      // 优美流动
+  CHAOS_WAVES: 'ChaosWavesBg',              // 混沌波浪
+  SWIRLING_CURVES: 'SwirlingCurvesBg',      //  卷卷曲线
   BLUR_GRADIENT: 'BlurGradientBg',          // 模糊渐变
-  AMBIENT_LIGHT: 'AmbientLightBg',          // 背景光
   ABSTRACT_SHAPE: 'AbstractShapeBg',        // 抽象曲线
   BLUR_DOT: 'BlurDotBg'                     // 模糊圆点
 }
