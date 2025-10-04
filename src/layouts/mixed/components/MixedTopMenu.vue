@@ -25,11 +25,6 @@ const appStore = useAppStore()
 
 const selectedKeys = ref([])
 
-// 获取用户登录状态
-const getUserLoginStatus = () => {
-  return !!(localStorage.getItem('isLoggedIn') || sessionStorage.getItem('isLoggedIn'))
-}
-
 // 顶部菜单项（显示一级菜单和有子菜单的父级菜单）
 const topMenuItems = computed(() => {
   return allRoutes
@@ -39,10 +34,7 @@ const topMenuItems = computed(() => {
       const notHidden = !r.meta?.hidden
       const notRoot = r.path !== '/'
 
-      // 权限检查：如果路由需要认证，检查用户是否已登录
-      const hasPermission = !r.meta?.requiresAuth || getUserLoginStatus()
-
-      return hasTitle && notHidden && notRoot && hasPermission
+      return hasTitle && notHidden && notRoot
     })
     .sort((a, b) => {
       // 根据order属性排序，没有order的路由排在最后
@@ -86,7 +78,7 @@ const findFirstAccessibleChild = (route) => {
   }
 
   for (const child of route.children) {
-    if (!child.meta?.hidden && (!child.meta?.requiresAuth || getUserLoginStatus())) {
+    if (!child.meta?.hidden) {
       if (child.children && child.children.length > 0) {
         return findFirstAccessibleChild(child)
       } else {

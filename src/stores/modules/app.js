@@ -57,14 +57,19 @@ export const useAppStore = defineStore(
 
     const setLayout = (newLayout) => {
       layout.value = newLayout;
+      if(newLayout === 'fullscreen') {
+        toggleFullscreen(true)
+      } else {
+        toggleFullscreen(false)
+      }
     };
 
     const setPrevLayout = (prev) => {
       prevLayout.value = prev;
     };
 
-    const toggleFullscreen = () => {
-      isFullscreen.value = !isFullscreen.value;
+    const toggleFullscreen = (newFullscreen) => {
+      isFullscreen.value = newFullscreen;
     };
 
     const toggleSidebar = () => {

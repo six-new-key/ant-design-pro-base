@@ -27,11 +27,6 @@ const selectedKeys = ref([])
 
 // 图标映射已移除，直接使用meta.icon
 
-// 获取用户登录状态
-const getUserLoginStatus = () => {
-  return !!(localStorage.getItem('isLoggedIn') || sessionStorage.getItem('isLoggedIn'))
-}
-
 // 第一级路由（一级路由或多级路由的父路由）
 const firstLevelRoutes = computed(() => {
   return allRoutes
@@ -39,8 +34,7 @@ const firstLevelRoutes = computed(() => {
       const hasTitle = route.meta?.title
       const notHidden = !route.meta?.hidden
       const notRoot = route.path !== '/'
-      const hasPermission = !route.meta?.requiresAuth || getUserLoginStatus()
-      return hasTitle && notHidden && notRoot && hasPermission
+      return hasTitle && notHidden && notRoot
     })
     .sort((a, b) => {
       const orderA = a.meta?.order || 999

@@ -70,11 +70,6 @@ const openKeys = ref([])
 
 // 图标映射已移除，直接使用meta.icon
 
-// 获取用户登录状态
-const getUserLoginStatus = () => {
-  return !!(localStorage.getItem('isLoggedIn') || sessionStorage.getItem('isLoggedIn'))
-}
-
 // 根据当前选中的顶部菜单获取对应的侧边栏菜单
 const visibleRoutes = computed(() => {
   const currentTopMenuKey = appStore.currentTopMenu
@@ -95,8 +90,7 @@ const visibleRoutes = computed(() => {
     if (processed.children) {
       processed.children = processed.children
         .filter(child => {
-          const hasPermission = !child.meta?.requiresAuth || getUserLoginStatus()
-          return !child.meta?.hidden && hasPermission
+          return !child.meta?.hidden
         })
         .map(processRoute)
         .sort((a, b) => {
@@ -110,8 +104,7 @@ const visibleRoutes = computed(() => {
 
   return topMenuRoute.children
     .filter(route => {
-      const hasPermission = !route.meta?.requiresAuth || getUserLoginStatus()
-      return !route.meta?.hidden && hasPermission
+      return !route.meta?.hidden
     })
     .map(processRoute)
     .sort((a, b) => {

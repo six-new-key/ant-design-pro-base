@@ -1,13 +1,6 @@
 import { layoutRoutes } from '@/router/routes'
 
 /**
- * 获取用户登录状态
- */
-const getUserLoginStatus = () => {
-  return !!(localStorage.getItem('isLoggedIn') || sessionStorage.getItem('isLoggedIn'))
-}
-
-/**
  * 递归扁平化路由数据，提取所有可搜索的菜单项
  * @param {Array} routes - 路由数组
  * @param {Array} result - 结果数组
@@ -20,9 +13,8 @@ const flattenRoutes = (routes, result = [], parentPath = '') => {
     const hasTitle = route.meta?.title
     const notHidden = !route.meta?.hidden
     const notRoot = route.path !== '/'
-    const hasPermission = !route.meta?.requiresAuth || getUserLoginStatus()
 
-    if (hasTitle && notHidden && notRoot && hasPermission) {
+    if (hasTitle && notHidden && notRoot) {
       // 构建完整路径
       const fullPath = route.path.startsWith('/') ? route.path : `${parentPath}/${route.path}`
       

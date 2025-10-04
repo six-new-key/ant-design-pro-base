@@ -85,12 +85,6 @@ const route = useRoute()
 const selectedKeys = ref([route.path])
 const openKeys = ref([])
 
-
-// 获取用户登录状态
-const getUserLoginStatus = () => {
-  return !!(localStorage.getItem('isLoggedIn') || sessionStorage.getItem('isLoggedIn'))
-}
-
 // 处理路由数据，添加图标组件
 const visibleRoutes = computed(() => {
   return allRoutes
@@ -100,10 +94,7 @@ const visibleRoutes = computed(() => {
       const notHidden = !route.meta?.hidden
       const notRoot = route.path !== '/'
 
-      // 权限检查：如果路由需要认证，检查用户是否已登录
-      const hasPermission = !route.meta?.requiresAuth || getUserLoginStatus()
-
-      return hasTitle && notHidden && notRoot && hasPermission
+      return hasTitle && notHidden && notRoot
     })
     .sort((a, b) => {
       // 根据order属性排序，没有order的路由排在最后

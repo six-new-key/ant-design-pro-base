@@ -117,7 +117,7 @@ import {
 } from '@ant-design/icons-vue'
 import { getLanguageOptions } from '@/locale'
 import { message, themeChangeWithAnimation } from '@/utils'
-import { useAppStore, useThemeStore } from '@/stores'
+import { useAppStore, useThemeStore, useUserStore } from '@/stores'
 import SearchDialog from './SearchDialog.vue'
 import LockScreenDialog from './LockScreenDialog.vue'
 import { theme } from 'ant-design-vue'
@@ -126,6 +126,7 @@ import { Modal } from 'ant-design-vue'
 const router = useRouter()
 const appStore = useAppStore()
 const themeStore = useThemeStore()
+const userStore = useUserStore()
 const isFullscreen = ref(false)
 const languageOptions = getLanguageOptions()
 const dotColor = computed(() => themeStore.primaryColorHex)
@@ -242,11 +243,7 @@ const handleLogout = () => {
         onOk: () => {
             // 这里应该调用登出逻辑
             // 重置登录状态
-            localStorage.removeItem('isLoggedIn')
-            localStorage.removeItem('username')
-
-            sessionStorage.removeItem('isLoggedIn')
-            sessionStorage.removeItem('username')
+            userStore.handleLogout()
 
             message.success('退出登录成功')
             router.push('/login')

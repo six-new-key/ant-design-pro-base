@@ -160,16 +160,16 @@
           </p>
         </div>
 
-        <a-form :model="formData" :rules="rules">
+        <a-form ref="formRef" :model="formData" :rules="rules">
           <!-- 用户名输入框 -->
           <a-form-item name="username">
-            <a-input v-model:value="formData.username" size="large" placeholder="vben">
+            <a-input v-model:value="formData.username" size="large" placeholder="用户名">
             </a-input>
           </a-form-item>
 
           <!-- 密码输入框 -->
           <a-form-item name="password">
-            <a-input-password v-model:value="formData.password" size="large" placeholder="......">
+            <a-input-password v-model:value="formData.password" size="large" placeholder="密码">
             </a-input-password>
           </a-form-item>
 
@@ -178,7 +178,7 @@
             <drag-verify ref="dragVerify" :height="39.6" :width="438.4" :background="token.colorFillTertiary"
               :progressBarBg="token.colorSuccess + '90'" :handlerBg="token.colorBgContainer"
               :textSize="token.fontSize - 2 + 'px'" :textColor="token.colorText" :radius="token.borderRadius + 'px'"
-              v-model:isPassing="isPassing" text="请按住滑块拖动" successText="验证通过">
+              v-model:isPassing="formData.captcha" @passcallback="handleCaptchaPass" text="请按住滑块拖动" successText="验证通过">
             </drag-verify>
           </a-form-item>
 
@@ -196,7 +196,7 @@
 
           <!-- 登录按钮 -->
           <a-form-item>
-            <a-button type="primary" @click="handleLogin" size="large" :loading="loading" block>
+            <a-button type="primary" @click="doLogin" size="large" :loading="loading" block>
               登录
             </a-button>
           </a-form-item>
@@ -270,18 +270,20 @@ import { useRouter } from 'vue-router'
 import { theme } from 'ant-design-vue'
 import { message, themeChangeWithAnimation, dynamicBgManager, generateThemeColors } from '@/utils'
 import { settings } from '@/settings'
-import { useLoginStore, useThemeStore, useAppStore } from '@/stores'
+import { useLoginStore, useThemeStore, useAppStore, useUserStore } from '@/stores'
 import DragVerify from '@/components/custom/DragVerify.vue'
 
 // 使用 Ant Design Vue 的 design token
 const { token } = theme.useToken()
 
-const isPassing = ref(false)
+const formRef = ref();
 const appStore = useAppStore()
 // 使用登录状态管理
 const loginStore = useLoginStore()
 // 使用主题状态管理
 const themeStore = useThemeStore()
+// 使用用户状态管理
+const userStore = useUserStore()
 
 //颜色复杂计算
 const color = computed(() => {
@@ -322,15 +324,12 @@ const preloadBackgroundImages = async () => {
 const formData = reactive({
   username: 'admin',
   password: '123456',
-  captcha: false, // 滑块验证状态
+  captcha: false,
   remember: false
 })
 
 // 表单验证规则
 const rules = computed(() => ({
-  userType: [
-    { required: true, message: '请选择用户类型', trigger: 'change' }
-  ],
   username: [
     { required: true, message: '请输入用户名', trigger: 'blur' }
   ],
@@ -346,10 +345,15 @@ const rules = computed(() => ({
         }
         return Promise.resolve()
       },
-      trigger: 'change'
+      trigger: ['change', 'blur']
     }
   ]
 }))
+
+// 处理滑块验证通过
+const handleCaptchaPass = () => {
+  formRef.value.clearValidate();
+}
 
 //登录容器计算
 const loginContainerStyle = computed(() => ({
@@ -368,36 +372,24 @@ const controlPanelStyle = computed(() => ({
 }))
 
 // 处理登录
-const handleLogin = async () => {
-  loading.value = true
-
-  try {
-    // 模拟登录请求
-    await new Promise(resolve => setTimeout(resolve, 1000))
-
-    // 简单的登录验证
-    if (formData.username === 'admin' && formData.password === '123456') {
-      message.success('登录成功！')
-
-      // 存储登录状态
-      if (formData.remember) {
-        localStorage.setItem('isLoggedIn', 'true')
-        localStorage.setItem('username', formData.username)
+const doLogin = async () => {
+  //校验
+  await formRef.value.validate().then(async () => {
+    loading.value = true
+    // 校验通过，继续登录
+    try {
+      // 调用用户状态管理的登录方法
+      const loginSuccess = await userStore.handleLogin(formData)
+      if (loginSuccess) {
+        // 登录成功，跳转到后台首页
+        router.push('/dashboard')
       } else {
-        sessionStorage.setItem('isLoggedIn', 'true')
-        sessionStorage.setItem('username', formData.username)
+        message.error('用户名或密码错误！')
       }
-
-      // 跳转到后台首页
-      router.push('/dashboard')
-    } else {
-      message.error('用户名或密码错误！')
+    } finally {
+      loading.value = false
     }
-  } catch (error) {
-    message.error('登录失败，请重试！')
-  } finally {
-    loading.value = false
-  }
+  })
 }
 
 // 处理动态背景切换

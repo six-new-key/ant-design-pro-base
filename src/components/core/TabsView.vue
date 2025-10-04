@@ -584,11 +584,11 @@ const handleLayoutSwitch = () => {
   if (appStore.layout !== 'fullscreen') {
     appStore.setPrevLayout(appStore.layout) // 假设 store 提供 setPrevLayout 来保存
     appStore.setLayout('fullscreen')
-    appStore.toggleFullscreen()
+    appStore.toggleFullscreen(true)
   } else {
     // 如果当前已是全屏，则恢复之前保存的布局
     appStore.setLayout(appStore.prevLayout || 'sidebar') // 默认回退 side
-    appStore.toggleFullscreen()
+    appStore.toggleFullscreen(false)
   }
 }
 
