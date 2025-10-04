@@ -1,11 +1,5 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import loginBg1 from '@/assets/image/login-1.png'
-import loginBg2 from '@/assets/image/login-2.png'
-import loginBg3 from '@/assets/image/login-3.png'
-import loginBg4 from '@/assets/image/login-4.png'
-import loginBg5 from '@/assets/image/login-5.png'
-import loginBg6 from '@/assets/image/login-6.png'
 import { DYNAMIC_BG_TYPES } from '@/utils'
 
 export const useLoginStore = defineStore('login', () => {
@@ -21,32 +15,32 @@ export const useLoginStore = defineStore('login', () => {
     {
       id: 'bg1',
       name: '薄荷清晨',
-      url: loginBg1,
+      url: '/images/login/login-1.webp',
     },
     {
       id: 'bg2', 
       name: '焦糖日落',
-      url: loginBg2,
+      url: '/images/login/login-2.webp',
     },
     {
       id: 'bg3',
       name: '星空絮语', 
-      url: loginBg3,
+      url: '/images/login/login-3.webp',
     },
     {
       id: 'bg4',
       name: '复古唱片',
-      url: loginBg4,
+      url: '/images/login/login-4.webp', 
     },
     {
       id: 'bg5',
       name: '樱花雾雨',
-      url: loginBg5,
+      url: '/images/login/login-5.webp',
     },
     {
       id: 'bg6',
       name: '森系苔藓',
-      url: loginBg6,
+      url: '/images/login/login-6.webp',
     }
   ])
   

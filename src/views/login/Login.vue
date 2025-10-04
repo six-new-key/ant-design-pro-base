@@ -300,6 +300,24 @@ const router = useRouter()
 const loading = ref(false)
 let dynamicBgInstance = null
 
+// 图片预加载功能
+const preloadImage = (url) => {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    img.onload = resolve
+    img.onerror = reject
+    img.src = url
+  })
+}
+
+// 预加载所有背景图片
+const preloadBackgroundImages = async () => {
+  const imagePromises = loginStore.staticBackgrounds.map(bg =>
+    preloadImage(bg.url)
+  )
+  await Promise.all(imagePromises)
+}
+
 // 登录表单数据
 const formData = reactive({
   username: 'admin',
@@ -511,6 +529,8 @@ const destroyDynamicBackground = async () => {
 // 组件挂载时初始化
 onMounted(() => {
   initDynamicBackground()
+  // 预加载背景图片
+  preloadBackgroundImages()
 })
 
 // 组件卸载时清理
