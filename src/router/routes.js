@@ -27,6 +27,45 @@ export const layoutRoutes = [
       hidden: false,
     },
   },
+  //大语言模型
+  {
+    path: "/llm",
+    name: "LLM",
+    redirect: "/llm/one",
+    meta: {
+      title: "大模型",
+      icon: "ChromeOutlined",
+      requiresAuth: true,
+      order: 2,
+      hidden: false,
+    },
+    children: [
+      {
+        path: "/llm/one",
+        name: "LlmOne",
+        component: () => import("@/views/Llm/One.vue"),
+        meta: {
+          title: "大模型1",
+          icon: "ChromeOutlined",
+          requiresAuth: true,
+          order: 1,
+          hidden: false,
+        },
+      },
+      {
+        path: "/llm/two",
+        name: "LlmTwo",
+        component: () => import("@/views/Llm/Two.vue"),
+        meta: {
+          title: "大模型2",
+          icon: "ChromeOutlined",
+          requiresAuth: true,
+          order: 2,
+          hidden: false,
+        },
+      },
+    ],
+  },
   // 表单页面
   {
     path: "/form",

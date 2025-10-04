@@ -1426,5 +1426,25 @@
 	"io38z3": {
 		"zh-cn": "管理员",
 		"en": "Administrator"
+	},
+	"dkmpd3": {
+		"zh-cn": "大模型",
+		"en": "Large model"
+	},
+	"borjvk4": {
+		"zh-cn": "大模型1",
+		"en": ""
+	},
+	"borjvl4": {
+		"zh-cn": "大模型2",
+		"en": "\"Large Model 2"
+	},
+	"63q2kt6": {
+		"zh-cn": "大语言模型1",
+		"en": "Large Language Model 1"
+	},
+	"63q2ku6": {
+		"zh-cn": "大语言模型2",
+		"en": "Large Language Model 2"
 	}
 }

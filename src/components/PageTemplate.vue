@@ -22,9 +22,3 @@ defineProps({
   }
 })
 </script>
-
-<style scoped>
-.page-template {
-  padding: 24px;
-}
-</style>
