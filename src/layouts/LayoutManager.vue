@@ -7,7 +7,7 @@
     <component v-if="isLayoutLoaded && currentLayout && !appStore.isScreenLocked" :is="currentLayout" />
     <!-- 加载中状态 -->
     <div v-else-if="!appStore.isScreenLocked" class="layout-loading">
-      <a-spin size="large" tip="正在加载新布局..." />
+      <a-spin size="large" tip="数据加载中..." />
     </div>
 
     <!-- 布局切换按钮 -->

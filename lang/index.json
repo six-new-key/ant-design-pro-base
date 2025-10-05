@@ -1446,5 +1446,17 @@
 	"63q2ku6": {
 		"zh-cn": "大语言模型2",
 		"en": "Large Language Model 2"
+	},
+	"vwpj0r8": {
+		"zh-cn": "正在加数据...",
+		"en": "Data is being added..."
+	},
+	"8csu269": {
+		"zh-cn": "正在加载数据...",
+		"en": "Loading data..."
+	},
+	"5u04jg8": {
+		"zh-cn": "数据加载中...",
+		"en": "Data loading in progress..."
 	}
 }
