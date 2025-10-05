@@ -1,8 +1,9 @@
 import vitePluginsAutoI18n, { YoudaoTranslator } from 'vite-auto-i18n-plugin'
-import { defineConfig, loadEnv } from "vite";
-import vue from "@vitejs/plugin-vue";
-import Components from "unplugin-vue-components/vite";
-import { AntDesignVueResolver } from "unplugin-vue-components/resolvers";
+import { defineConfig, loadEnv } from "vite"
+import vue from "@vitejs/plugin-vue"
+import Components from "unplugin-vue-components/vite"
+import { AntDesignVueResolver } from "unplugin-vue-components/resolvers"
+import { AntDesignXVueResolver } from 'ant-design-x-vue/resolver'
 //引入path路径，用于路径别名
 import path from "path";
 import { resolve } from "path";
@@ -41,6 +42,7 @@ export default defineConfig(({ command, mode }) => {
           AntDesignVueResolver({
             importStyle: false,
           }),
+          AntDesignXVueResolver()
         ],
       }),
       vue(),
