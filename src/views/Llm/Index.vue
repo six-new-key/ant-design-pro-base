@@ -1,34 +1,36 @@
 <template>
-  <a-card class="chat-container">
-    <a-flex gap="middle" vertical>
-      <AXBubble placement="start" content="Good morning, how are you?"
-        :avatar="{ icon: h(UserOutlined), style: fooAvatar }" />
-      <AXBubble placement="start" content="What a beautiful day!" :styles="{ avatar: hideAvatar }" :avatar="{}" />
-      <AXBubble placement="end" content="Hi, good morning, I'm fine!">
-        <template #avatar>
-          <a-avatar :icon="h(UserOutlined)" :style="barAvatar" />
-        </template>
-      </AXBubble>
-      <AXBubble placement="end" content="Thank you!" :styles="{ avatar: hideAvatar }" :avatar="{}" />
-    </a-flex>
-  </a-card>
+  <a-flex horizontal>
+    <div class="left">
+      <Left />
+    </div>
+    <div class="right">
+      <Right />
+    </div>
+  </a-flex>
 </template>
-
 <script setup>
-import { UserOutlined } from '@ant-design/icons-vue';
-import { h } from 'vue';
+import Left from './components/Left.vue';
+import Right from './components/Right.vue';
+import { theme } from 'ant-design-vue';
 
-const fooAvatar = {
-  color: '#f56a00',
-  backgroundColor: '#fde3cf',
-};
-
-const barAvatar = {
-  color: '#fff',
-  backgroundColor: '#87d068',
-};
-
-const hideAvatar = {
-  visibility: 'hidden',
-};
+const { token } = theme.useToken();
 </script>
+
+<style scoped lang="scss">
+.left {
+  width: 18%;
+  min-height: 84vh;
+  max-height: 88vh;
+  background: v-bind('token.colorFillTertiary');
+  overflow-y: scroll;
+  border-right: 1px solid v-bind('token.colorBorder');
+  padding: 20px;
+}
+
+.right {
+  width: 82%;
+  background: v-bind('token.colorBgContainer');
+  min-height: 84vh;
+  max-height: 88vh;
+}
+</style>
