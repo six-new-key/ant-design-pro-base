@@ -5,9 +5,17 @@ export const noLayoutRoutes = [
     name: "Login",
     component: () => import("@/views/login/Login.vue"),
     meta: {
-      requiresAuth: false,
       title: "用户登录",
-      description: "用户登录页面",
+      requiresAuth: false,
+    },
+  },
+  {
+    path: "/:pathMatch(.*)*",
+    name: "404",
+    component: () => import("@/views/404/Index.vue"),
+    meta: {
+      title: "任意路由",
+      requiresAuth: false,
     },
   },
 ];
@@ -31,7 +39,7 @@ export const layoutRoutes = [
   {
     path: "/llm",
     name: "LLM",
-    redirect: "/llm/one",
+    component: () => import("@/views/Llm/Index.vue"),
     meta: {
       title: "大模型",
       icon: "ChromeOutlined",
@@ -39,32 +47,6 @@ export const layoutRoutes = [
       order: 2,
       hidden: false,
     },
-    children: [
-      {
-        path: "/llm/one",
-        name: "LlmOne",
-        component: () => import("@/views/Llm/One.vue"),
-        meta: {
-          title: "大模型1",
-          icon: "ChromeOutlined",
-          requiresAuth: true,
-          order: 1,
-          hidden: false,
-        },
-      },
-      {
-        path: "/llm/two",
-        name: "LlmTwo",
-        component: () => import("@/views/Llm/Two.vue"),
-        meta: {
-          title: "大模型2",
-          icon: "ChromeOutlined",
-          requiresAuth: true,
-          order: 2,
-          hidden: false,
-        },
-      },
-    ],
   },
   // 表单页面
   {
