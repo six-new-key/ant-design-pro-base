@@ -29,8 +29,9 @@
             <!-- 对话消息 -->
             <div class="chat-messages">
                 <div v-for="(msg, index) in messages" :key="index" class="message-item">
-                    <AXBubble :placement="msg.placement" :loading="msg.loading" :content="msg.content"
-                        :avatar="getAvatarStyle(msg.placement)" :messageRender="renderMarkdown" variant="outlined" shape="round">
+                    <AXBubble :typing="{ step: 2, interval: 20 }" :placement="msg.placement" :loading="msg.loading" :content="msg.content"
+                        :avatar="getAvatarStyle(msg.placement)" :messageRender="renderMarkdown" variant="outlined"
+                        shape="round">
                         <template #footer="{ content }">
                             <a-space :size="token.paddingXXS">
                                 <a-button type="text" size="small" :icon="h(SyncOutlined)"
@@ -60,7 +61,7 @@ import SenderMsg from './SenderMsg.vue'
 import markdownit from 'markdown-it'
 import hljs from 'highlight.js'
 import 'highlight.js/styles/atom-one-dark.css' // 深色主题（推荐）
-import { theme } from 'ant-design-vue';
+import { theme, Typography } from 'ant-design-vue';
 
 // 常量定义
 const SSE_CONSTANTS = {
@@ -70,7 +71,6 @@ const SSE_CONSTANTS = {
 };
 
 // 定义state
-const id = 'preview-only';
 const messageValue = ref('')
 const loading = ref(false)
 const chatContentRef = ref(null)
@@ -151,9 +151,9 @@ const getAvatarStyle = (placement) => {
 };
 
 // 修改渲染函数，添加类名
-const renderMarkdown = (content) => {
-    return h('div', { innerHTML: md.render(content) })
-}
+const renderMarkdown = (content) => h(Typography, null, {
+    default: () => h('div', { innerHTML: md.render(content) })
+})
 
 // 滚动到底部
 const scrollToBottom = () => {

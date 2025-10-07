@@ -1714,5 +1714,113 @@
 	"mhytkf5": {
 		"zh-cn": "对话已重置",
 		"en": "The conversation has been reset."
+	},
+	"6y8iv95": {
+		"zh-cn": "请求失败：",
+		"en": "Request failed"
+	},
+	"ogghtbr": {
+		"zh-cn": "后端未返回流式数据（response.body 为空）",
+		"en": "The backend does not return streaming data (response.body is empty)"
+	},
+	"42dnckc": {
+		"zh-cn": "\n（请求已被手动停止）",
+		"en": "(The request has been manually stopped."
+	},
+	"diprg14": {
+		"zh-cn": "未知错误",
+		"en": "Unknown error"
+	},
+	"henewq5": {
+		"zh-cn": "对接失败：",
+		"en": "Docking failed"
+	},
+	"krj1ro5": {
+		"zh-cn": "[错误] ",
+		"en": "\"Error"
+	},
+	"2f7fob6": {
+		"zh-cn": "请求失败: ",
+		"en": "Request failed"
+	},
+	"h5hcsjq": {
+		"zh-cn": "后端未返回流式数据（response.body为空）",
+		"en": "The backend does not return streaming data (response.body is empty)"
+	},
+	"kmizmg6": {
+		"zh-cn": "AI返回错误",
+		"en": "AI returns an error"
+	},
+	"8tj1iy9": {
+		"zh-cn": "\n（请求已取消）",
+		"en": "(The request has been cancelled"
+	},
+	"gru5iyj": {
+		"zh-cn": "连接异常，请重试（已超过最大重连次数）",
+		"en": "Connection is abnormal. Please try again (the maximum number of reconnections has been exceeded)."
+	},
+	"enlj4ac": {
+		"zh-cn": "\n（连接异常，已停止）",
+		"en": "(Connection abnormal, stopped)"
+	},
+	"yoek5uh": {
+		"zh-cn": "XStream连接异常，已停止重连",
+		"en": "XStream connection exception. Reconnection has been stopped"
+	},
+	"ura0f68": {
+		"zh-cn": "请输入消息...",
+		"en": "Please enter the message..."
+	},
+	"jx65og7": {
+		"zh-cn": "已复制到剪贴板",
+		"en": "It has been copied to the clipboard"
+	},
+	"bktvvh4": {
+		"zh-cn": "复制失败",
+		"en": "Copy failed"
+	},
+	"jdhqxo4": {
+		"zh-cn": "错误: ",
+		"en": "Error"
+	},
+	"u4uuge8": {
+		"zh-cn": "连接失败，请重试",
+		"en": "Connection failed. Please try again"
+	},
+	"84pbjx7": {
+		"zh-cn": "AI 智能助手",
+		"en": "AI Intelligent assistant"
+	},
+	"f2pi3p15": {
+		"zh-cn": "我是您的AI助手，可以帮助您解答问题、提供建议和进行对话。请输入您的问题开始对话。",
+		"en": "I'm your AI assistant, capable of helping you answer questions, offer advice and engage in conversations. Please enter your question to start the conversation."
+	},
+	"dzz9z4": {
+		"zh-cn": " 复制 ",
+		"en": "Copy"
+	},
+	"ml0t44": {
+		"zh-cn": " 重试 ",
+		"en": "Retry"
+	},
+	"127acha": {
+		"zh-cn": "请输入您的问题...",
+		"en": "Please enter your question..."
+	},
+	"ix59tx4": {
+		"zh-cn": "重置对话",
+		"en": "Reset the conversation"
+	},
+	"miwv34": {
+		"zh-cn": " 重置 ",
+		"en": "Reset"
+	},
+	"irpx08": {
+		"zh-cn": "正在思考中...",
+		"en": "I'm thinking..."
+	},
+	"8pzw2sd": {
+		"zh-cn": "抱歉，请求失败了，请重试。",
+		"en": "Sorry, the request failed. Please try again."
 	}
 }
