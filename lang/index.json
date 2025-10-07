@@ -1606,5 +1606,113 @@
 	"gl6sc08": {
 		"zh-cn": "连接异常，请重试",
 		"en": "Connection is abnormal. Please try again"
+	},
+	"xw8tqna": {
+		"zh-cn": "连接异常，请稍后重试",
+		"en": "Connection is abnormal. Please try again later"
+	},
+	"sn9zl26": {
+		"zh-cn": "创建连接失败",
+		"en": "Failed to create the connection"
+	},
+	"b65a734": {
+		"zh-cn": "发送成功",
+		"en": "Sent successfully"
+	},
+	"b643fo4": {
+		"zh-cn": "发送失败",
+		"en": "Failed to send"
+	},
+	"h245jp7": {
+		"zh-cn": "服务器处理出错",
+		"en": "Server processing error"
+	},
+	"ik8eb94": {
+		"zh-cn": "连接信息",
+		"en": "Connection information"
+	},
+	"so8hxn6": {
+		"zh-cn": "当前状态: ",
+		"en": "Current status"
+	},
+	"1oxzag8": {
+		"zh-cn": "\\n重连次数: ",
+		"en": "\\n reconnection times:"
+	},
+	"csik03": {
+		"zh-cn": "加载中",
+		"en": "Loading"
+	},
+	"gdll2": {
+		"zh-cn": "就绪",
+		"en": "Ready"
+	},
+	"jb7xng7": {
+		"zh-cn": "请输入消息内容",
+		"en": "Please enter the message content"
+	},
+	"me372lc": {
+		"zh-cn": "连接中断，正在重连...",
+		"en": "The connection was interrupted and is being reconnected..."
+	},
+	"llzo3": {
+		"zh-cn": " 第 ",
+		"en": "The first"
+	},
+	"jogucq9": {
+		"zh-cn": " 次重试中... ",
+		"en": "In this retry..."
+	},
+	"xg2xln6": {
+		"zh-cn": " 重置对话 ",
+		"en": "Reset the conversation"
+	},
+	"mbrsiz6": {
+		"zh-cn": " 连接信息 ",
+		"en": "Connection information"
+	},
+	"i9kcyr6": {
+		"zh-cn": "连接错误: ",
+		"en": "Connection error"
+	},
+	"pkfc2": {
+		"zh-cn": "重试",
+		"en": "Retry"
+	},
+	"49svcre": {
+		"zh-cn": "连接中断，正在重连... (",
+		"en": "The connection was interrupted and is being reconnected... ("
+	},
+	"pqqsfp8": {
+		"zh-cn": "消息内容不能为空",
+		"en": "The content of the message cannot be empty"
+	},
+	"3l7fqj8": {
+		"zh-cn": "重新连接中...",
+		"en": "Reconnecting..."
+	},
+	"8jbgcq6": {
+		"zh-cn": "发送失败: ",
+		"en": "Failed to send"
+	},
+	"qht4gb6": {
+		"zh-cn": "消息发送失败",
+		"en": "Message sending failed"
+	},
+	"mho6lc5": {
+		"zh-cn": "对话已取消",
+		"en": "The conversation has been cancelled."
+	},
+	"9o29n6a": {
+		"zh-cn": "没有找到可重试的消息",
+		"en": "No reachable message was found"
+	},
+	"ikiwuw4": {
+		"zh-cn": "连接超时",
+		"en": "Connection timeout"
+	},
+	"mhytkf5": {
+		"zh-cn": "对话已重置",
+		"en": "The conversation has been reset."
 	}
 }

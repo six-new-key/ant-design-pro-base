@@ -1,5 +1,10 @@
 <template>
     <div class="right-wrapper">
+        <!-- 重连提示 -->
+        <div v-if="isReconnecting" class="reconnect-notice">
+            <a-alert message="连接中断，正在重连..." type="warning" show-icon />
+        </div>
+
         <!-- 对话内容区：可滚动 -->
         <div class="chat-content" ref="chatContentRef">
             <!-- 欢迎消息 -->
@@ -10,29 +15,31 @@
                     description="Base on Ant Design, AGI product interface solution, create a better intelligent vision~">
                     <template #extra>
                         <a-space>
-                            <a-button>
+                            <a-button @click="resetChat">
                                 <template #icon>
-                                    <ShareAltOutlined />
+                                    <ReloadOutlined />
                                 </template>
-                            </a-button>
-                            <a-button>
-                                <template #icon>
-                                    <EllipsisOutlined />
-                                </template>
+                                重置对话
                             </a-button>
                         </a-space>
                     </template>
                 </AXWelcome>
             </div>
+
             <!-- 对话消息 -->
             <div class="chat-messages">
                 <div v-for="(msg, index) in messages" :key="index" class="message-item">
-                    <AXBubble 
-                        :placement="msg.placement" 
-                        :loading="msg.loading" 
-                        :content="msg.content"
-                        :avatar="{ icon: h(UserOutlined), style: msg.placement === 'end' ? barAvatar : fooAvatar }" 
-                    />
+                    <AXBubble :placement="msg.placement" :loading="msg.loading" :content="msg.content"
+                        :avatar="getAvatarStyle(msg.placement)" :messageRender="renderMarkdown" variant="outlined" shape="round">
+                        <template #footer="{ content }">
+                            <a-space :size="token.paddingXXS">
+                                <a-button type="text" size="small" :icon="h(SyncOutlined)"
+                                    @click="handleRetry(index)" />
+                                <a-button type="text" size="small" :icon="h(CopyOutlined)"
+                                    @click="handleCopy(content)" />
+                            </a-space>
+                        </template>
+                    </AXBubble>
                 </div>
             </div>
         </div>
@@ -47,20 +54,55 @@
 
 <script setup>
 import { ref, h, onMounted, nextTick, onUnmounted } from 'vue'
-import { UserOutlined } from '@ant-design/icons-vue';
+import { UserOutlined, RobotOutlined, ReloadOutlined, SyncOutlined, CopyOutlined } from '@ant-design/icons-vue';
 import { message } from '@/utils';
 import SenderMsg from './SenderMsg.vue'
+import markdownit from 'markdown-it'
+import hljs from 'highlight.js'
+import 'highlight.js/styles/atom-one-dark.css' // 深色主题（推荐）
+import { theme } from 'ant-design-vue';
+
+// 常量定义
+const SSE_CONSTANTS = {
+    END_FLAG: '[DONE]',
+    ERROR_PREFIX: '[ERROR] ',
+    MAX_RECONNECT_ATTEMPTS: 2
+};
 
 // 定义state
+const id = 'preview-only';
 const messageValue = ref('')
 const loading = ref(false)
 const chatContentRef = ref(null)
+const isReconnecting = ref(false)
+const reconnectCount = ref(0)
+const { token } = theme.useToken();
+
+// Markdown渲染器
+const md = markdownit({
+    html: true,
+    breaks: true,
+    typographer: true,
+    // 启用代码高亮
+    highlight: function (str, lang) {
+        // 如果指定了语言且 highlight.js 支持，则高亮该语言
+        if (lang && hljs.getLanguage(lang)) {
+            try {
+                return `<pre class="hljs"><code>${hljs.highlight(str, { language: lang }).value}</code></pre>`
+            } catch (err) { }
+        }
+        // 未指定语言或不支持时，自动检测语言并高亮
+        return `<pre class="hljs"><code>${hljs.highlightAuto(str).value}</code></pre>`
+    }
+})
 
 // SSE相关变量
 let eventSource = null
 let currentAiMessageIndex = -1
+let reconnectTimer = null
+let hasReceivedData = false
 
-// 初始化一些历史消息
+// 初始化消息
 const messages = ref([
     {
         placement: 'start',
@@ -79,17 +121,41 @@ const messages = ref([
     }
 ])
 
-const fooAvatar = {
-    color: '#f56a00',
-    backgroundColor: '#fde3cf',
+// 头像样式
+const getAvatarStyle = (placement) => {
+    const baseStyle = {
+        color: '#fff',
+        borderRadius: '50%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+    };
+
+    if (placement === 'end') {
+        return {
+            icon: h(UserOutlined),
+            style: {
+                ...baseStyle,
+                backgroundColor: '#1890ff',
+            }
+        };
+    } else {
+        return {
+            icon: h(RobotOutlined),
+            style: {
+                ...baseStyle,
+                backgroundColor: '#52c41a',
+            }
+        };
+    }
 };
 
-const barAvatar = {
-    color: '#fff',
-    backgroundColor: '#87d068',
-};
+// 修改渲染函数，添加类名
+const renderMarkdown = (content) => {
+    return h('div', { innerHTML: md.render(content) })
+}
 
-// 滚动到底部函数
+// 滚动到底部
 const scrollToBottom = () => {
     nextTick(() => {
         if (chatContentRef.value) {
@@ -101,150 +167,168 @@ const scrollToBottom = () => {
     });
 };
 
-// 页面加载完成后滚动到底部
-onMounted(() => {
-    setTimeout(() => {
-        scrollToBottom();
-    }, 1000);
-});
-
-// 关闭SSE连接
-const closeSSEConnection = () => {
-    if (eventSource) {
-        eventSource.close();
-        eventSource = null;
-        console.log('SSE连接已关闭');
-    }
-    loading.value = false;
-};
-
-// 处理标准SSE格式数据
-const processSSEData = (rawData) => {
-    // 标准SSE格式: "data:内容\n\n"
-    // 我们需要提取"data:"后面的内容
-    if (rawData.startsWith('data:')) {
-        // 提取"data:"后面的内容，并去掉末尾的换行符
-        return rawData.substring(5).replace(/\n\n$/, '');
-    }
-    return rawData;
-};
-
-// 使用fetch API处理流式数据
-const connectWithFetch = async (userMessage) => {
-    const encodedMessage = encodeURIComponent(userMessage);
-    const url = `http://localhost:8201/llm/chat?msg=${encodedMessage}`;
-
-    try {
-        const response = await fetch(url, {
-            method: 'GET',
-            headers: {
-                'Accept': 'text/event-stream',
-                'Cache-Control': 'no-cache',
-            },
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP错误! 状态码: ${response.status}`);
-        }
-
-        if (!response.body) {
-            throw new Error('响应体不可读');
-        }
-
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder();
-        
-        // 创建AI消息占位
-        currentAiMessageIndex = messages.value.length;
-        messages.value.push({
+// 重置聊天
+const resetChat = () => {
+    messages.value = [
+        {
             placement: 'start',
-            content: '',
-            loading: true
-        });
-        
-        scrollToBottom();
-
-        try {
-            while (true) {
-                const { done, value } = await reader.read();
-                
-                if (done) {
-                    console.log('流式响应结束');
-                    break;
-                }
-                
-                const chunk = decoder.decode(value, { stream: true });
-                console.log('原始数据:', chunk);
-                
-                // 处理标准SSE格式数据
-                const processedChunk = processSSEData(chunk);
-                console.log('处理后数据:', processedChunk);
-                
-                // 更新消息内容
-                if (currentAiMessageIndex !== -1 && processedChunk) {
-                    messages.value[currentAiMessageIndex].content += processedChunk;
-                    messages.value[currentAiMessageIndex].loading = false;
-                    scrollToBottom();
-                }
-            }
-        } finally {
-            reader.releaseLock();
+            content: '你好，我是AI助手，有什么可以帮助你的吗？',
+            loading: false
         }
-        
+    ];
+    message.info('对话已重置');
+};
+
+// 发送消息
+const handleSubmit = async (value) => {
+    if (!value) return;
+
+    messageValue.value = ''
+
+    // 添加用户消息
+    messages.value.push({
+        placement: 'end',
+        content: value,
+        loading: false
+    });
+
+    loading.value = true;
+
+    // 添加AI消息占位
+    currentAiMessageIndex = messages.value.length;
+    messages.value.push({
+        placement: 'start',
+        content: '',
+        loading: true
+    });
+
+    scrollToBottom();
+
+    // 使用SSE连接
+    connectSSE(value);
+}
+
+// 取消发送
+const handleCancel = () => {
+    closeSSEConnection();
+    messageValue.value = ''
+}
+
+// 重试发送
+const handleRetry = (index) => {
+    if (index < 0 || index >= messages.value.length) return;
+
+    const message = messages.value[index];
+    if (message.placement !== 'end') return;
+
+    handleSubmit(message.content);
+};
+
+// 复制文本
+const handleCopy = (textToCopy) => {
+    if (!textToCopy) return message.success('Text is empty');
+    navigator.clipboard.writeText(textToCopy).then(() => {
+        message.success('Text copied successfully');
+    }).catch(err => {
+        message.error('Failed to copy text');
+    });
+};
+
+//=================== SSE事件处理函数 ===============
+const handleSSEOpen = () => {
+    hasReceivedData = false;
+    isReconnecting.value = false;
+    reconnectCount.value = 0;
+};
+
+const handleSSEMessage = (event) => {
+    const processedData = event.data;
+
+    // 检查结束标志
+    if (processedData === SSE_CONSTANTS.END_FLAG) {
+        closeSSEConnection();
         loading.value = false;
-        console.log('AI回复完成');
-        
-    } catch (error) {
-        console.error('获取流式数据错误:', error);
+        return;
+    }
+
+    // 检查错误标志
+    if (processedData.startsWith(SSE_CONSTANTS.ERROR_PREFIX)) {
         if (currentAiMessageIndex !== -1) {
-            messages.value[currentAiMessageIndex].content = `抱歉，获取回复时出现错误: ${error.message}`;
+            messages.value[currentAiMessageIndex].content = processedData.replace(SSE_CONSTANTS.ERROR_PREFIX, '');
             messages.value[currentAiMessageIndex].loading = false;
         }
-        loading.value = false;
-        message.error('连接失败: ' + error.message);
+        closeSSEConnection();
+        return;
+    }
+
+    // 正常数据处理
+    if (processedData) {
+        hasReceivedData = true;
+        if (currentAiMessageIndex !== -1) {
+            messages.value[currentAiMessageIndex].content += processedData;
+            messages.value[currentAiMessageIndex].loading = false;
+            scrollToBottom();
+        }
     }
 };
 
-// 使用SSE连接处理流式数据
-const connectSSE = (userMessage) => {
-    closeSSEConnection();
+const handleSSEError = (error) => {
+    console.error('SSE连接错误:', error);
 
-    const encodedMessage = encodeURIComponent(userMessage);
-    const url = `http://localhost:8201/llm/chat?msg=${encodedMessage}`;
+    // 如果已经收到过数据，可能是正常结束
+    if (hasReceivedData) {
+        console.log('连接正常结束');
+        closeSSEConnection();
+        loading.value = false;
+        return;
+    }
+
+    // 尝试重连
+    if (reconnectCount.value < SSE_CONSTANTS.MAX_RECONNECT_ATTEMPTS) {
+        reconnectCount.value++;
+        isReconnecting.value = true;
+
+        console.log(`尝试重连 (${reconnectCount.value}/${SSE_CONSTANTS.MAX_RECONNECT_ATTEMPTS})`);
+
+        reconnectTimer = setTimeout(() => {
+            // 获取最后一条用户消息进行重连
+            const lastUserMessage = messages.value
+                .filter(msg => msg.placement === 'end')
+                .pop()?.content;
+            if (lastUserMessage) {
+                connectSSE(lastUserMessage);
+            }
+        }, 2000);
+        return;
+    }
+
+    // 重连失败，显示错误
+    if (currentAiMessageIndex !== -1 && messages.value[currentAiMessageIndex].content === '') {
+        messages.value[currentAiMessageIndex].content = '连接异常，请重试';
+        messages.value[currentAiMessageIndex].loading = false;
+    }
+
+    closeSSEConnection();
+    message.error('连接异常');
+};
+
+//=================== SSE连接管理 ===============
+const connectSSE = (userMessage) => {
+    // 先关闭已有的连接
+    if (eventSource) {
+        closeSSEConnection();
+    }
+
+    const encodedMsg = encodeURIComponent(userMessage);
+    const url = `http://localhost:8201/llm/chat?msg=${encodedMsg}&_t=${Date.now()}`;
 
     try {
         eventSource = new EventSource(url);
 
-        eventSource.onopen = () => {
-            console.log('SSE连接已建立');
-        };
-
-        eventSource.onmessage = (event) => {
-            console.log('SSE原始消息:', event.data);
-            
-            // 处理标准SSE格式数据
-            const processedData = processSSEData(event.data);
-            console.log('SSE处理后消息:', processedData);
-            
-            if (currentAiMessageIndex !== -1 && processedData) {
-                messages.value[currentAiMessageIndex].content += processedData;
-                messages.value[currentAiMessageIndex].loading = false;
-                scrollToBottom();
-            }
-        };
-
-        eventSource.onerror = (error) => {
-            console.error('SSE连接错误:', error);
-            
-            // 如果连接出错，但已经有部分内容，保持内容不变
-            if (currentAiMessageIndex !== -1 && messages.value[currentAiMessageIndex].content === '') {
-                messages.value[currentAiMessageIndex].content = '连接异常，请重试';
-                messages.value[currentAiMessageIndex].loading = false;
-            }
-            
-            closeSSEConnection();
-            message.error('连接异常');
-        };
+        // 绑定事件处理函数
+        eventSource.onopen = handleSSEOpen;
+        eventSource.onmessage = handleSSEMessage;
+        eventSource.onerror = handleSSEError;
 
     } catch (error) {
         console.error('创建SSE连接失败:', error);
@@ -257,42 +341,32 @@ const connectSSE = (userMessage) => {
     }
 };
 
-const handleSubmit = async (value) => {
-    if (!value) return;
+// 关闭SSE连接
+const closeSSEConnection = () => {
+    if (reconnectTimer) {
+        clearTimeout(reconnectTimer);
+        reconnectTimer = null;
+    }
 
-    messageValue.value = ''
-    
-    // 1. 添加用户发送的消息
-    messages.value.push({
-        placement: 'end',
-        content: value,
-        loading: false
-    });
-    
-    scrollToBottom();
-    
-    // 设置loading状态
-    loading.value = true;
-    
-    // 2. 优先使用SSE方式连接
-    currentAiMessageIndex = messages.value.length;
-    messages.value.push({
-        placement: 'start',
-        content: '',
-        loading: true
-    });
-    
-    scrollToBottom();
-    
-    // 使用SSE连接
-    connectSSE(value);
-}
+    if (eventSource) {
+        // 移除事件监听器
+        eventSource.onerror = null;
+        eventSource.onmessage = null;
+        eventSource.onopen = null;
 
-const handleCancel = () => {
-    closeSSEConnection();
-    messageValue.value = ''
-    message.error('已取消发送');
-}
+        eventSource.close();
+        eventSource = null;
+        console.log('SSE连接已关闭');
+    }
+
+    loading.value = false;
+    isReconnecting.value = false;
+};
+
+// 页面加载完成后滚动到底部
+onMounted(() => {
+    scrollToBottom();
+});
 
 // 组件卸载时自动关闭连接
 onUnmounted(() => {
@@ -301,6 +375,11 @@ onUnmounted(() => {
 </script>
 
 <style scoped lang="scss">
+//隐藏滚动条
+::-webkit-scrollbar {
+    display: none;
+}
+
 .right-wrapper {
     position: relative;
     height: 100%;
@@ -308,6 +387,10 @@ onUnmounted(() => {
     display: flex;
     flex-direction: column;
     padding: 20px 50px 0 50px;
+
+    .reconnect-notice {
+        margin-bottom: 16px;
+    }
 
     .chat-content {
         flex: 1;
@@ -317,7 +400,7 @@ onUnmounted(() => {
         .welcome-message {
             margin-bottom: 50px;
         }
-        
+
         .chat-messages {
             .message-item {
                 margin-bottom: 24px;
@@ -332,7 +415,7 @@ onUnmounted(() => {
         right: 0;
         z-index: 10;
         padding: 0 50px 20px 50px;
-        background-color: #fff;
+        background: v-bind('token.colorBgContainer');
     }
 }
 </style>
