@@ -13,25 +13,16 @@
                     icon="https://mdn.alipayobjects.com/huamei_iwk9zp/afts/img/A*s5sNRo5LjfQAAAAAAAAAAAAADgCCAQ/fmt.webp"
                     title="Hello, I'm Ant Design X"
                     description="Base on Ant Design, AGI product interface solution, create a better intelligent vision~">
-                    <template #extra>
-                        <a-space>
-                            <a-button @click="resetChat">
-                                <template #icon>
-                                    <ReloadOutlined />
-                                </template>
-                                重置对话
-                            </a-button>
-                        </a-space>
-                    </template>
                 </AXWelcome>
             </div>
 
             <!-- 对话消息 -->
             <div class="chat-messages">
                 <div v-for="(msg, index) in messages" :key="index" class="message-item">
-                    <AXBubble :typing="{ step: 2, interval: 20 }" :placement="msg.placement" :loading="msg.loading" :content="msg.content"
-                        :avatar="getAvatarStyle(msg.placement)" :messageRender="renderMarkdown" variant="outlined"
-                        shape="round">
+                    <AXBubble :typing="msg.placement === 'start' ? { step: 2, interval: 20 } : false"
+                        :placement="msg.placement" :loading="msg.loading" :content="msg.content"
+                        :avatar="getAvatarStyle(msg.placement)" :messageRender="renderMarkdown"
+                        :variant="msg.placement === 'start' ? 'outlined' : 'filled'" shape="corner">
                         <template #footer="{ content }">
                             <a-space :size="token.paddingXXS">
                                 <a-button type="text" size="small" :icon="h(SyncOutlined)"
@@ -47,41 +38,42 @@
 
         <!-- 消息发送区：固定在底部 -->
         <div class="sender">
-            <SenderMsg v-model:message="messageValue" :loading="loading" @submit="handleSubmit"
+            <SenderMsg v-model:message="messageValue" :loading="submitLoading" @submit="handleSubmit"
                 @cancel="handleCancel" />
         </div>
     </div>
 </template>
 
 <script setup>
-import { ref, h, onMounted, nextTick, onUnmounted } from 'vue'
-import { UserOutlined, RobotOutlined, ReloadOutlined, SyncOutlined, CopyOutlined } from '@ant-design/icons-vue';
+import { ref, h, onMounted, nextTick,watch } from 'vue'
+import { UserOutlined, RobotOutlined, CopyOutlined, SyncOutlined } from '@ant-design/icons-vue';
 import { message } from '@/utils';
 import SenderMsg from './SenderMsg.vue'
 import markdownit from 'markdown-it'
+import markdownitTaskLists from 'markdown-it-task-lists'
+// import { full as emoji } from 'markdown-it-emoji'
+import markdownitSub from 'markdown-it-sub'
+import markdownitSup from 'markdown-it-sup'
+import markdownitMark from 'markdown-it-mark'
+import DOMPurify from 'dompurify'
 import hljs from 'highlight.js'
-import 'highlight.js/styles/atom-one-dark.css' // 深色主题（推荐）
+import { useAppStore } from '@/stores'
 import { theme, Typography } from 'ant-design-vue';
-
-// 常量定义
-const SSE_CONSTANTS = {
-    END_FLAG: '[DONE]',
-    ERROR_PREFIX: '[ERROR] ',
-    MAX_RECONNECT_ATTEMPTS: 2
-};
+import { chatStream } from '@/api/chat'
 
 // 定义state
 const messageValue = ref('')
-const loading = ref(false)
+const submitLoading = ref(false)
 const chatContentRef = ref(null)
 const isReconnecting = ref(false)
-const reconnectCount = ref(0)
 const { token } = theme.useToken();
+const appStore = useAppStore()
 
 // Markdown渲染器
 const md = markdownit({
     html: true,
     breaks: true,
+    linkify: true,
     typographer: true,
     // 启用代码高亮
     highlight: function (str, lang) {
@@ -95,28 +87,24 @@ const md = markdownit({
         return `<pre class="hljs"><code>${hljs.highlightAuto(str).value}</code></pre>`
     }
 })
+.use(markdownitTaskLists, {
+    enabled: true,
+    label: true,
+    labelAfter: true
+})
+// .use(emoji)
+.use(markdownitSub)      // 下标 H~2~O
+.use(markdownitSup)      // 上标 x^2^
+.use(markdownitMark)     // 高亮 ==marked==
 
 // SSE相关变量
-let eventSource = null
 let currentAiMessageIndex = -1
-let reconnectTimer = null
-let hasReceivedData = false
 
 // 初始化消息
 const messages = ref([
     {
         placement: 'start',
         content: '你好，我是AI助手，有什么可以帮助你的吗？',
-        loading: false
-    },
-    {
-        placement: 'end',
-        content: '你能做什么？',
-        loading: false
-    },
-    {
-        placement: 'start',
-        content: '我可以回答问题、提供信息、帮助解决问题等。请随时向我提问！',
         loading: false
     }
 ])
@@ -151,9 +139,18 @@ const getAvatarStyle = (placement) => {
 };
 
 // 修改渲染函数，添加类名
-const renderMarkdown = (content) => h(Typography, null, {
-    default: () => h('div', { innerHTML: md.render(content) })
-})
+const renderMarkdown = (content) => {
+    // 先用 markdown-it 渲染
+    const htmlContent = md.render(content)
+
+    // 再用 DOMPurify 清理 HTML，防止 XSS 攻击
+    const safeHtml = DOMPurify.sanitize(htmlContent)
+
+    return h(Typography, null, {
+        default: () => h('div', { innerHTML: safeHtml })
+    })
+    // return h('div', { innerHTML: safeHtml })
+}
 
 // 滚动到底部
 const scrollToBottom = () => {
@@ -167,19 +164,7 @@ const scrollToBottom = () => {
     });
 };
 
-// 重置聊天
-const resetChat = () => {
-    messages.value = [
-        {
-            placement: 'start',
-            content: '你好，我是AI助手，有什么可以帮助你的吗？',
-            loading: false
-        }
-    ];
-    message.info('对话已重置');
-};
-
-// 发送消息
+// 处理发送
 const handleSubmit = async (value) => {
     if (!value) return;
 
@@ -192,7 +177,7 @@ const handleSubmit = async (value) => {
         loading: false
     });
 
-    loading.value = true;
+    submitLoading.value = true;
 
     // 添加AI消息占位
     currentAiMessageIndex = messages.value.length;
@@ -204,13 +189,66 @@ const handleSubmit = async (value) => {
 
     scrollToBottom();
 
-    // 使用SSE连接
-    connectSSE(value);
+    //调用后端接口
+    handleChatStream({ msg: value })
 }
+
+// 处理请求
+const handleChatStream = async (data) => {
+    try {
+        const response = await chatStream(data);
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+        let lastUpdateTime = 0;
+        const updateInterval = 50; // 50ms 更新一次
+
+        try {
+            while (true) {
+                const { done, value: chunk } = await reader.read();
+
+                if (done) {
+                    // 最后更新
+                    if (buffer.trim()) {
+                        messages.value[currentAiMessageIndex].content += buffer;
+                        scrollToBottom();
+                    }
+                    console.log('Stream completed');
+                    break;
+                }
+
+                const text = decoder.decode(chunk, { stream: true });
+                buffer += text;
+
+                // 节流更新，避免过于频繁的 DOM 操作
+                const now = Date.now();
+                if (now - lastUpdateTime > updateInterval) {
+                    if (buffer.trim()) {
+                        messages.value[currentAiMessageIndex].content += buffer;
+                        messages.value[currentAiMessageIndex].loading = false;
+                        buffer = '';
+                        lastUpdateTime = now;
+                        scrollToBottom();
+                    }
+                }
+            }
+        } finally {
+            reader.releaseLock();
+        }
+    } catch (err) {
+        console.error('Stream error:', err);
+        message.error('请求失败: ' + err.message);
+
+        if (currentAiMessageIndex < messages.value.length) {
+            messages.value.splice(currentAiMessageIndex, 1);
+        }
+    } finally {
+        submitLoading.value = false;
+    }
+};
 
 // 取消发送
 const handleCancel = () => {
-    closeSSEConnection();
     messageValue.value = ''
 }
 
@@ -234,143 +272,28 @@ const handleCopy = (textToCopy) => {
     });
 };
 
-//=================== SSE事件处理函数 ===============
-const handleSSEOpen = () => {
-    hasReceivedData = false;
-    isReconnecting.value = false;
-    reconnectCount.value = 0;
-};
+// 根据 appStore.themeMode 动态加载高亮主题
+const loadHighlightTheme = (mode) => {
+  // 先卸载旧样式
+  const links = document.querySelectorAll('link[data-highlight-theme]')
+  links.forEach(link => link.remove())
 
-const handleSSEMessage = (event) => {
-    const processedData = event.data;
+  // 按需加载新样式
+  const theme = mode === 'dark' ? 'atom-one-dark' : 'atom-one-light'
+  const link = document.createElement('link')
+  link.rel = 'stylesheet'
+  link.href = `https://cdn.jsdelivr.net/npm/highlight.js@11/styles/${theme}.css`
+  link.setAttribute('data-highlight-theme', '')
+  document.head.appendChild(link)
+}
 
-    // 检查结束标志
-    if (processedData === SSE_CONSTANTS.END_FLAG) {
-        closeSSEConnection();
-        loading.value = false;
-        return;
-    }
-
-    // 检查错误标志
-    if (processedData.startsWith(SSE_CONSTANTS.ERROR_PREFIX)) {
-        if (currentAiMessageIndex !== -1) {
-            messages.value[currentAiMessageIndex].content = processedData.replace(SSE_CONSTANTS.ERROR_PREFIX, '');
-            messages.value[currentAiMessageIndex].loading = false;
-        }
-        closeSSEConnection();
-        return;
-    }
-
-    // 正常数据处理
-    if (processedData) {
-        hasReceivedData = true;
-        if (currentAiMessageIndex !== -1) {
-            messages.value[currentAiMessageIndex].content += processedData;
-            messages.value[currentAiMessageIndex].loading = false;
-            scrollToBottom();
-        }
-    }
-};
-
-const handleSSEError = (error) => {
-    console.error('SSE连接错误:', error);
-
-    // 如果已经收到过数据，可能是正常结束
-    if (hasReceivedData) {
-        console.log('连接正常结束');
-        closeSSEConnection();
-        loading.value = false;
-        return;
-    }
-
-    // 尝试重连
-    if (reconnectCount.value < SSE_CONSTANTS.MAX_RECONNECT_ATTEMPTS) {
-        reconnectCount.value++;
-        isReconnecting.value = true;
-
-        console.log(`尝试重连 (${reconnectCount.value}/${SSE_CONSTANTS.MAX_RECONNECT_ATTEMPTS})`);
-
-        reconnectTimer = setTimeout(() => {
-            // 获取最后一条用户消息进行重连
-            const lastUserMessage = messages.value
-                .filter(msg => msg.placement === 'end')
-                .pop()?.content;
-            if (lastUserMessage) {
-                connectSSE(lastUserMessage);
-            }
-        }, 2000);
-        return;
-    }
-
-    // 重连失败，显示错误
-    if (currentAiMessageIndex !== -1 && messages.value[currentAiMessageIndex].content === '') {
-        messages.value[currentAiMessageIndex].content = '连接异常，请重试';
-        messages.value[currentAiMessageIndex].loading = false;
-    }
-
-    closeSSEConnection();
-    message.error('连接异常');
-};
-
-//=================== SSE连接管理 ===============
-const connectSSE = (userMessage) => {
-    // 先关闭已有的连接
-    if (eventSource) {
-        closeSSEConnection();
-    }
-
-    const encodedMsg = encodeURIComponent(userMessage);
-    const url = `http://localhost:8201/llm/chat?msg=${encodedMsg}&_t=${Date.now()}`;
-
-    try {
-        eventSource = new EventSource(url);
-
-        // 绑定事件处理函数
-        eventSource.onopen = handleSSEOpen;
-        eventSource.onmessage = handleSSEMessage;
-        eventSource.onerror = handleSSEError;
-
-    } catch (error) {
-        console.error('创建SSE连接失败:', error);
-        if (currentAiMessageIndex !== -1) {
-            messages.value[currentAiMessageIndex].content = '创建连接失败: ' + error.message;
-            messages.value[currentAiMessageIndex].loading = false;
-        }
-        loading.value = false;
-        message.error('连接创建失败');
-    }
-};
-
-// 关闭SSE连接
-const closeSSEConnection = () => {
-    if (reconnectTimer) {
-        clearTimeout(reconnectTimer);
-        reconnectTimer = null;
-    }
-
-    if (eventSource) {
-        // 移除事件监听器
-        eventSource.onerror = null;
-        eventSource.onmessage = null;
-        eventSource.onopen = null;
-
-        eventSource.close();
-        eventSource = null;
-        console.log('SSE连接已关闭');
-    }
-
-    loading.value = false;
-    isReconnecting.value = false;
-};
+// 初始化并监听主题变化
+loadHighlightTheme(appStore.themeMode)
+watch(() => appStore.themeMode, loadHighlightTheme)
 
 // 页面加载完成后滚动到底部
 onMounted(() => {
     scrollToBottom();
-});
-
-// 组件卸载时自动关闭连接
-onUnmounted(() => {
-    closeSSEConnection();
 });
 </script>
 

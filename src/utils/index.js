@@ -49,3 +49,6 @@ export {
   generateThemeColors,
   DYNAMIC_BG_TYPES,
 } from "./buildGradientBg.js";
+
+// 导出 axios 实例
+export { default as request } from "./request.js";
