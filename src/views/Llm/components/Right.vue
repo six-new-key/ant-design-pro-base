@@ -29,9 +29,10 @@
             <!-- 对话消息 -->
             <div class="chat-messages">
                 <div v-for="(msg, index) in messages" :key="index" class="message-item">
-                    <AXBubble :typing="{ step: 2, interval: 20 }" :placement="msg.placement" :loading="msg.loading" :content="msg.content"
-                        :avatar="getAvatarStyle(msg.placement)" :messageRender="renderMarkdown" variant="outlined"
-                        shape="round">
+                    <AXBubble :typing="msg.placement === 'start' ? { step: 2, interval: 20 } : false"
+                        :placement="msg.placement" :loading="msg.loading" :content="msg.content"
+                        :avatar="getAvatarStyle(msg.placement)" :messageRender="renderMarkdown"
+                        :variant="msg.placement === 'start' ? 'outlined' : 'filled'" shape="corner">
                         <template #footer="{ content }">
                             <a-space :size="token.paddingXXS">
                                 <a-button type="text" size="small" :icon="h(SyncOutlined)"
@@ -60,7 +61,7 @@ import { message } from '@/utils';
 import SenderMsg from './SenderMsg.vue'
 import markdownit from 'markdown-it'
 import hljs from 'highlight.js'
-import 'highlight.js/styles/atom-one-dark.css' // 深色主题（推荐）
+import 'highlight.js/styles/atom-one-light.css' // 深色主题（推荐）
 import { theme, Typography } from 'ant-design-vue';
 
 // 常量定义
