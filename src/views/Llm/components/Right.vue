@@ -19,8 +19,7 @@
             <!-- 对话消息 -->
             <div class="chat-messages">
                 <div v-for="(msg, index) in messages" :key="index" class="message-item">
-                    <AXBubble :typing="msg.placement === 'start' ? { step: 2, interval: 20 } : false"
-                        :placement="msg.placement" :loading="msg.loading" :content="msg.content"
+                    <AXBubble :placement="msg.placement" :loading="msg.loading" :content="msg.content"
                         :avatar="getAvatarStyle(msg.placement)" :messageRender="renderMarkdown"
                         :variant="msg.placement === 'start' ? 'outlined' : 'filled'" shape="corner">
                         <template #footer="{ content }">
@@ -45,7 +44,7 @@
 </template>
 
 <script setup>
-import { ref, h, onMounted, nextTick,watch } from 'vue'
+import { ref, h, onMounted, nextTick, watch } from 'vue'
 import { UserOutlined, RobotOutlined, CopyOutlined, SyncOutlined } from '@ant-design/icons-vue';
 import { message } from '@/utils';
 import SenderMsg from './SenderMsg.vue'
@@ -87,15 +86,15 @@ const md = markdownit({
         return `<pre class="hljs"><code>${hljs.highlightAuto(str).value}</code></pre>`
     }
 })
-.use(markdownitTaskLists, {
-    enabled: true,
-    label: true,
-    labelAfter: true
-})
-// .use(emoji)
-.use(markdownitSub)      // 下标 H~2~O
-.use(markdownitSup)      // 上标 x^2^
-.use(markdownitMark)     // 高亮 ==marked==
+    .use(markdownitTaskLists, {
+        enabled: true,
+        label: true,
+        labelAfter: true
+    })
+    // .use(emoji)
+    .use(markdownitSub)      // 下标 H~2~O
+    .use(markdownitSup)      // 上标 x^2^
+    .use(markdownitMark)     // 高亮 ==marked==
 
 // SSE相关变量
 let currentAiMessageIndex = -1
@@ -274,17 +273,17 @@ const handleCopy = (textToCopy) => {
 
 // 根据 appStore.themeMode 动态加载高亮主题
 const loadHighlightTheme = (mode) => {
-  // 先卸载旧样式
-  const links = document.querySelectorAll('link[data-highlight-theme]')
-  links.forEach(link => link.remove())
+    // 先卸载旧样式
+    const links = document.querySelectorAll('link[data-highlight-theme]')
+    links.forEach(link => link.remove())
 
-  // 按需加载新样式
-  const theme = mode === 'dark' ? 'atom-one-dark' : 'atom-one-light'
-  const link = document.createElement('link')
-  link.rel = 'stylesheet'
-  link.href = `https://cdn.jsdelivr.net/npm/highlight.js@11/styles/${theme}.css`
-  link.setAttribute('data-highlight-theme', '')
-  document.head.appendChild(link)
+    // 按需加载新样式
+    const theme = mode === 'dark' ? 'atom-one-dark' : 'atom-one-light'
+    const link = document.createElement('link')
+    link.rel = 'stylesheet'
+    link.href = `https://cdn.jsdelivr.net/npm/highlight.js@11/styles/${theme}.css`
+    link.setAttribute('data-highlight-theme', '')
+    document.head.appendChild(link)
 }
 
 // 初始化并监听主题变化
