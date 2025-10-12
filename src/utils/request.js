@@ -24,12 +24,11 @@ request.interceptors.response.use(
     let userStore = useUserStore();
     const res = response.data;
     const code = res.code;
-    if (code !== 200) {
+    if (code !== 200 && code !== 405) {
       message.error(res.message);
     }
     if (code === 405) {
       userStore.handleLogout();
-      router.push("/login");
     }
     return res;
   },

@@ -37,19 +37,14 @@ export const useUserStore = defineStore(
     };
 
     //退出登录
-    const handleLogout = async () => {
-      // 调用退出登录接口
-      const res = await logout();
-      if (res.code === 200) {
-        // 清除用户数据
-        userData.value = null;
+    const handleLogout = () => {
+      // 清除用户数据
+      userData.value = null;
 
-        // 使用认证工具类清除登录信息
-        AuthUtils.removeToken();
-
-        message.success("退出登录成功");
-        router.push("/login");
-      }
+      // 使用认证工具类清除登录信息
+      AuthUtils.removeToken();
+      router.push("/login");
+      message.success("退出登录成功");
     };
 
     return {

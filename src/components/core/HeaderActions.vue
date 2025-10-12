@@ -120,8 +120,8 @@ import { themeChangeWithAnimation } from '@/utils'
 import { useAppStore, useThemeStore, useUserStore } from '@/stores'
 import SearchDialog from './SearchDialog.vue'
 import LockScreenDialog from './LockScreenDialog.vue'
-import { theme } from 'ant-design-vue'
-import { Modal } from 'ant-design-vue'
+import { theme, Modal } from 'ant-design-vue'
+import { logout } from "@/api";
 
 const router = useRouter()
 const appStore = useAppStore()
@@ -227,7 +227,6 @@ const handleMenuClick = ({ key }) => {
         case 'logout':
             // 这里应该调用登出逻辑
             doLogout()
-            // message.success('退出登录成功')
             break
     }
 }
@@ -240,9 +239,9 @@ const doLogout = () => {
         okText: '确定',
         okType: 'primary',
         centered: true,
-        onOk: () => {
-            // 这里应该调用登出逻辑
-            // 重置登录状态
+        onOk: async () => {
+            // 调用退出登录接口
+            await logout()
             userStore.handleLogout()
         }
     })
