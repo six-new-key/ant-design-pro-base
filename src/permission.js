@@ -1,7 +1,7 @@
 import router from '@/router'
 import { settings } from './settings'
 import { NProgress, initNProgress } from '@/utils'
-// import { useUserStore } from '@/stores'
+import { useUserStore } from '@/stores'
 import { AuthUtils } from "@/utils";
 
 // 初始化NProgress配置
@@ -11,12 +11,30 @@ initNProgress()
  * 全局前置守卫
  * 处理用户认证和路由权限控制
  */
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   // 启动NProgress进度条
   NProgress.start()
+
+  // 获取用户存储实例
+  const userStore = useUserStore();
   
   if(AuthUtils.getToken()){
-    next()
+    //用户已登录
+    if (to.path === "/login") {
+      next("/");
+    } else {
+      if (userStore.userData) {
+        next();
+      } else {
+        try {
+          await userStore.getUserInfo();
+          next({ ...to });
+        } catch (error) {
+          userStore.handleLogout();
+          next({ path: "/login", query: { redirect: to.path } });
+        }
+      }
+    }
   } else {
     if(to.path === '/login'){
       next()

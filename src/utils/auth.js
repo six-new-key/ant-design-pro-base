@@ -1,7 +1,7 @@
 import Cookies from "js-cookie";
 
 // Token 相关配置
-const TOKEN_KEY = "authorization";
+const TOKEN_KEY = "Authorization";
 
 // Cookie 配置选项
 const COOKIE_OPTIONS = {

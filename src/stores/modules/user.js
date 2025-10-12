@@ -1,47 +1,70 @@
 import { defineStore } from "pinia";
 import { AuthUtils } from "@/utils";
 import { ref } from "vue";
+import { login, querySelf, logout } from "@/api";
+import { message } from "@/utils";
+import router from "@/router";
 
-export const useUserStore = defineStore("user", () => {
-
+export const useUserStore = defineStore(
+  "user",
+  () => {
     const userData = ref(null);
 
-  // 登录方法
-  const handleLogin = async (userInfo) => {
-    // 模拟后端 300ms 延迟
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    // 登录方法
+    const handleLogin = async (data) => {
+      // 调用登录接口
+      const res = await login(data);
+      if (res.code === 200) {
+        // 使用认证工具类保存用户token
+        AuthUtils.setToken(res.data, {
+          expires: 7, // Token 7天过期
+          secure: process.env.NODE_ENV === "production",
+        });
 
-    if (userInfo.username === "admin" && userInfo.password === "123456") {
+        return true;
+      } else {
+        return false;
+      }
+    };
 
-        userData.value = userInfo;
+    //获取用户信息
+    const getUserInfo = async () => {
+      // 调用登录接口
+      const res = await querySelf();
+      if (res.code === 200) {
+        userData.value = res.data;
+      }
+    };
 
-      // 模拟后端返回的 Token 和用户信息
-      const mockToken =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6ImFkbWluIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
+    //退出登录
+    const handleLogout = async () => {
+      // 调用退出登录接口
+      const res = await logout();
+      if (res.code === 200) {
+        // 清除用户数据
+        userData.value = null;
 
-      // 使用认证工具类保存登录信息
-      AuthUtils.setToken(mockToken, {
-        expires: 7, // Token 7天过期
-        secure: process.env.NODE_ENV === "production",
-      });
+        // 使用认证工具类清除登录信息
+        AuthUtils.removeToken();
 
-      return true;
-    } else {
-      return false;
-    }
-  };
+        message.success("退出登录成功");
+        router.push("/login");
+      }
+    };
 
-  //退出登录
-  const handleLogout = () => {
-    // 清除用户数据
-    userData.value = null;
-
-    // 使用认证工具类清除登录信息
-    AuthUtils.removeToken();
-  };
-
-  return {
-    handleLogin,
-    handleLogout
-  };
-});
+    return {
+      handleLogin,
+      handleLogout,
+      getUserInfo,
+      userData,
+    };
+  },
+  {
+    // 持久化配置
+    persist: {
+      key: "user-store",
+      storage: localStorage,
+      paths: ["userData"],
+    },
+  }
+);

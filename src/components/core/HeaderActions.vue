@@ -116,7 +116,7 @@ import {
     LockOutlined
 } from '@ant-design/icons-vue'
 import { getLanguageOptions } from '@/locale'
-import { message, themeChangeWithAnimation } from '@/utils'
+import { themeChangeWithAnimation } from '@/utils'
 import { useAppStore, useThemeStore, useUserStore } from '@/stores'
 import SearchDialog from './SearchDialog.vue'
 import LockScreenDialog from './LockScreenDialog.vue'
@@ -226,14 +226,14 @@ const handleMenuClick = ({ key }) => {
             break
         case 'logout':
             // 这里应该调用登出逻辑
-            handleLogout()
+            doLogout()
+            // message.success('退出登录成功')
             break
     }
 }
 
 // 返回登录
-const handleLogout = () => {
-
+const doLogout = () => {
     // 确认退出登录
     Modal.confirm({
         title: '确认退出登录吗？',
@@ -244,9 +244,6 @@ const handleLogout = () => {
             // 这里应该调用登出逻辑
             // 重置登录状态
             userStore.handleLogout()
-
-            message.success('退出登录成功')
-            router.push('/login')
         }
     })
 }

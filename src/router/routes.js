@@ -575,16 +575,6 @@ export const layoutRoutes = [
       },
     ],
   },
-  // 通用路由
-  {
-    path: "/",
-    redirect: "/login",
-    meta: {
-      title: "根路径重定向",
-      requiresAuth: false,
-      hidden: false,
-    },
-  },
 ];
 
 // 兼容性导出：为现有组件提供routes导出

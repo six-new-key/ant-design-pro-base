@@ -162,8 +162,8 @@
 
         <a-form ref="formRef" :model="formData" :rules="rules">
           <!-- 用户名输入框 -->
-          <a-form-item name="username">
-            <a-input v-model:value="formData.username" size="large" placeholder="用户名">
+          <a-form-item name="userName">
+            <a-input v-model:value="formData.userName" size="large" placeholder="用户名">
             </a-input>
           </a-form-item>
 
@@ -266,7 +266,7 @@
 
 <script setup>
 import { ref, reactive, onMounted, onUnmounted, computed, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import router from '@/router'
 import { theme } from 'ant-design-vue'
 import { message, themeChangeWithAnimation, dynamicBgManager, generateThemeColors } from '@/utils'
 import { settings } from '@/settings'
@@ -298,7 +298,6 @@ const iconSize = computed(() => {
   return themeStore.baseConfig.fontSize + 8 + 'px'
 })
 
-const router = useRouter()
 const loading = ref(false)
 let dynamicBgInstance = null
 
@@ -322,7 +321,7 @@ const preloadBackgroundImages = async () => {
 
 // 登录表单数据
 const formData = reactive({
-  username: 'admin',
+  userName: 'admin',
   password: '123456',
   captcha: false,
   remember: false
@@ -330,7 +329,7 @@ const formData = reactive({
 
 // 表单验证规则
 const rules = computed(() => ({
-  username: [
+  userName: [
     { required: true, message: '请输入用户名', trigger: 'blur' }
   ],
   password: [
@@ -382,7 +381,7 @@ const doLogin = async () => {
       const loginSuccess = await userStore.handleLogin(formData)
       if (loginSuccess) {
         // 登录成功，跳转到后台首页
-        router.push('/dashboard')
+        router.push('/')
       } else {
         message.error('用户名或密码错误！')
       }
