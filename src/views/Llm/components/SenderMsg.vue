@@ -1,8 +1,13 @@
 <template>
     <AXSender :allow-speech="true" :value="message" :loading="loading" :auto-size="{ minRows: 4, maxRows: 8 }"
-        @update:value="updateValue" @submit="submit" @cancel="cancel" />
+        @update:value="updateValue" @submit="submit" @cancel="cancel">
+        <template #prefix>
+            <a-select v-model:value="selectedModel" style="width: 120px" :options="modelList"></a-select>
+        </template>
+    </AXSender>
 </template>
 <script setup>
+import { ref, computed } from 'vue'
 
 // 定义props
 const props = defineProps({
@@ -13,7 +18,16 @@ const props = defineProps({
     loading: {
         type: Boolean,
         default: false
+    },
+    modelList: {
+        type: Array,
+        default: () => []
     }
+})
+
+// 定义选中的模型
+const selectedModel = computed(() => {
+    return props.modelList[0]?.value
 })
 
 //向外暴露方法

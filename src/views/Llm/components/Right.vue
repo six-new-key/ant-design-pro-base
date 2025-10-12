@@ -37,7 +37,7 @@
 
         <!-- 消息发送区：固定在底部 -->
         <div class="sender">
-            <SenderMsg v-model:message="messageValue" :loading="submitLoading" @submit="handleSubmit"
+            <SenderMsg v-model:message="messageValue" :loading="submitLoading" :modelList="modelList" @submit="handleSubmit"
                 @cancel="handleCancel" />
         </div>
     </div>
@@ -58,7 +58,7 @@ import DOMPurify from 'dompurify'
 import hljs from 'highlight.js'
 import { useAppStore } from '@/stores'
 import { theme, Typography } from 'ant-design-vue';
-import { chatStream } from '@/api/chat'
+import { chatStream, queryAllModelList } from '@/api'
 
 // 定义state
 const messageValue = ref('')
@@ -67,6 +67,7 @@ const chatContentRef = ref(null)
 const isReconnecting = ref(false)
 const { token } = theme.useToken();
 const appStore = useAppStore()
+const modelList = ref([])
 
 // Markdown渲染器
 const md = markdownit({
@@ -290,9 +291,18 @@ const loadHighlightTheme = (mode) => {
 loadHighlightTheme(appStore.themeMode)
 watch(() => appStore.themeMode, loadHighlightTheme)
 
+// 初始化模型列表
+const initModelList = async () => {
+    const res = await queryAllModelList()
+    if(res.code === 200) {
+        modelList.value = res.data || []
+    }
+}
+
 // 页面加载完成后滚动到底部
 onMounted(() => {
     scrollToBottom();
+    initModelList()
 });
 </script>
 
