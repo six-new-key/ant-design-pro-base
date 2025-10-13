@@ -66,7 +66,7 @@
 <script setup>
 import { ref, h, onMounted, nextTick, watch } from 'vue'
 import { UserOutlined, RobotOutlined, CopyOutlined, SyncOutlined, LinkOutlined } from '@ant-design/icons-vue';
-import { message } from '@/utils';
+import { message, createConversationId } from '@/utils';
 import markdownit from 'markdown-it'
 import markdownitTaskLists from 'markdown-it-task-lists'
 // import { full as emoji } from 'markdown-it-emoji'
@@ -75,7 +75,7 @@ import markdownitSup from 'markdown-it-sup'
 import markdownitMark from 'markdown-it-mark'
 import DOMPurify from 'dompurify'
 import hljs from 'highlight.js'
-import { useAppStore } from '@/stores'
+import { useAppStore ,useUserStore} from '@/stores'
 import { theme, Typography } from 'ant-design-vue';
 import { chatStream, queryAllModelList } from '@/api'
 
@@ -86,6 +86,7 @@ const chatContentRef = ref(null)
 const isReconnecting = ref(false)
 const { token } = theme.useToken();
 const appStore = useAppStore()
+const userStore = useUserStore()
 // 定义选中的模型
 const selectedModel = ref('deepseek-v3')
 const modelList = ref([])
@@ -93,6 +94,8 @@ const iconStyle = {
     fontSize: 18,
     color: token.value.colorText,
 }
+// 定义会话ID
+const conversationId = ref(null)
 
 // Markdown渲染器
 const md = markdownit({
@@ -221,8 +224,13 @@ const handleSubmit = async (value) => {
 
 // 处理请求
 const handleChatStream = async (msg) => {
+    // 初始化会话ID
+    if (!conversationId.value) {
+        conversationId.value = createConversationId(userStore.userData.id)
+    }
+    
     try {
-        const response = await chatStream(msg,selectedModel.value);
+        const response = await chatStream(msg,selectedModel.value,conversationId.value);
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
         let buffer = '';
@@ -333,10 +341,6 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-//隐藏滚动条
-::-webkit-scrollbar {
-    display: none;
-}
 
 .right-wrapper {
     position: relative;

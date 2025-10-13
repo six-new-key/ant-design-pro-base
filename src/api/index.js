@@ -2,3 +2,4 @@
 export { chatStream } from './chat'
 export { login, logout, querySelf } from './user'
 export { queryAllModelList } from './model'
+export { queryHistory } from './memory'

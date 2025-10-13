@@ -52,3 +52,6 @@ export {
 
 // 导出 axios 实例
 export { default as request } from "./request.js";
+
+// 导出通用工具函数
+export { createConversationId } from "./common.js";

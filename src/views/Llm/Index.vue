@@ -17,14 +17,17 @@ const { token } = theme.useToken();
 </script>
 
 <style scoped lang="scss">
+//隐藏滚动条
+::-webkit-scrollbar {
+    display: none;
+}
 .left {
   width: 18%;
   min-height: 84vh;
   max-height: 88vh;
-  background: v-bind('token.colorFillTertiary');
-  overflow-y: scroll;
+  // background: v-bind('token.colorFillTertiary');
+  overflow-y: auto;
   border-right: 1px solid v-bind('token.colorBorder');
-  padding: 20px;
 }
 
 .right {

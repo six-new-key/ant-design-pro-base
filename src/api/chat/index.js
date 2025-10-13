@@ -4,7 +4,7 @@
 
 import {AuthUtils} from "@/utils";
 
-export const chatStream = async (msg,model) => {
+export const chatStream = async (msg,model,conversationId) => {
   // 使用代理路径，避免跨域问题
   const response = await fetch('/api/llm/chat', {
             method: 'POST',
@@ -13,7 +13,8 @@ export const chatStream = async (msg,model) => {
                 'Accept': 'text/plain',
                 'Cache-Control': 'no-cache',
                 'Authorization': AuthUtils.getToken(),
-                'Model': model
+                'Model': model,
+                'Conversation-Id': conversationId
             },
             body: msg
         })
