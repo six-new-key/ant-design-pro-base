@@ -37,17 +37,36 @@
 
         <!-- 消息发送区：固定在底部 -->
         <div class="sender">
-            <SenderMsg v-model:message="messageValue" :loading="submitLoading" :modelList="modelList" @submit="handleSubmit"
-                @cancel="handleCancel" />
+            <AXSender :allow-speech="true" :actions="false" v-model:value="messageValue"
+                :auto-size="{ minRows: 3, maxRows: 8 }" @submit="handleSubmit" @cancel="handleCancel">
+                <template #footer="{ info: { components: { SendButton, LoadingButton, SpeechButton } } }">
+                    <a-flex justify="space-between" align="center">
+                        <a-flex gap="small" align="center">
+                            <a-select v-model:value="selectedModel" style="width: 120px"
+                                :options="modelList"></a-select>
+                            <a-divider type="vertical" />
+                            Deep Thinking
+                            <a-switch size="small" />
+                        </a-flex>
+                        <a-flex align="center">
+                            <a-button :style="iconStyle" type="text" :icon="h(LinkOutlined)" />
+                            <a-divider type="vertical" />
+                            <component :is="SpeechButton" :style="iconStyle" />
+                            <a-divider type="vertical" />
+                            <component :is="LoadingButton" v-if="submitLoading" type="default" />
+                            <component :is="SendButton" v-else type="primary" :disabled="false" />
+                        </a-flex>
+                    </a-flex>
+                </template>
+            </AXSender>
         </div>
     </div>
 </template>
 
 <script setup>
 import { ref, h, onMounted, nextTick, watch } from 'vue'
-import { UserOutlined, RobotOutlined, CopyOutlined, SyncOutlined } from '@ant-design/icons-vue';
+import { UserOutlined, RobotOutlined, CopyOutlined, SyncOutlined, LinkOutlined } from '@ant-design/icons-vue';
 import { message } from '@/utils';
-import SenderMsg from './SenderMsg.vue'
 import markdownit from 'markdown-it'
 import markdownitTaskLists from 'markdown-it-task-lists'
 // import { full as emoji } from 'markdown-it-emoji'
@@ -67,7 +86,13 @@ const chatContentRef = ref(null)
 const isReconnecting = ref(false)
 const { token } = theme.useToken();
 const appStore = useAppStore()
+// 定义选中的模型
+const selectedModel = ref('deepseek-v3')
 const modelList = ref([])
+const iconStyle = {
+    fontSize: 18,
+    color: token.value.colorText,
+}
 
 // Markdown渲染器
 const md = markdownit({
@@ -138,6 +163,7 @@ const getAvatarStyle = (placement) => {
     }
 };
 
+
 // 修改渲染函数，添加类名
 const renderMarkdown = (content) => {
     // 先用 markdown-it 渲染
@@ -190,7 +216,7 @@ const handleSubmit = async (value) => {
     scrollToBottom();
 
     //调用后端接口
-    handleChatStream({ msg: value })
+    handleChatStream(value)
 }
 
 // 处理请求
@@ -294,7 +320,7 @@ watch(() => appStore.themeMode, loadHighlightTheme)
 // 初始化模型列表
 const initModelList = async () => {
     const res = await queryAllModelList()
-    if(res.code === 200) {
+    if (res.code === 200) {
         modelList.value = res.data || []
     }
 }
