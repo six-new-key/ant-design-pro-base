@@ -51,8 +51,8 @@
                         <a-flex align="center">
                             <a-button :style="iconStyle" type="text" :icon="h(LinkOutlined)" />
                             <a-divider type="vertical" />
-                            <component :is="SpeechButton" :style="iconStyle" />
-                            <a-divider type="vertical" />
+                            <!-- <component :is="SpeechButton" :style="iconStyle" />
+                            <a-divider type="vertical" /> -->
                             <component :is="LoadingButton" v-if="submitLoading" type="default" />
                             <component :is="SendButton" v-else type="primary" :disabled="false" />
                         </a-flex>
@@ -220,9 +220,9 @@ const handleSubmit = async (value) => {
 }
 
 // 处理请求
-const handleChatStream = async (data) => {
+const handleChatStream = async (msg) => {
     try {
-        const response = await chatStream(data);
+        const response = await chatStream(msg,selectedModel.value);
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
         let buffer = '';
