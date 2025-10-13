@@ -1,19 +1,26 @@
 <template>
   <a-flex horizontal>
     <div class="left">
-      <Left />
+      <Left @activeChange="handleActiveChange" />
     </div>
     <div class="right">
-      <Right />
+      <Right :conversationId="conversationId" />
     </div>
   </a-flex>
 </template>
 <script setup>
+import { ref } from 'vue'
 import Left from './components/Left.vue';
 import Right from './components/Right.vue';
 import { theme } from 'ant-design-vue';
 
 const { token } = theme.useToken();
+
+const conversationId = ref('')
+
+const handleActiveChange = (key) => {
+  conversationId.value = key
+}
 </script>
 
 <style scoped lang="scss">

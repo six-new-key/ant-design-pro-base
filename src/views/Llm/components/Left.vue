@@ -1,6 +1,6 @@
 <template>
   <div class="left-content">
-    <AXConversations default-active-key="item1" :menu="menuConfig" :items="historyList" :style="style" />
+    <AXConversations :menu="menuConfig" :items="historyList" :style="style" @activeChange="handleActiveChange" />
   </div>
 </template>
 
@@ -10,6 +10,8 @@ import { EditOutlined, StopOutlined, DeleteOutlined } from '@ant-design/icons-vu
 import { queryHistory } from '@/api'
 import { message } from '@/utils'
 import { theme } from 'ant-design-vue';
+
+const emit = defineEmits(['activeChange'])
 
 const historyList = ref([])
 const { token } = theme.useToken();
@@ -45,6 +47,10 @@ const style = computed(() => ({
   background: token.value.colorFillTertiary,
   borderRadius: token.value.borderRadius,
 }));
+
+const handleActiveChange = (key) => {
+  emit('activeChange', key)
+}
 
 onMounted(() => {
   queryHistory().then(res => {

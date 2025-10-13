@@ -77,7 +77,15 @@ import DOMPurify from 'dompurify'
 import hljs from 'highlight.js'
 import { useAppStore ,useUserStore} from '@/stores'
 import { theme, Typography } from 'ant-design-vue';
-import { chatStream, queryAllModelList } from '@/api'
+import { chatStream, queryAllModelList ,queryMessages} from '@/api'
+
+// 定义props
+const props = defineProps({
+    conversationId: {
+        type: String,
+        default: ''
+    }
+})
 
 // 定义state
 const messageValue = ref('')
@@ -323,7 +331,30 @@ const loadHighlightTheme = (mode) => {
 
 // 初始化并监听主题变化
 loadHighlightTheme(appStore.themeMode)
+
+//根据会话ID查询消息列表
+const handleQueryMsgListById = async () => {
+    if (!props.conversationId) return
+    const res = await queryMessages(props.conversationId)
+    // 清空旧消息
+    messages.value = []
+    if (res.code === 200) {
+        messages.value = res.data || []
+    }
+    console.log('messages', messages.value)
+    // 滚动到底部
+    scrollToBottom();
+}
+
 watch(() => appStore.themeMode, loadHighlightTheme)
+
+//监听 conversationId 变化
+watch(() => props.conversationId, (newVal, oldVal) => {
+    if (newVal !== oldVal) {
+        // 处理 conversationId 变化后的逻辑
+        handleQueryMsgListById()
+    }
+})
 
 // 初始化模型列表
 const initModelList = async () => {
