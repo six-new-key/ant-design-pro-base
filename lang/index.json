@@ -1858,5 +1858,13 @@
 	"f1ow2": {
 		"zh-cn": "发送",
 		"en": "Send"
+	},
+	"f0s7em8": {
+		"zh-cn": "对话加载中...",
+		"en": "The dialogue is loading..."
+	},
+	"27k1ha6": {
+		"zh-cn": "加载中...",
+		"en": "Loading..."
 	}
 }

@@ -15,8 +15,8 @@ export function queryMessages(conversationId) {
   return request({
     //模板字符串拼接参数
     url: `${PREFIX}/query/messages`,
-    method: "POST",
-    data: {
+    method: "GET",
+    params: {
       conversationId
     }
   });

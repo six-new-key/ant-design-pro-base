@@ -17,7 +17,9 @@
             </div>
 
             <!-- 对话消息 -->
-            <div class="chat-messages">
+            <a-spin v-if="loadingMsg" class="spin-loading" :spinning="loadingMsg" tip="加载中..." />
+
+            <div v-else class="chat-messages">
                 <div v-for="(msg, index) in messages" :key="index" class="message-item">
                     <AXBubble :placement="msg.placement" :loading="msg.loading" :content="msg.content"
                         :avatar="getAvatarStyle(msg.placement)" :messageRender="renderMarkdown"
@@ -75,9 +77,9 @@ import markdownitSup from 'markdown-it-sup'
 import markdownitMark from 'markdown-it-mark'
 import DOMPurify from 'dompurify'
 import hljs from 'highlight.js'
-import { useAppStore ,useUserStore} from '@/stores'
+import { useAppStore, useUserStore } from '@/stores'
 import { theme, Typography } from 'ant-design-vue';
-import { chatStream, queryAllModelList ,queryMessages} from '@/api'
+import { chatStream, queryAllModelList, queryMessages } from '@/api'
 
 // 定义props
 const props = defineProps({
@@ -90,6 +92,7 @@ const props = defineProps({
 // 定义state
 const messageValue = ref('')
 const submitLoading = ref(false)
+const loadingMsg = ref(false)
 const chatContentRef = ref(null)
 const isReconnecting = ref(false)
 const { token } = theme.useToken();
@@ -236,9 +239,9 @@ const handleChatStream = async (msg) => {
     if (!conversationId.value) {
         conversationId.value = createConversationId(userStore.userData.id)
     }
-    
+
     try {
-        const response = await chatStream(msg,selectedModel.value,conversationId.value);
+        const response = await chatStream(msg, selectedModel.value, conversationId.value);
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
         let buffer = '';
@@ -340,8 +343,8 @@ const handleQueryMsgListById = async () => {
     messages.value = []
     if (res.code === 200) {
         messages.value = res.data || []
+        loadingMsg.value = false
     }
-    console.log('messages', messages.value)
     // 滚动到底部
     scrollToBottom();
 }
@@ -351,6 +354,9 @@ watch(() => appStore.themeMode, loadHighlightTheme)
 //监听 conversationId 变化
 watch(() => props.conversationId, (newVal, oldVal) => {
     if (newVal !== oldVal) {
+        //TODO: 需要设置会话ID
+        conversationId.value = newVal
+        loadingMsg.value = true
         // 处理 conversationId 变化后的逻辑
         handleQueryMsgListById()
     }
@@ -372,7 +378,6 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-
 .right-wrapper {
     position: relative;
     height: 100%;
@@ -389,6 +394,14 @@ onMounted(() => {
         flex: 1;
         overflow-y: auto;
         padding-bottom: 250px;
+
+        .spin-loading {
+            height: 100%;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
 
         .welcome-message {
             margin-bottom: 50px;

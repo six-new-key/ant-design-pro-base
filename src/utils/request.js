@@ -7,6 +7,9 @@ import {useUserStore} from "@/stores";
 //配置通用的基础路径和超时时间
 const request = axios.create({
   baseURL: import.meta.env.VITE_APP_BASE_API,
+  headers: {
+    "Content-Type": "application/json",
+  },
   timeout: 60000,
 });
 
