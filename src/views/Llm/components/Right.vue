@@ -66,7 +66,7 @@
 </template>
 
 <script setup>
-import { ref, h, onMounted, nextTick, watch,onUnmounted } from 'vue'
+import { ref, h, onMounted, nextTick, watch, onUnmounted } from 'vue'
 import { UserOutlined, RobotOutlined, CopyOutlined, SyncOutlined, LinkOutlined } from '@ant-design/icons-vue';
 import { message, createConversationId } from '@/utils';
 import markdownit from 'markdown-it'
@@ -86,8 +86,18 @@ const props = defineProps({
     conversationId: {
         type: String,
         default: ''
-    }
+    },
+    createNewChat: {
+        type: Boolean,
+        default: false
+    },
+    newConversationId: {
+        type: String,
+        default: ''
+    },
 })
+
+const emit = defineEmits(['createNewChatSuccess'])
 
 // 定义state
 const messageValue = ref('')
@@ -359,6 +369,28 @@ watch(() => props.conversationId, (newVal, oldVal) => {
         loadingMsg.value = true
         // 处理 conversationId 变化后的逻辑
         handleQueryMsgListById()
+    }
+})
+
+//监听 createNewChat 变化
+watch(() => props.createNewChat, (newVal, oldVal) => {
+    if (newVal !== oldVal) {
+        //TODO: 需要创建新会话
+        if (newVal) {
+            // 触发创建新会话成功事件
+            emit('createNewChatSuccess')
+            // 清空旧消息
+            messages.value = []
+            conversationId.value = props.newConversationId;
+            messageValue.value = ''
+            messages.value = [{
+                placement: 'start',
+                content: '你好，我是AI助手，有什么可以帮助你的吗？',
+                loading: false
+            }]
+            // 滚动到底部
+            scrollToBottom();
+        }
     }
 })
 

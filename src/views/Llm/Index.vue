@@ -1,10 +1,10 @@
 <template>
   <a-flex horizontal>
     <div class="left">
-      <Left @activeChange="handleActiveChange" />
+      <Left @activeChange="handleActiveChange" @createNewChat="handleCreateNewChat" />
     </div>
     <div class="right">
-      <Right :conversationId="conversationId" />
+      <Right :conversationId="conversationId" :newConversationId="newConversationId" :createNewChat="createNewChat" @createNewChatSuccess="handleCreateNewChatSuccess" />
     </div>
   </a-flex>
 </template>
@@ -16,8 +16,17 @@ import { theme } from 'ant-design-vue';
 
 const { token } = theme.useToken();
 
-const conversationId = ref('')
+const conversationId = ref(null)
+const newConversationId = ref(null)
+const createNewChat = ref(false)
 
+const handleCreateNewChatSuccess = () => {
+  createNewChat.value = false
+}
+const handleCreateNewChat = (id) => {
+  newConversationId.value = id
+  createNewChat.value = true
+}
 const handleActiveChange = (key) => {
   conversationId.value = key
 }
@@ -32,7 +41,7 @@ const handleActiveChange = (key) => {
   width: 18%;
   min-height: 84vh;
   max-height: 88vh;
-  // background: v-bind('token.colorFillTertiary');
+  background: v-bind('token.colorFillTertiary');
   overflow-y: auto;
   border-right: 1px solid v-bind('token.colorBorder');
 }
