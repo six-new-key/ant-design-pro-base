@@ -66,7 +66,7 @@
 </template>
 
 <script setup>
-import { ref, h, onMounted, nextTick, watch } from 'vue'
+import { ref, h, onMounted, nextTick, watch,onUnmounted } from 'vue'
 import { UserOutlined, RobotOutlined, CopyOutlined, SyncOutlined, LinkOutlined } from '@ant-design/icons-vue';
 import { message, createConversationId } from '@/utils';
 import markdownit from 'markdown-it'
@@ -375,6 +375,11 @@ onMounted(() => {
     scrollToBottom();
     initModelList()
 });
+
+// 组件卸载时取消事件监听
+onUnmounted(() => {
+    conversationId.value = null
+})
 </script>
 
 <style scoped lang="scss">
