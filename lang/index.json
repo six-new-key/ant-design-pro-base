@@ -1870,5 +1870,13 @@
 	"faf1v3": {
 		"zh-cn": "新会话",
 		"en": "New conversation"
+	},
+	"fclv83": {
+		"zh-cn": "新对话",
+		"en": "New Dialogue"
+	},
+	"d83aha4": {
+		"zh-cn": "新建对话",
+		"en": "Create a new dialogue"
 	}
 }

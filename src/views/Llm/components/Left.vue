@@ -1,7 +1,7 @@
 <template>
   <div class="left-content">
     <div class="create-new-chat">
-      <a-button type="primary" size="large" block @click="handleCreateNewChat">Create New Chat</a-button>
+      <a-button type="primary" size="large" block @click="handleCreateNewChat">新建对话</a-button>
     </div>
 
     <div class="chat-history">
