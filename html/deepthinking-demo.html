@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -207,8 +208,16 @@
         }
 
         @keyframes blink {
-            0%, 50% { opacity: 1; }
-            51%, 100% { opacity: 0; }
+
+            0%,
+            50% {
+                opacity: 1;
+            }
+
+            51%,
+            100% {
+                opacity: 0;
+            }
         }
 
         .error-message {
@@ -243,17 +252,18 @@
             .container {
                 border-radius: 0;
             }
-            
+
             .main-content {
                 padding: 20px;
             }
-            
+
             .input-group {
                 flex-direction: column;
             }
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <header>
@@ -331,7 +341,7 @@
                 this.isAnswerComplete = false;
                 this.isStreamComplete = false;
                 this.controller = null;
-                this.baseURL = 'http://localhost:8201/api/ai/think';
+                this.baseURL = 'http://localhost:8201/llm/chat';
                 this.hasThinkStarted = false;
                 this.hasAnswerStarted = false;
             }
@@ -341,32 +351,32 @@
              */
             handleStreamData(data) {
                 console.log('收到数据:', data);
-                
+
                 // 处理思考内容 (以THINK:开头)
                 if (data.startsWith('THINK:')) {
                     this.currentType = 'think';
                     const content = data.replace('THINK:', '');
                     this.thinkContent += content;
-                    
+
                     if (!this.hasThinkStarted) {
                         this.hasThinkStarted = true;
                         this.updateStatus('current-status', 'thinking', '思考中');
                         this.updateStatus('thinking-status', 'thinking', '进行中');
                     }
-                    
+
                     this.onThinkData(content, false);
-                } 
+                }
                 // 处理回答内容 (以ANSWER:开头)
                 else if (data.startsWith('ANSWER:')) {
                     this.currentType = 'answer';
                     const content = data.replace('ANSWER:', '');
                     this.answerContent += content;
-                    
+
                     if (!this.hasAnswerStarted) {
                         this.hasAnswerStarted = true;
                         this.updateStatus('current-status', 'answering', '回答中');
                         this.updateStatus('answer-status', 'answering', '进行中');
-                        
+
                         // 标记思考完成
                         if (this.hasThinkStarted && !this.isThinkComplete) {
                             this.isThinkComplete = true;
@@ -374,7 +384,7 @@
                             this.onThinkComplete();
                         }
                     }
-                    
+
                     this.onAnswerData(content, false);
                 }
                 // 处理普通数据（追加到当前类型）
@@ -428,22 +438,22 @@
                 console.log('流式传输结束');
                 console.log('最终思考内容:', this.thinkContent);
                 console.log('最终回答内容:', this.answerContent);
-                
+
                 // 确保所有内容都正确结束
                 if (this.hasThinkStarted && !this.isThinkComplete) {
                     this.isThinkComplete = true;
                     this.updateStatus('thinking-status', 'completed', '已完成');
                     this.onThinkComplete();
                 }
-                
+
                 if (this.hasAnswerStarted && !this.isAnswerComplete) {
                     this.isAnswerComplete = true;
                     this.updateStatus('answer-status', 'completed', '已完成');
                     this.onAnswerComplete();
                 }
-                
+
                 this.updateStatus('current-status', 'completed', '已完成');
-                
+
                 // 启用按钮
                 document.getElementById('ask-button').disabled = false;
                 document.getElementById('ask-button').textContent = '发送问题';
@@ -455,11 +465,11 @@
             updateThinkUI(content, isComplete) {
                 const thinkElement = document.getElementById('thinking-content');
                 const placeholder = thinkElement.querySelector('.placeholder');
-                
+
                 if (placeholder) {
                     thinkElement.removeChild(placeholder);
                 }
-                
+
                 // 只在内容开头添加前缀标签
                 if (thinkElement.textContent === '') {
                     const prefixTag = document.createElement('span');
@@ -467,16 +477,16 @@
                     prefixTag.textContent = 'THINK';
                     thinkElement.appendChild(prefixTag);
                 }
-                
+
                 thinkElement.appendChild(document.createTextNode(content));
-                
+
                 // 添加打字光标效果
                 if (!isComplete) {
                     this.addTypingCursor(thinkElement);
                 } else {
                     this.removeTypingCursor(thinkElement);
                 }
-                
+
                 // 滚动到底部
                 thinkElement.scrollTop = thinkElement.scrollHeight;
             }
@@ -487,11 +497,11 @@
             updateAnswerUI(content, isComplete) {
                 const answerElement = document.getElementById('answer-content');
                 const placeholder = answerElement.querySelector('.placeholder');
-                
+
                 if (placeholder) {
                     answerElement.removeChild(placeholder);
                 }
-                
+
                 // 只在内容开头添加前缀标签
                 if (answerElement.textContent === '') {
                     const prefixTag = document.createElement('span');
@@ -499,16 +509,16 @@
                     prefixTag.textContent = 'ANSWER';
                     answerElement.appendChild(prefixTag);
                 }
-                
+
                 answerElement.appendChild(document.createTextNode(content));
-                
+
                 // 添加打字光标效果
                 if (!isComplete) {
                     this.addTypingCursor(answerElement);
                 } else {
                     this.removeTypingCursor(answerElement);
                 }
-                
+
                 // 滚动到底部
                 answerElement.scrollTop = answerElement.scrollHeight;
             }
@@ -554,13 +564,13 @@
                 this.isStreamComplete = false;
                 this.hasThinkStarted = false;
                 this.hasAnswerStarted = false;
-                
+
                 // 重置UI
                 document.getElementById('thinking-content').innerHTML = '<div class="placeholder">AI正在思考...</div>';
                 document.getElementById('answer-content').innerHTML = '<div class="placeholder">答案将在这里显示...</div>';
                 document.getElementById('thinking-section').classList.remove('completed');
                 document.getElementById('answer-section').classList.remove('completed');
-                
+
                 this.updateStatus('current-status', 'waiting', '处理中');
                 this.updateStatus('thinking-status', 'waiting', '等待中');
                 this.updateStatus('answer-status', 'waiting', '等待中');
@@ -571,22 +581,32 @@
              */
             async startStream(question) {
                 this.reset();
-                
+
                 try {
                     // 创建AbortController以便可以取消请求
                     this.controller = new AbortController();
-                    
+
                     // 构建请求URL - 使用GET请求，prompt参数
-                    const url = `${this.baseURL}?prompt=${encodeURIComponent(question)}`;
+                    const url = this.baseURL;
                     console.log('请求URL:', url);
-                    
+
+                    const body = {
+                        'model': 'deepseek-v3.1',
+                        'conversationId': '132468874:4654',
+                        'prompt': question,
+                        'enableThinking': true,
+                        'enableSearch': false,
+                    }
+
                     const response = await fetch(url, {
-                        method: 'GET',
+                        method: 'POST',
                         headers: {
                             'Accept': 'text/plain',
-                            'Content-Type': 'text/plain; charset=utf-8'
+                            'Content-Type': 'application/json; charset=utf-8'
                         },
-                        signal: this.controller.signal
+                        signal: this.controller.signal,
+                        // 发送JSON格式的请求体
+                        body: JSON.stringify(body),
                     });
 
                     if (!response.ok) {
@@ -595,7 +615,7 @@
 
                     const reader = response.body.getReader();
                     const decoder = new TextDecoder('utf-8');
-                    
+
                     try {
                         while (true) {
                             const { done, value } = await reader.read();
@@ -603,13 +623,13 @@
                                 this.onStreamComplete();
                                 break;
                             }
-                            
+
                             const chunk = decoder.decode(value, { stream: true });
                             console.log('原始数据块:', chunk);
-                            
+
                             // 按行分割处理
                             const lines = chunk.split('\n');
-                            
+
                             for (const line of lines) {
                                 if (line.trim()) {
                                     this.handleStreamData(line.trim());
@@ -626,7 +646,7 @@
                     this.showError('请求失败: ' + error.message);
                     document.getElementById('ask-button').disabled = false;
                     document.getElementById('ask-button').textContent = '发送问题';
-                    
+
                     // 如果是CORS错误，给出提示
                     if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
                         this.showError('网络请求失败，请检查：1. 后端服务是否运行 2. 是否存在CORS跨域问题 3. 网络连接是否正常');
@@ -651,7 +671,7 @@
                 const errorElement = document.getElementById('error-message');
                 errorElement.textContent = message;
                 errorElement.style.display = 'block';
-                
+
                 setTimeout(() => {
                     errorElement.style.display = 'none';
                 }, 5000);
@@ -662,43 +682,43 @@
         const processor = new StreamProcessor();
 
         // DOM加载完成后初始化
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const askButton = document.getElementById('ask-button');
             const questionInput = document.getElementById('question-input');
-            
+
             // 发送问题事件
-            askButton.addEventListener('click', function() {
+            askButton.addEventListener('click', function () {
                 const question = questionInput.value.trim();
-                
+
                 if (!question) {
                     processor.showError('请输入问题');
                     return;
                 }
-                
+
                 // 禁用按钮，防止重复提交
                 askButton.disabled = true;
                 askButton.textContent = '思考中...';
-                
+
                 // 开始流式请求
                 processor.startStream(question);
             });
-            
+
             // 按Enter键发送
-            questionInput.addEventListener('keypress', function(e) {
+            questionInput.addEventListener('keypress', function (e) {
                 if (e.key === 'Enter') {
                     askButton.click();
                 }
             });
-            
+
             // 添加停止按钮
             const stopButton = document.createElement('button');
             stopButton.textContent = '停止生成';
             stopButton.style.cssText = 'background: #e53e3e; margin-left: 10px;';
-            stopButton.addEventListener('click', function() {
+            stopButton.addEventListener('click', function () {
                 processor.stopStream();
             });
             document.querySelector('.input-group').appendChild(stopButton);
-            
+
             // 示例问题
             const exampleQuestions = [
                 "解释一下量子计算的基本原理",
@@ -706,25 +726,26 @@
                 "中国的首都是哪里？它有什么著名景点？",
                 "什么是人工智能？它有哪些应用场景？"
             ];
-            
+
             // 创建示例问题区域
             const examplesContainer = document.createElement('div');
             examplesContainer.style.marginTop = '15px';
             examplesContainer.innerHTML = '<div style="font-size: 14px; color: #666; margin-bottom: 8px;">试试这些问题：</div>';
-            
+
             exampleQuestions.forEach(question => {
                 const exampleBtn = document.createElement('button');
                 exampleBtn.textContent = question;
                 exampleBtn.style.cssText = 'font-size: 12px; padding: 6px 12px; margin: 0 8px 8px 0; background: #e2e8f0; color: #4a5568; border: none; border-radius: 16px; cursor: pointer;';
-                exampleBtn.addEventListener('click', function() {
+                exampleBtn.addEventListener('click', function () {
                     questionInput.value = question;
                     questionInput.focus();
                 });
                 examplesContainer.appendChild(exampleBtn);
             });
-            
+
             document.querySelector('.input-section').appendChild(examplesContainer);
         });
     </script>
 </body>
+
 </html>

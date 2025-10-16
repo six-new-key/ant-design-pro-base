@@ -68,7 +68,6 @@ const handleCreateNewChat = () => {
   //新建会话ID
   const conversationId = createConversationId(userStore.userData.id);
   emit('createNewChat', conversationId)
-  //TODO：逻辑不对，要先新建一个会话ID ，新增一个空的会话
   historyList.value.unshift({
     key: conversationId,
     label: '新会话',

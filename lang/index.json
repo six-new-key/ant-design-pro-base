@@ -1878,5 +1878,49 @@
 	"d83aha4": {
 		"zh-cn": "新建对话",
 		"en": "Create a new dialogue"
+	},
+	"v6h1z96": {
+		"zh-cn": " 深度思考 ",
+		"en": "Deep thinking"
+	},
+	"ftlbu4": {
+		"zh-cn": " 搜索 ",
+		"en": "Search"
+	},
+	"yuqwrn6": {
+		"zh-cn": " 联网搜索 ",
+		"en": "Online search"
+	},
+	"dx6ylj6": {
+		"zh-cn": "思考中...",
+		"en": "Thinking..."
+	},
+	"qfn30t5": {
+		"zh-cn": "已深度思考",
+		"en": "Have thought deeply"
+	},
+	"axnmqgc": {
+		"zh-cn": "思考完毕，这是我的答案。",
+		"en": "After thinking it through, here is my answer."
+	},
+	"e7hbq3": {
+		"zh-cn": "已完成",
+		"en": "Completed"
+	},
+	"b6ehmi4": {
+		"zh-cn": "发送问题",
+		"en": "Send a question"
+	},
+	"ep0873": {
+		"zh-cn": "思考中",
+		"en": "In thought"
+	},
+	"lq5q43": {
+		"zh-cn": "进行中",
+		"en": "In progress"
+	},
+	"dbgdz3": {
+		"zh-cn": "回答中",
+		"en": "In the answer"
 	}
 }

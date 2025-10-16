@@ -21,16 +21,34 @@
 
             <div v-else class="chat-messages">
                 <div v-for="(msg, index) in messages" :key="index" class="message-item">
-                    <AXBubble :placement="msg.placement" :loading="msg.loading" :content="msg.content"
-                        :avatar="getAvatarStyle(msg.placement)" :messageRender="renderMarkdown"
+                    <AXBubble :placement="msg.placement" :loading="msg.loading" :avatar="getAvatarStyle(msg.placement)"
                         :variant="msg.placement === 'start' ? 'outlined' : 'filled'" shape="corner">
-                        <template #footer="{ content }">
-                            <a-space :size="token.paddingXXS">
+                        <template v-if="chatDto.enableThinking" #message>
+                            <Space>
+                                <BulbOutlined />
+                                <span>{{ think ? "思考中..." : "已深度思考" }}</span>
+                                <Button type="text" size="small" style="background: transparent;"
+                                    :icon="collapse ? h(UpOutlined) : h(DownOutlined)" @click="() => {
+                                        collapse = !collapse;
+                                    }" />
+                            </Space>
+                        </template>
+                        <template #footer>
+                            <!-- <a-space :size="token.paddingXXS">
                                 <a-button type="text" size="small" :icon="h(SyncOutlined)"
                                     @click="handleRetry(index)" />
                                 <a-button type="text" size="small" :icon="h(CopyOutlined)"
                                     @click="handleCopy(content)" />
-                            </a-space>
+                            </a-space> -->
+                            <Space direction="vertical">
+                                <div v-if="chatDto.enableThinking">
+                                    <Bubble v-show="!collapse" variant="borderless" :typing="true"
+                                        :content="thinkContent" :message-render="renderMarkdown" />
+                                </div>
+                                <LoadingOutlined v-if="think" />
+                                <Bubble variant="borderless" style="margin-top: -24px;" :typing="true"
+                                    :content="chatDto.enableThinking ? answerContent : answerContent" :message-render="renderMarkdown" />
+                            </Space>
                         </template>
                     </AXBubble>
                 </div>
@@ -47,8 +65,11 @@
                             <a-select v-model:value="selectedModel" style="width: 120px"
                                 :options="modelList"></a-select>
                             <a-divider type="vertical" />
-                            Deep Thinking
-                            <a-switch size="small" />
+                            深度思考
+                            <a-switch v-model:checked="chatDto.enableThinking" />
+                            <a-divider type="vertical" />
+                            联网搜索
+                            <a-switch v-model:checked="chatDto.enableSearch" />
                         </a-flex>
                         <a-flex align="center">
                             <a-button :style="iconStyle" type="text" :icon="h(LinkOutlined)" />
@@ -67,7 +88,7 @@
 
 <script setup>
 import { ref, h, onMounted, nextTick, watch, onUnmounted } from 'vue'
-import { UserOutlined, RobotOutlined, CopyOutlined, SyncOutlined, LinkOutlined } from '@ant-design/icons-vue';
+import { UserOutlined, RobotOutlined, CopyOutlined, SyncOutlined, LinkOutlined, UpOutlined, DownOutlined } from '@ant-design/icons-vue';
 import { message, createConversationId } from '@/utils';
 import markdownit from 'markdown-it'
 import markdownitTaskLists from 'markdown-it-task-lists'
@@ -108,15 +129,32 @@ const isReconnecting = ref(false)
 const { token } = theme.useToken();
 const appStore = useAppStore()
 const userStore = useUserStore()
-// 定义选中的模型
-const selectedModel = ref('deepseek-v3.1')
 const modelList = ref([])
+// 定义选中的模型
+const selectedModel = ref('')
 const iconStyle = {
     fontSize: 18,
     color: token.value.colorText,
 }
 // 定义会话ID
 const conversationId = ref(null)
+const chatDto = ref({
+    model: selectedModel.value,
+    conversationId: conversationId.value,
+    prompt: messageValue.value,
+    enableThinking: false,
+    enableSearch: false,
+})
+const collapse = ref(false);
+const think = ref(false);
+const currentType = ref(null); // 'think' 或 'answer'
+const thinkContent = ref('');
+const answerContent = ref('');
+const isThinkComplete = ref(false);
+const isAnswerComplete = ref(false);
+const isStreamComplete = ref(false);
+const hasThinkStarted = ref(false);
+const hasAnswerStarted = ref(false);
 
 // Markdown渲染器
 const md = markdownit({
@@ -187,7 +225,6 @@ const getAvatarStyle = (placement) => {
     }
 };
 
-
 // 修改渲染函数，添加类名
 const renderMarkdown = (content) => {
     // 先用 markdown-it 渲染
@@ -244,51 +281,28 @@ const handleSubmit = async (value) => {
 }
 
 // 处理请求
-const handleChatStream = async (msg) => {
+const handleChatStream = async (value) => {
     // 初始化会话ID
     if (!conversationId.value) {
         conversationId.value = createConversationId(userStore.userData.id)
     }
 
+    // 更新chatDto
+    chatDto.value = {
+        model: selectedModel.value,
+        conversationId: conversationId.value,
+        prompt: value,
+        enableThinking: chatDto.value.enableThinking,
+        enableSearch: chatDto.value.enableSearch,
+    }
+
     try {
-        const response = await chatStream(msg, selectedModel.value, conversationId.value);
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder();
-        let buffer = '';
-        let lastUpdateTime = 0;
-        const updateInterval = 50; // 50ms 更新一次
+        const response = await chatStream(chatDto.value);
 
-        try {
-            while (true) {
-                const { done, value: chunk } = await reader.read();
-
-                if (done) {
-                    // 最后更新
-                    if (buffer.trim()) {
-                        messages.value[currentAiMessageIndex].content += buffer;
-                        scrollToBottom();
-                    }
-                    console.log('Stream completed');
-                    break;
-                }
-
-                const text = decoder.decode(chunk, { stream: true });
-                buffer += text;
-
-                // 节流更新，避免过于频繁的 DOM 操作
-                const now = Date.now();
-                if (now - lastUpdateTime > updateInterval) {
-                    if (buffer.trim()) {
-                        messages.value[currentAiMessageIndex].content += buffer;
-                        messages.value[currentAiMessageIndex].loading = false;
-                        buffer = '';
-                        lastUpdateTime = now;
-                        scrollToBottom();
-                    }
-                }
-            }
-        } finally {
-            reader.releaseLock();
+        if (!chatDto.value.enableThinking) {
+            handleNonThinkingResponse(response)
+        } else {
+            handleThinkingResponse(response)
         }
     } catch (err) {
         console.error('Stream error:', err);
@@ -301,6 +315,138 @@ const handleChatStream = async (msg) => {
         submitLoading.value = false;
     }
 };
+
+// 处理非思考模式响应
+const handleNonThinkingResponse = async (response) => {
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+    let lastUpdateTime = 0;
+    const updateInterval = 50; // 50ms 更新一次
+
+    try {
+        while (true) {
+            const { done, value: chunk } = await reader.read();
+
+            if (done) {
+                // 最后更新
+                if (buffer.trim()) {
+                    messages.value[currentAiMessageIndex].content += buffer;
+                    scrollToBottom();
+                }
+                console.log('Stream completed');
+                break;
+            }
+
+            const text = decoder.decode(chunk, { stream: true });
+            buffer += text;
+
+            // 节流更新，避免过于频繁的 DOM 操作
+            const now = Date.now();
+            if (now - lastUpdateTime > updateInterval) {
+                if (buffer.trim()) {
+                    messages.value[currentAiMessageIndex].content += buffer;
+                    messages.value[currentAiMessageIndex].loading = false;
+                    buffer = '';
+                    lastUpdateTime = now;
+                    scrollToBottom();
+                }
+            }
+        }
+    } finally {
+        reader.releaseLock();
+    }
+}
+
+// 处理思考模式响应
+const handleThinkingResponse = async (response) => {
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder('utf-8');
+
+    try {
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) {
+                onStreamComplete();
+                break;
+            }
+
+            const chunk = decoder.decode(value, { stream: true });
+            console.log('原始数据块:', chunk);
+
+            // 按行分割处理
+            const lines = chunk.split('\n');
+
+            for (const line of lines) {
+                if (line.trim()) {
+                    handleStreamData(line.trim());
+                }
+            }
+        }
+    } catch (error) {
+        if (error.name !== 'AbortError') {
+            throw error;
+        }
+    }
+}
+
+/**
+ * 处理流式数据 - 根据版本3的后端格式
+ */
+const handleStreamData = (data) => {
+    console.log('收到数据:', data);
+
+    // 处理思考内容 (以THINK:开头)
+    if (data.startsWith('THINK:')) {
+        currentType.value = 'think';
+        const content = data.replace('THINK:', '');
+        thinkContent.value += content;
+        if (!hasThinkStarted.value) {
+            hasThinkStarted.value = true;
+        }
+    }
+    // 处理回答内容 (以ANSWER:开头)
+    else if (data.startsWith('ANSWER:')) {
+        currentType.value = 'answer';
+        const content = data.replace('ANSWER:', '');
+        answerContent.value += content;
+
+        if (!hasAnswerStarted.value) {
+            hasAnswerStarted.value = true;
+
+            // 标记思考完成
+            if (hasThinkStarted.value && !isThinkComplete.value) {
+                isThinkComplete.value = true;
+            }
+        }
+    }
+    // 处理普通数据（追加到当前类型）
+    else if (data.trim() !== '') {
+        if (currentType.value === 'think') {
+            thinkContent.value += data;
+        } else if (currentType.value === 'answer') {
+            answerContent.value += data;
+        }
+    }
+}
+
+/**
+ * 处理流结束
+ */
+const onStreamComplete = () => {
+    console.log('流式传输结束');
+    console.log('最终思考内容:', thinkContent.value);
+    console.log('最终回答内容:', answerContent.value);
+
+    // 确保所有内容都正确结束
+    if (hasThinkStarted.value && !isThinkComplete.value) {
+        isThinkComplete.value = true;
+    }
+
+    if (hasAnswerStarted.value && !isAnswerComplete.value) {
+        isAnswerComplete.value = true;
+    }
+}
 
 // 取消发送
 const handleCancel = () => {
@@ -364,7 +510,6 @@ watch(() => appStore.themeMode, loadHighlightTheme)
 //监听 conversationId 变化
 watch(() => props.conversationId, (newVal, oldVal) => {
     if (newVal !== oldVal) {
-        //TODO: 需要设置会话ID
         conversationId.value = newVal
         loadingMsg.value = true
         // 处理 conversationId 变化后的逻辑
@@ -375,7 +520,6 @@ watch(() => props.conversationId, (newVal, oldVal) => {
 //监听 createNewChat 变化
 watch(() => props.createNewChat, (newVal, oldVal) => {
     if (newVal !== oldVal) {
-        //TODO: 需要创建新会话
         if (newVal) {
             // 触发创建新会话成功事件
             emit('createNewChatSuccess')
@@ -399,6 +543,8 @@ const initModelList = async () => {
     const res = await queryAllModelList()
     if (res.code === 200) {
         modelList.value = res.data || []
+        // 初始化选中的模型
+        selectedModel.value = modelList.value[0]?.value || ''
     }
 }
 
