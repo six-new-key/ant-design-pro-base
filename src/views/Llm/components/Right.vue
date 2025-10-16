@@ -109,7 +109,7 @@ const { token } = theme.useToken();
 const appStore = useAppStore()
 const userStore = useUserStore()
 // 定义选中的模型
-const selectedModel = ref('deepseek-v3')
+const selectedModel = ref('deepseek-v3.1')
 const modelList = ref([])
 const iconStyle = {
     fontSize: 18,
