@@ -56,7 +56,7 @@
                                 </template>
                                 <template #footer>
                                     <Space direction="vertical">
-                                        <AXBubble v-show="!msg.collapse" variant="borderless"
+                                        <AXBubble v-show="!msg.collapse" variant="filled"
                                             :content="msg.text.thinkContent" :message-render="renderMarkdown2" />
 
                                         <LoadingOutlined v-if="msg.think" />
@@ -454,39 +454,39 @@ const handleNonThinkingResponse = async (response) => {
 }
 
 // 处理思考模式响应
-const handleThinkingResponse = async (response) => {
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder();
-    let buffer = '';
-    let lastUpdateTime = 0;
-    const updateInterval = 50; // 50ms 更新一次
+// const handleThinkingResponse = async (response) => {
+//     const reader = response.body.getReader();
+//     const decoder = new TextDecoder();
+//     let buffer = '';
+//     let lastUpdateTime = 0;
+//     const updateInterval = 50; // 50ms 更新一次
 
-    try {
-        while (true) {
-            const { done, value: chunk } = await reader.read();
-            if (done) {
-                onStreamComplete();
-                console.log('Stream completed');
-                break;
-            }
+//     try {
+//         while (true) {
+//             const { done, value: chunk } = await reader.read();
+//             if (done) {
+//                 onStreamComplete();
+//                 console.log('Stream completed');
+//                 break;
+//             }
 
-            const text = decoder.decode(chunk, { stream: true });
-            buffer += text;
+//             const text = decoder.decode(chunk, { stream: true });
+//             buffer += text;
 
-            // 节流更新，避免过于频繁的 DOM 操作
-            const now = Date.now();
-            if (now - lastUpdateTime > updateInterval) {
-                if (buffer.trim()) {
-                    handleStreamData(buffer);
-                    buffer = '';
-                    lastUpdateTime = now;
-                }
-            }
-        }
-    } finally {
-        reader.releaseLock();
-    }
-}
+//             // 节流更新，避免过于频繁的 DOM 操作
+//             const now = Date.now();
+//             if (now - lastUpdateTime > updateInterval) {
+//                 if (buffer.trim()) {
+//                     handleStreamData(buffer);
+//                     buffer = '';
+//                     lastUpdateTime = now;
+//                 }
+//             }
+//         }
+//     } finally {
+//         reader.releaseLock();
+//     }
+// }
 
 const handleStreamData = (data) => {
     console.log('收到数据:', data);
@@ -502,9 +502,9 @@ const handleStreamData = (data) => {
         }
     }
     // 处理回答内容 (以ANSWER:开头)
-    else if (data.startsWith('ANSWER:')) {
+    else if (data.startsWith('ANSWER')) {
         currentType.value = 'answer';
-        const content = data.replace('ANSWER:', '');
+        const content = data.replace('ANSWER', '');
         messages.value[currentAiMessageIndex].text.answerContent += content;
         messages.value[currentAiMessageIndex].loading = false;
 
@@ -525,6 +525,116 @@ const handleStreamData = (data) => {
         } else if (currentType.value === 'answer') {
             messages.value[currentAiMessageIndex].text.answerContent += data;
         }
+    }
+}
+
+// 处理思考模式响应
+const handleThinkingResponse = async (response) => {
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+    let currentType = null; // 'think' 或 'answer'
+
+    // 处理缓冲区中的数据
+    const processBuffer = () => {
+        const thinkIndex = buffer.indexOf('THINK:');
+        const answerIndex = buffer.indexOf('ANSWER:');
+
+        // 如果缓冲区中有完整标识符
+        if (thinkIndex !== -1 || answerIndex !== -1) {
+            let nextType = null;
+            let nextIndex = -1;
+
+            // 确定下一个出现的标识符类型和位置
+            if (thinkIndex !== -1 && answerIndex !== -1) {
+                if (thinkIndex < answerIndex) {
+                    nextType = 'think';
+                    nextIndex = thinkIndex;
+                } else {
+                    nextType = 'answer';
+                    nextIndex = answerIndex;
+                }
+            } else if (thinkIndex !== -1) {
+                nextType = 'think';
+                nextIndex = thinkIndex;
+            } else {
+                nextType = 'answer';
+                nextIndex = answerIndex;
+            }
+
+            // 如果当前有类型，处理当前类型的内容
+            if (currentType && nextIndex > 0) {
+                const content = buffer.substring(0, nextIndex);
+                if (content.trim()) {
+                    handleContent(currentType, content);
+                }
+                buffer = buffer.substring(nextIndex);
+            }
+
+            // 设置新的当前类型
+            if (nextType === 'think') {
+                currentType = 'think';
+                buffer = buffer.substring(6); // 移除 'THINK:'
+            } else {
+                currentType = 'answer';
+                buffer = buffer.substring(7); // 移除 'ANSWER:'
+            }
+        }
+    };
+
+    // 处理内容
+    const handleContent = (type, content) => {
+        if (type === 'think') {
+            messages.value[currentAiMessageIndex].text.thinkContent += content;
+            messages.value[currentAiMessageIndex].loading = false;
+            if (!hasThinkStarted.value) {
+                hasThinkStarted.value = true;
+            }
+        } else if (type === 'answer') {
+            messages.value[currentAiMessageIndex].text.answerContent += content;
+            messages.value[currentAiMessageIndex].loading = false;
+
+            if (!hasAnswerStarted.value) {
+                hasAnswerStarted.value = true;
+                // 标记思考完成
+                if (hasThinkStarted.value && !isThinkComplete.value) {
+                    isThinkComplete.value = true;
+                    messages.value[currentAiMessageIndex].think = false;
+                }
+            }
+        }
+        scrollToBottom();
+    };
+
+    try {
+        while (true) {
+            const { done, value: chunk } = await reader.read();
+            if (done) {
+                // 处理剩余缓冲区内容
+                if (currentType && buffer.trim()) {
+                    handleContent(currentType, buffer);
+                }
+                onStreamComplete();
+                console.log('Stream completed');
+                break;
+            }
+
+            const text = decoder.decode(chunk, { stream: true });
+            buffer += text;
+
+            // 处理缓冲区
+            processBuffer();
+
+            // 如果缓冲区中没有标识符但当前有类型，直接处理
+            if (currentType && buffer.length > 0 &&
+                buffer.indexOf('THINK:') === -1 &&
+                buffer.indexOf('ANSWER:') === -1) {
+                handleContent(currentType, buffer);
+                buffer = '';
+            }
+        }
+    } finally {
+        reader.releaseLock();
     }
 }
 
