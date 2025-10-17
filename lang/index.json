@@ -1922,5 +1922,13 @@
 	"dbgdz3": {
 		"zh-cn": "回答中",
 		"en": "In the answer"
+	},
+	"m9ibtw16": {
+		"zh-cn": "嗯，用户在向我问候，我应该诚恳的向用户回应...，这是我的思考内容，最后回复 你好！",
+		"en": "Well, the user is greeting me, and I should respond sincerely to the user... This is my thought. Finally, I reply to you!"
+	},
+	"uwzwt0f": {
+		"zh-cn": "你好，我是AI助手，进来可好！",
+		"en": "Hello, I'm the AI assistant. Could you come in?"
 	}
 }

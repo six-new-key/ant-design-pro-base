@@ -21,36 +21,75 @@
 
             <div v-else class="chat-messages">
                 <div v-for="(msg, index) in messages" :key="index" class="message-item">
-                    <AXBubble :placement="msg.placement" :loading="msg.loading" :avatar="getAvatarStyle(msg.placement)"
-                        :variant="msg.placement === 'start' ? 'outlined' : 'filled'" shape="corner">
-                        <template v-if="chatDto.enableThinking" #message>
-                            <Space>
-                                <BulbOutlined />
-                                <span>{{ think ? "思考中..." : "已深度思考" }}</span>
-                                <Button type="text" size="small" style="background: transparent;"
-                                    :icon="collapse ? h(UpOutlined) : h(DownOutlined)" @click="() => {
-                                        collapse = !collapse;
-                                    }" />
-                            </Space>
+                    <!-- 非思考模式 -->
+                    <template v-if="!msg.thinkMode">
+                        <AXBubble :placement="msg.placement" :loading="msg.loading"
+                            :avatar="getAvatarStyle(msg.placement)"
+                            :variant="msg.placement === 'start' ? 'borderless' : 'filled'"
+                            :content="msg.text.answerContent" :messageRender="renderMarkdown1" shape="corner">
+                            <template #footer="{ content }">
+                                <a-space :size="token.paddingXXS">
+                                    <a-button type="text" size="small" :icon="h(SyncOutlined)"
+                                        @click="handleRetry(index)" />
+                                    <a-button type="text" size="small" :icon="h(CopyOutlined)"
+                                        @click="handleCopy(content)" />
+                                </a-space>
+                            </template>
+                        </AXBubble>
+                    </template>
+
+                    <!-- 思考模式 -->
+                    <template v-else>
+                        <!-- 大模型 -->
+                        <template v-if="msg.placement === 'start'">
+                            <AXBubble :placement="msg.placement" :avatar="getAvatarStyle(msg.placement)"
+                                variant="filled" shape="corner">
+                                <template #message>
+                                    <Space>
+                                        <BulbOutlined />
+                                        <span>{{ msg.think ? "思考中..." : "已深度思考" }}</span>
+                                        <a-button type="text" size="small" style="background: transparent;"
+                                            :icon="msg.collapse ? h(UpOutlined) : h(DownOutlined)" @click="() => {
+                                                msg.collapse = !msg.collapse;
+                                            }" />
+                                    </Space>
+                                </template>
+                                <template #footer>
+                                    <Space direction="vertical">
+                                        <AXBubble v-show="!msg.collapse" variant="borderless"
+                                            :content="msg.text.thinkContent" :message-render="renderMarkdown2" />
+
+                                        <LoadingOutlined v-if="msg.think" />
+
+                                        <AXBubble variant="borderless" style="margin-top: 10px;"
+                                            :content="msg.text.answerContent" :message-render="renderMarkdown3" />
+
+                                        <a-space :size="token.paddingXXS">
+                                            <a-button type="text" size="small" :icon="h(SyncOutlined)"
+                                                @click="handleRetry(index)" />
+                                            <a-button type="text" size="small" :icon="h(CopyOutlined)"
+                                                @click="handleCopy(msg.text.answerContent)" />
+                                        </a-space>
+                                    </Space>
+                                </template>
+                            </AXBubble>
                         </template>
-                        <template #footer>
-                            <!-- <a-space :size="token.paddingXXS">
-                                <a-button type="text" size="small" :icon="h(SyncOutlined)"
-                                    @click="handleRetry(index)" />
-                                <a-button type="text" size="small" :icon="h(CopyOutlined)"
-                                    @click="handleCopy(content)" />
-                            </a-space> -->
-                            <Space direction="vertical">
-                                <div v-if="chatDto.enableThinking">
-                                    <Bubble v-show="!collapse" variant="borderless" :typing="true"
-                                        :content="thinkContent" :message-render="renderMarkdown" />
-                                </div>
-                                <LoadingOutlined v-if="think" />
-                                <Bubble variant="borderless" style="margin-top: -24px;" :typing="true"
-                                    :content="chatDto.enableThinking ? answerContent : answerContent" :message-render="renderMarkdown" />
-                            </Space>
+                        <!-- 用户 -->
+                        <template v-else>
+                            <AXBubble :placement="msg.placement" :loading="msg.loading"
+                                :avatar="getAvatarStyle(msg.placement)" variant="filled"
+                                :content="msg.text.answerContent" :messageRender="renderMarkdown1" shape="corner">
+                                <template #footer="{ content }">
+                                    <a-space :size="token.paddingXXS">
+                                        <a-button type="text" size="small" :icon="h(SyncOutlined)"
+                                            @click="handleRetry(index)" />
+                                        <a-button type="text" size="small" :icon="h(CopyOutlined)"
+                                            @click="handleCopy(content)" />
+                                    </a-space>
+                                </template>
+                            </AXBubble>
                         </template>
-                    </AXBubble>
+                    </template>
                 </div>
             </div>
         </div>
@@ -66,10 +105,10 @@
                                 :options="modelList"></a-select>
                             <a-divider type="vertical" />
                             深度思考
-                            <a-switch v-model:checked="chatDto.enableThinking" />
+                            <a-switch v-model:checked="enableThinking" />
                             <a-divider type="vertical" />
                             联网搜索
-                            <a-switch v-model:checked="chatDto.enableSearch" />
+                            <a-switch v-model:checked="enableSearch" />
                         </a-flex>
                         <a-flex align="center">
                             <a-button :style="iconStyle" type="text" :icon="h(LinkOutlined)" />
@@ -130,6 +169,44 @@ const { token } = theme.useToken();
 const appStore = useAppStore()
 const userStore = useUserStore()
 const modelList = ref([])
+// 消息索引
+let currentAiMessageIndex = -1
+// 初始化消息
+const messages = ref([
+    {
+        placement: 'start',
+        text: {
+            thinkContent: '',
+            answerContent: '你好，我是AI助手，有什么可以帮助你的吗？'
+        },
+        loading: false,
+        thinkMode: false,
+        think: false,
+        collapse: false,
+    },
+    {
+        placement: 'end',
+        text: {
+            thinkContent: '',
+            answerContent: '你好'
+        },
+        loading: false,
+        thinkMode: true,
+        think: false,
+        collapse: false,
+    },
+    {
+        placement: 'start',
+        text: {
+            thinkContent: '嗯，用户在向我问候，我应该诚恳的向用户回应...，这是我的思考内容，最后回复 你好！',
+            answerContent: '你好，我是AI助手，进来可好！'
+        },
+        loading: false,
+        thinkMode: true,
+        think: false,
+        collapse: false,
+    }
+])
 // 定义选中的模型
 const selectedModel = ref('')
 const iconStyle = {
@@ -138,23 +215,15 @@ const iconStyle = {
 }
 // 定义会话ID
 const conversationId = ref(null)
-const chatDto = ref({
-    model: selectedModel.value,
-    conversationId: conversationId.value,
-    prompt: messageValue.value,
-    enableThinking: false,
-    enableSearch: false,
-})
-const collapse = ref(false);
-const think = ref(false);
+
+//深度思考相关
 const currentType = ref(null); // 'think' 或 'answer'
-const thinkContent = ref('');
-const answerContent = ref('');
 const isThinkComplete = ref(false);
 const isAnswerComplete = ref(false);
-const isStreamComplete = ref(false);
 const hasThinkStarted = ref(false);
 const hasAnswerStarted = ref(false);
+const enableThinking = ref(false);
+const enableSearch = ref(false);
 
 // Markdown渲染器
 const md = markdownit({
@@ -183,18 +252,6 @@ const md = markdownit({
     .use(markdownitSub)      // 下标 H~2~O
     .use(markdownitSup)      // 上标 x^2^
     .use(markdownitMark)     // 高亮 ==marked==
-
-// SSE相关变量
-let currentAiMessageIndex = -1
-
-// 初始化消息
-const messages = ref([
-    {
-        placement: 'start',
-        content: '你好，我是AI助手，有什么可以帮助你的吗？',
-        loading: false
-    }
-])
 
 // 头像样式
 const getAvatarStyle = (placement) => {
@@ -226,7 +283,33 @@ const getAvatarStyle = (placement) => {
 };
 
 // 修改渲染函数，添加类名
-const renderMarkdown = (content) => {
+const renderMarkdown1 = (content) => {
+    // 先用 markdown-it 渲染
+    const htmlContent = md.render(content)
+
+    // 再用 DOMPurify 清理 HTML，防止 XSS 攻击
+    const safeHtml = DOMPurify.sanitize(htmlContent)
+
+    return h(Typography, null, {
+        default: () => h('div', { innerHTML: safeHtml })
+    })
+    // return h('div', { innerHTML: safeHtml })
+}
+
+const renderMarkdown2 = (content) => {
+    // 先用 markdown-it 渲染
+    const htmlContent = md.render(content)
+
+    // 再用 DOMPurify 清理 HTML，防止 XSS 攻击
+    const safeHtml = DOMPurify.sanitize(htmlContent)
+
+    return h(Typography, null, {
+        default: () => h('div', { innerHTML: safeHtml })
+    })
+    // return h('div', { innerHTML: safeHtml })
+}
+
+const renderMarkdown3 = (content) => {
     // 先用 markdown-it 渲染
     const htmlContent = md.render(content)
 
@@ -260,8 +343,14 @@ const handleSubmit = async (value) => {
     // 添加用户消息
     messages.value.push({
         placement: 'end',
-        content: value,
-        loading: false
+        text: {
+            thinkContent: '',
+            answerContent: value
+        },
+        loading: false,
+        thinkMode: enableThinking.value,
+        think: false,
+        collapse: false,
     });
 
     submitLoading.value = true;
@@ -270,8 +359,14 @@ const handleSubmit = async (value) => {
     currentAiMessageIndex = messages.value.length;
     messages.value.push({
         placement: 'start',
-        content: '',
-        loading: true
+        text: {
+            thinkContent: '',
+            answerContent: ''
+        },
+        loading: true,
+        thinkMode: enableThinking.value,
+        think: true,
+        collapse: false,
     });
 
     scrollToBottom();
@@ -288,21 +383,21 @@ const handleChatStream = async (value) => {
     }
 
     // 更新chatDto
-    chatDto.value = {
+    const chatDto = {
         model: selectedModel.value,
         conversationId: conversationId.value,
         prompt: value,
-        enableThinking: chatDto.value.enableThinking,
-        enableSearch: chatDto.value.enableSearch,
+        enableThinking: enableThinking.value,
+        enableSearch: enableSearch.value,
     }
 
     try {
-        const response = await chatStream(chatDto.value);
+        const response = await chatStream(chatDto);
 
-        if (!chatDto.value.enableThinking) {
-            handleNonThinkingResponse(response)
-        } else {
+        if (enableThinking.value) {
             handleThinkingResponse(response)
+        } else {
+            handleNonThinkingResponse(response)
         }
     } catch (err) {
         console.error('Stream error:', err);
@@ -331,7 +426,7 @@ const handleNonThinkingResponse = async (response) => {
             if (done) {
                 // 最后更新
                 if (buffer.trim()) {
-                    messages.value[currentAiMessageIndex].content += buffer;
+                    messages.value[currentAiMessageIndex].text.answerContent += buffer;
                     scrollToBottom();
                 }
                 console.log('Stream completed');
@@ -345,7 +440,7 @@ const handleNonThinkingResponse = async (response) => {
             const now = Date.now();
             if (now - lastUpdateTime > updateInterval) {
                 if (buffer.trim()) {
-                    messages.value[currentAiMessageIndex].content += buffer;
+                    messages.value[currentAiMessageIndex].text.answerContent += buffer;
                     messages.value[currentAiMessageIndex].loading = false;
                     buffer = '';
                     lastUpdateTime = now;
@@ -361,38 +456,38 @@ const handleNonThinkingResponse = async (response) => {
 // 处理思考模式响应
 const handleThinkingResponse = async (response) => {
     const reader = response.body.getReader();
-    const decoder = new TextDecoder('utf-8');
+    const decoder = new TextDecoder();
+    let buffer = '';
+    let lastUpdateTime = 0;
+    const updateInterval = 50; // 50ms 更新一次
 
     try {
         while (true) {
-            const { done, value } = await reader.read();
+            const { done, value: chunk } = await reader.read();
             if (done) {
                 onStreamComplete();
+                console.log('Stream completed');
                 break;
             }
 
-            const chunk = decoder.decode(value, { stream: true });
-            console.log('原始数据块:', chunk);
+            const text = decoder.decode(chunk, { stream: true });
+            buffer += text;
 
-            // 按行分割处理
-            const lines = chunk.split('\n');
-
-            for (const line of lines) {
-                if (line.trim()) {
-                    handleStreamData(line.trim());
+            // 节流更新，避免过于频繁的 DOM 操作
+            const now = Date.now();
+            if (now - lastUpdateTime > updateInterval) {
+                if (buffer.trim()) {
+                    handleStreamData(buffer);
+                    buffer = '';
+                    lastUpdateTime = now;
                 }
             }
         }
-    } catch (error) {
-        if (error.name !== 'AbortError') {
-            throw error;
-        }
+    } finally {
+        reader.releaseLock();
     }
 }
 
-/**
- * 处理流式数据 - 根据版本3的后端格式
- */
 const handleStreamData = (data) => {
     console.log('收到数据:', data);
 
@@ -400,7 +495,8 @@ const handleStreamData = (data) => {
     if (data.startsWith('THINK:')) {
         currentType.value = 'think';
         const content = data.replace('THINK:', '');
-        thinkContent.value += content;
+        messages.value[currentAiMessageIndex].text.thinkContent += content;
+        messages.value[currentAiMessageIndex].loading = false;
         if (!hasThinkStarted.value) {
             hasThinkStarted.value = true;
         }
@@ -409,7 +505,8 @@ const handleStreamData = (data) => {
     else if (data.startsWith('ANSWER:')) {
         currentType.value = 'answer';
         const content = data.replace('ANSWER:', '');
-        answerContent.value += content;
+        messages.value[currentAiMessageIndex].text.answerContent += content;
+        messages.value[currentAiMessageIndex].loading = false;
 
         if (!hasAnswerStarted.value) {
             hasAnswerStarted.value = true;
@@ -417,27 +514,21 @@ const handleStreamData = (data) => {
             // 标记思考完成
             if (hasThinkStarted.value && !isThinkComplete.value) {
                 isThinkComplete.value = true;
+                messages.value[currentAiMessageIndex].think = false;
             }
         }
     }
     // 处理普通数据（追加到当前类型）
     else if (data.trim() !== '') {
         if (currentType.value === 'think') {
-            thinkContent.value += data;
+            messages.value[currentAiMessageIndex].text.thinkContent += data;
         } else if (currentType.value === 'answer') {
-            answerContent.value += data;
+            messages.value[currentAiMessageIndex].text.answerContent += data;
         }
     }
 }
 
-/**
- * 处理流结束
- */
 const onStreamComplete = () => {
-    console.log('流式传输结束');
-    console.log('最终思考内容:', thinkContent.value);
-    console.log('最终回答内容:', answerContent.value);
-
     // 确保所有内容都正确结束
     if (hasThinkStarted.value && !isThinkComplete.value) {
         isThinkComplete.value = true;
