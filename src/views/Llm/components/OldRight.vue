@@ -1,3 +1,5 @@
+<!-- 未使用vue-markdown-renderer渲染markdown版本 -->
+
 <template>
     <div class="right-wrapper">
         <!-- 重连提示 -->
@@ -26,10 +28,7 @@
                         <AXBubble :placement="msg.placement" :loading="msg.loading"
                             :avatar="getAvatarStyle(msg.placement)"
                             :variant="msg.placement === 'start' ? 'borderless' : 'outlined'"
-                            :content="msg.text.answerContent" shape="corner">
-                            <template #message="{ content }">
-                                <MarkdownRender :content="content" />
-                            </template>
+                            :content="msg.text.answerContent" :messageRender="renderMarkdown1" shape="corner">
                             <template #footer="{ content }">
                                 <a-space :size="token.paddingXXS">
                                     <a-button type="text" size="small" :icon="h(SyncOutlined)"
@@ -61,20 +60,13 @@
                                         <AXBubble
                                             :style="{ borderLeft: `2px solid ${token.colorBorder}`, paddingLeft: '12px', opacity: 0.7 }"
                                             v-show="!msg.collapse && !msg.loading" variant="borderless"
-                                            :content="msg.text.thinkContent">
-                                            <template #message="{ content }">
-                                                <MarkdownRender :content="content" />
-                                            </template>
-                                        </AXBubble>
+                                            :content="msg.text.thinkContent" :message-render="renderMarkdown2" />
                                     </a-space>
                                 </template>
                                 <template #footer>
                                     <a-space direction="vertical">
-                                        <AXBubble variant="borderless" :content="msg.text.answerContent">
-                                            <template #message="{ content }">
-                                                <MarkdownRender :content="content" />
-                                            </template>
-                                        </AXBubble>
+                                        <AXBubble variant="borderless" :content="msg.text.answerContent"
+                                            :message-render="renderMarkdown3" />
 
                                         <a-space :size="token.paddingXXS">
                                             <a-button type="text" size="small" :icon="h(SyncOutlined)"
@@ -89,10 +81,8 @@
                         <!-- 用户 -->
                         <template v-else>
                             <AXBubble :placement="msg.placement" :avatar="getAvatarStyle(msg.placement)"
-                                variant="outlined" :content="msg.text.answerContent" shape="corner">
-                                <template #message="{ content }">
-                                    <MarkdownRender :content="content" />
-                                </template>
+                                variant="outlined" :content="msg.text.answerContent" :messageRender="renderMarkdown1"
+                                shape="corner">
                                 <template #footer="{ content }">
                                     <a-space :size="token.paddingXXS">
                                         <a-button type="text" size="small" :icon="h(SyncOutlined)"
@@ -154,12 +144,6 @@ import hljs from 'highlight.js'
 import { useAppStore, useUserStore } from '@/stores'
 import { theme, Typography } from 'ant-design-vue';
 import { chatStream, queryAllModelList, queryMessages } from '@/api'
-import { MarkdownCodeBlockNode, setCustomComponents, MarkdownRender } from 'vue-renderer-markdown'
-import 'vue-renderer-markdown/index.css'
-
-setCustomComponents({
-    code_block: MarkdownCodeBlockNode,
-})
 
 // 定义props
 const props = defineProps({

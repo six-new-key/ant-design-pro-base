@@ -3,6 +3,7 @@ import { loadDynamicBgLibraries } from '@/utils'
 
 import { createApp } from 'vue'
 import '@/style/index.scss'
+import 'katex/dist/katex.min.css'
 import App from './App.vue'
 import router from './router'
 import * as antIcons from "@ant-design/icons-vue" //引入UI图标库
