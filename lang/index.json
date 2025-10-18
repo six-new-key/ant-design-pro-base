@@ -1934,5 +1934,25 @@
 	"cnk9ne4": {
 		"zh-cn": "思考内容",
 		"en": "Thought content"
+	},
+	"eps8kb6": {
+		"zh-cn": "思考内容()",
+		"en": "Thought content ("
+	},
+	"7mzydp8": {
+		"zh-cn": "思考内容(用时)",
+		"en": "Thought content (time taken)"
+	},
+	"npmg4y9": {
+		"zh-cn": "思考内容(用时3)",
+		"en": "Thought content (takes 3 hours"
+	},
+	"ors1ima": {
+		"zh-cn": "思考内容(用时3秒)",
+		"en": "Thought content (within 3 seconds)"
+	},
+	"d9tyg1b": {
+		"zh-cn": "已深度思考(用时3秒)",
+		"en": "Thought deeply (took 3 seconds)"
 	}
 }

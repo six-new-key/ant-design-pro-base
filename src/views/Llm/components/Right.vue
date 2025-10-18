@@ -25,7 +25,7 @@
                     <template v-if="!msg.thinkMode">
                         <AXBubble :placement="msg.placement" :loading="msg.loading"
                             :avatar="getAvatarStyle(msg.placement)"
-                            :variant="msg.placement === 'start' ? 'borderless' : 'filled'"
+                            :variant="msg.placement === 'start' ? 'borderless' : 'outlined'"
                             :content="msg.text.answerContent" :messageRender="renderMarkdown1" shape="corner">
                             <template #footer="{ content }">
                                 <a-space :size="token.paddingXXS">
@@ -43,24 +43,29 @@
                         <!-- 大模型 -->
                         <template v-if="msg.placement === 'start'">
                             <AXBubble :placement="msg.placement" :loading="msg.loading"
-                                :avatar="getAvatarStyle(msg.placement)" variant="filled" shape="corner">
+                                :avatar="getAvatarStyle(msg.placement)" shape="corner">
                                 <template #message>
-                                    <Space>
-                                        <BulbOutlined />
-                                        <span>思考内容</span>
-                                        <a-button type="text" size="small" style="background: transparent;"
-                                            :icon="msg.collapse ? h(UpOutlined) : h(DownOutlined)" @click="() => {
-                                                msg.collapse = !msg.collapse;
-                                            }" />
-                                    </Space>
+                                    <a-space direction="vertical" :size="msg.collapse ? 5 : 10">
+                                        <a-space @click="() => {
+                                            msg.collapse = !msg.collapse;
+                                        }" style="cursor: pointer;" :size="5" direction="horizontal">
+                                            <span style="opacity: 0.7;">已深度思考</span>
+                                            <UpOutlined :style="{ fontSize: '12px',opacity: 0.7 }"
+                                                v-if="!msg.collapse" />
+                                            <DownOutlined :style="{ fontSize: '12px',opacity: 0.7 }"
+                                                v-else />
+                                        </a-space>
+
+                                        <AXBubble
+                                            :style="{ borderLeft: `2px solid ${token.colorBorder}`, paddingLeft: '12px',opacity: 0.7 }"
+                                            v-show="!msg.collapse && !msg.loading" variant="borderless"
+                                            :content="msg.text.thinkContent" :message-render="renderMarkdown2" />
+                                    </a-space>
                                 </template>
                                 <template #footer>
-                                    <Space direction="vertical">
-                                        <AXBubble v-show="!msg.collapse && !msg.loading" variant="filled"
-                                            :content="msg.text.thinkContent" :message-render="renderMarkdown2" />
-
-                                        <AXBubble variant="borderless" style="margin-top: 10px;"
-                                            :content="msg.text.answerContent" :message-render="renderMarkdown3" />
+                                    <a-space direction="vertical">
+                                        <AXBubble variant="borderless" :content="msg.text.answerContent"
+                                            :message-render="renderMarkdown3" />
 
                                         <a-space :size="token.paddingXXS">
                                             <a-button type="text" size="small" :icon="h(SyncOutlined)"
@@ -68,14 +73,14 @@
                                             <a-button type="text" size="small" :icon="h(CopyOutlined)"
                                                 @click="handleCopy(msg.text.answerContent)" />
                                         </a-space>
-                                    </Space>
+                                    </a-space>
                                 </template>
                             </AXBubble>
                         </template>
                         <!-- 用户 -->
                         <template v-else>
                             <AXBubble :placement="msg.placement" :avatar="getAvatarStyle(msg.placement)"
-                                variant="filled" :content="msg.text.answerContent" :messageRender="renderMarkdown1"
+                                variant="outlined" :content="msg.text.answerContent" :messageRender="renderMarkdown1"
                                 shape="corner">
                                 <template #footer="{ content }">
                                     <a-space :size="token.paddingXXS">
@@ -95,7 +100,7 @@
         <!-- 消息发送区：固定在底部 -->
         <div class="sender">
             <AXSender :allow-speech="true" :actions="false" v-model:value="messageValue"
-                :auto-size="{ minRows: 3, maxRows: 8 }" @submit="handleSubmit" @cancel="handleCancel">
+                :auto-size="{ minRows: 2, maxRows: 8 }" @submit="handleSubmit" @cancel="handleCancel">
                 <template #footer="{ info: { components: { SendButton, LoadingButton, SpeechButton } } }">
                     <a-flex justify="space-between" align="center">
                         <a-flex gap="small" align="center">
