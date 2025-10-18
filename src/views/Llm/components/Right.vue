@@ -42,12 +42,12 @@
                     <template v-else>
                         <!-- 大模型 -->
                         <template v-if="msg.placement === 'start'">
-                            <AXBubble :placement="msg.placement" :avatar="getAvatarStyle(msg.placement)"
-                                variant="filled" shape="corner">
+                            <AXBubble :placement="msg.placement" :loading="msg.loading"
+                                :avatar="getAvatarStyle(msg.placement)" variant="filled" shape="corner">
                                 <template #message>
                                     <Space>
                                         <BulbOutlined />
-                                        <span>{{ msg.think ? "思考中..." : "已深度思考" }}</span>
+                                        <span>思考内容</span>
                                         <a-button type="text" size="small" style="background: transparent;"
                                             :icon="msg.collapse ? h(UpOutlined) : h(DownOutlined)" @click="() => {
                                                 msg.collapse = !msg.collapse;
@@ -56,10 +56,8 @@
                                 </template>
                                 <template #footer>
                                     <Space direction="vertical">
-                                        <AXBubble v-show="!msg.collapse" variant="filled"
+                                        <AXBubble v-show="!msg.collapse && !msg.loading" variant="filled"
                                             :content="msg.text.thinkContent" :message-render="renderMarkdown2" />
-
-                                        <LoadingOutlined v-if="msg.think" />
 
                                         <AXBubble variant="borderless" style="margin-top: 10px;"
                                             :content="msg.text.answerContent" :message-render="renderMarkdown3" />
@@ -76,9 +74,9 @@
                         </template>
                         <!-- 用户 -->
                         <template v-else>
-                            <AXBubble :placement="msg.placement" :loading="msg.loading"
-                                :avatar="getAvatarStyle(msg.placement)" variant="filled"
-                                :content="msg.text.answerContent" :messageRender="renderMarkdown1" shape="corner">
+                            <AXBubble :placement="msg.placement" :avatar="getAvatarStyle(msg.placement)"
+                                variant="filled" :content="msg.text.answerContent" :messageRender="renderMarkdown1"
+                                shape="corner">
                                 <template #footer="{ content }">
                                     <a-space :size="token.paddingXXS">
                                         <a-button type="text" size="small" :icon="h(SyncOutlined)"
@@ -181,29 +179,7 @@ const messages = ref([
         },
         loading: false,
         thinkMode: false,
-        think: false,
-        collapse: false,
-    },
-    {
-        placement: 'end',
-        text: {
-            thinkContent: '',
-            answerContent: '你好'
-        },
-        loading: false,
-        thinkMode: true,
-        think: false,
-        collapse: false,
-    },
-    {
-        placement: 'start',
-        text: {
-            thinkContent: '嗯，用户在向我问候，我应该诚恳的向用户回应...，这是我的思考内容，最后回复 你好！',
-            answerContent: '你好，我是AI助手，进来可好！'
-        },
-        loading: false,
-        thinkMode: true,
-        think: false,
+        // think: false,
         collapse: false,
     }
 ])
@@ -217,7 +193,6 @@ const iconStyle = {
 const conversationId = ref(null)
 
 //深度思考相关
-const currentType = ref(null); // 'think' 或 'answer'
 const isThinkComplete = ref(false);
 const isAnswerComplete = ref(false);
 const hasThinkStarted = ref(false);
@@ -349,7 +324,7 @@ const handleSubmit = async (value) => {
         },
         loading: false,
         thinkMode: enableThinking.value,
-        think: false,
+        // think: false,
         collapse: false,
     });
 
@@ -365,7 +340,7 @@ const handleSubmit = async (value) => {
         },
         loading: true,
         thinkMode: enableThinking.value,
-        think: true,
+        // think: true,
         collapse: false,
     });
 
@@ -392,7 +367,10 @@ const handleChatStream = async (value) => {
     }
 
     try {
+        //后端请求
         const response = await chatStream(chatDto);
+
+        messages.value[currentAiMessageIndex].loading = false;
 
         if (enableThinking.value) {
             handleThinkingResponse(response)
@@ -454,165 +432,84 @@ const handleNonThinkingResponse = async (response) => {
 }
 
 // 处理思考模式响应
-// const handleThinkingResponse = async (response) => {
-//     const reader = response.body.getReader();
-//     const decoder = new TextDecoder();
-//     let buffer = '';
-//     let lastUpdateTime = 0;
-//     const updateInterval = 50; // 50ms 更新一次
-
-//     try {
-//         while (true) {
-//             const { done, value: chunk } = await reader.read();
-//             if (done) {
-//                 onStreamComplete();
-//                 console.log('Stream completed');
-//                 break;
-//             }
-
-//             const text = decoder.decode(chunk, { stream: true });
-//             buffer += text;
-
-//             // 节流更新，避免过于频繁的 DOM 操作
-//             const now = Date.now();
-//             if (now - lastUpdateTime > updateInterval) {
-//                 if (buffer.trim()) {
-//                     handleStreamData(buffer);
-//                     buffer = '';
-//                     lastUpdateTime = now;
-//                 }
-//             }
-//         }
-//     } finally {
-//         reader.releaseLock();
-//     }
-// }
-
-const handleStreamData = (data) => {
-    console.log('收到数据:', data);
-
-    // 处理思考内容 (以THINK:开头)
-    if (data.startsWith('THINK:')) {
-        currentType.value = 'think';
-        const content = data.replace('THINK:', '');
-        messages.value[currentAiMessageIndex].text.thinkContent += content;
-        messages.value[currentAiMessageIndex].loading = false;
-        if (!hasThinkStarted.value) {
-            hasThinkStarted.value = true;
-        }
-    }
-    // 处理回答内容 (以ANSWER:开头)
-    else if (data.startsWith('ANSWER')) {
-        currentType.value = 'answer';
-        const content = data.replace('ANSWER', '');
-        messages.value[currentAiMessageIndex].text.answerContent += content;
-        messages.value[currentAiMessageIndex].loading = false;
-
-        if (!hasAnswerStarted.value) {
-            hasAnswerStarted.value = true;
-
-            // 标记思考完成
-            if (hasThinkStarted.value && !isThinkComplete.value) {
-                isThinkComplete.value = true;
-                messages.value[currentAiMessageIndex].think = false;
-            }
-        }
-    }
-    // 处理普通数据（追加到当前类型）
-    else if (data.trim() !== '') {
-        if (currentType.value === 'think') {
-            messages.value[currentAiMessageIndex].text.thinkContent += data;
-        } else if (currentType.value === 'answer') {
-            messages.value[currentAiMessageIndex].text.answerContent += data;
-        }
-    }
-}
-
-// 处理思考模式响应
 const handleThinkingResponse = async (response) => {
     const reader = response.body.getReader();
     const decoder = new TextDecoder();
     let buffer = '';
-    let currentType = null; // 'think' 或 'answer'
+    let currentMode = null; // 'think' 或 'answer'
+    let lastUpdateTime = 0;
+    const updateInterval = 50;
+    const maxBufferSize = 512 * 1024;
 
-    // 处理缓冲区中的数据
     const processBuffer = () => {
+        let processed = false;
+
+        // 查找标识符
         const thinkIndex = buffer.indexOf('THINK:');
         const answerIndex = buffer.indexOf('ANSWER:');
 
-        // 如果缓冲区中有完整标识符
-        if (thinkIndex !== -1 || answerIndex !== -1) {
-            let nextType = null;
-            let nextIndex = -1;
-
-            // 确定下一个出现的标识符类型和位置
-            if (thinkIndex !== -1 && answerIndex !== -1) {
-                if (thinkIndex < answerIndex) {
-                    nextType = 'think';
-                    nextIndex = thinkIndex;
-                } else {
-                    nextType = 'answer';
-                    nextIndex = answerIndex;
+        // 处理 THINK: 标识
+        if (thinkIndex !== -1) {
+            // 如果之前有内容，先处理
+            if (thinkIndex > 0 && currentMode) {
+                const prevContent = buffer.substring(0, thinkIndex);
+                if (prevContent.trim()) {
+                    updateContent(currentMode, prevContent);
                 }
-            } else if (thinkIndex !== -1) {
-                nextType = 'think';
-                nextIndex = thinkIndex;
-            } else {
-                nextType = 'answer';
-                nextIndex = answerIndex;
             }
 
-            // 如果当前有类型，处理当前类型的内容
-            if (currentType && nextIndex > 0) {
-                const content = buffer.substring(0, nextIndex);
-                if (content.trim()) {
-                    handleContent(currentType, content);
-                }
-                buffer = buffer.substring(nextIndex);
-            }
-
-            // 设置新的当前类型
-            if (nextType === 'think') {
-                currentType = 'think';
-                buffer = buffer.substring(6); // 移除 'THINK:'
-            } else {
-                currentType = 'answer';
-                buffer = buffer.substring(7); // 移除 'ANSWER:'
-            }
+            // 切换到思考模式
+            currentMode = 'think';
+            buffer = buffer.substring(thinkIndex + 6); // 移除 'THINK:'
+            processed = true;
         }
+
+        // 处理 ANSWER: 标识
+        if (answerIndex !== -1) {
+            // 如果之前有内容，先处理
+            if (answerIndex > 0 && currentMode) {
+                const prevContent = buffer.substring(0, answerIndex);
+                if (prevContent.trim()) {
+                    updateContent(currentMode, prevContent);
+                }
+            }
+
+            // 切换到回答模式
+            currentMode = 'answer';
+            buffer = buffer.substring(answerIndex + 7); // 移除 'ANSWER:'
+            processed = true;
+        }
+
+        return processed;
     };
 
-    // 处理内容
-    const handleContent = (type, content) => {
-        if (type === 'think') {
+    const updateContent = (mode, content) => {
+        if (mode === 'think') {
             messages.value[currentAiMessageIndex].text.thinkContent += content;
-            messages.value[currentAiMessageIndex].loading = false;
             if (!hasThinkStarted.value) {
                 hasThinkStarted.value = true;
             }
-        } else if (type === 'answer') {
+        } else if (mode === 'answer') {
             messages.value[currentAiMessageIndex].text.answerContent += content;
-            messages.value[currentAiMessageIndex].loading = false;
-
             if (!hasAnswerStarted.value) {
                 hasAnswerStarted.value = true;
                 // 标记思考完成
                 if (hasThinkStarted.value && !isThinkComplete.value) {
                     isThinkComplete.value = true;
-                    messages.value[currentAiMessageIndex].think = false;
                 }
             }
         }
-        scrollToBottom();
+        messages.value[currentAiMessageIndex].loading = false;
     };
 
     try {
         while (true) {
             const { done, value: chunk } = await reader.read();
             if (done) {
-                // 处理剩余缓冲区内容
-                if (currentType && buffer.trim()) {
-                    handleContent(currentType, buffer);
+                // 处理剩余内容
+                if (buffer.trim() && currentMode) {
+                    updateContent(currentMode, buffer);
+                    scrollToBottom();
                 }
                 onStreamComplete();
                 console.log('Stream completed');
@@ -622,19 +519,60 @@ const handleThinkingResponse = async (response) => {
             const text = decoder.decode(chunk, { stream: true });
             buffer += text;
 
-            // 处理缓冲区
-            processBuffer();
-
-            // 如果缓冲区中没有标识符但当前有类型，直接处理
-            if (currentType && buffer.length > 0 &&
-                buffer.indexOf('THINK:') === -1 &&
-                buffer.indexOf('ANSWER:') === -1) {
-                handleContent(currentType, buffer);
+            // 防止内存溢出
+            if (buffer.length > maxBufferSize) {
+                console.warn('Buffer size exceeded, forcing update');
+                if (currentMode && buffer.trim()) {
+                    updateContent(currentMode, buffer);
+                    scrollToBottom();
+                }
                 buffer = '';
+                lastUpdateTime = Date.now();
+                continue;
+            }
+
+            // 尝试处理标识符
+            const hasIdentifier = processBuffer();
+
+            // 节流更新内容
+            const now = Date.now();
+            if (now - lastUpdateTime > updateInterval) {
+                if (currentMode && buffer.trim()) {
+                    // 如果没有找到新标识符，且当前有模式，则更新内容
+                    if (!hasIdentifier) {
+                        updateContent(currentMode, buffer);
+                        buffer = '';
+                        scrollToBottom();
+                    }
+                }
+                lastUpdateTime = now;
             }
         }
+    } catch (error) {
+        console.error('Stream processing error:', error);
+
+        // 错误处理
+        if (buffer.trim() && currentMode) {
+            try {
+                updateContent(currentMode, buffer);
+                scrollToBottom();
+            } catch (handleError) {
+                console.error('Error handling remaining buffer:', handleError);
+            }
+        }
+
+        if (currentAiMessageIndex >= 0 && currentAiMessageIndex < messages.value.length) {
+            messages.value[currentAiMessageIndex].loading = false;
+        }
+
+        onStreamComplete();
+        throw error;
     } finally {
-        reader.releaseLock();
+        try {
+            reader.releaseLock();
+        } catch (releaseError) {
+            console.error('Error releasing reader lock:', releaseError);
+        }
     }
 }
 
