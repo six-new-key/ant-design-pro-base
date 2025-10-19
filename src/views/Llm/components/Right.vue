@@ -22,7 +22,7 @@
             <div v-else class="chat-messages">
                 <div v-for="(msg, index) in messages" :key="index" class="message-item">
                     <!-- 非思考模式 -->
-                    <template v-if="!msg.thinkMode">
+                    <template v-if="!msg.enableThink">
                         <AXBubble :placement="msg.placement" :loading="msg.loading"
                             :avatar="getAvatarStyle(msg.placement)"
                             :variant="msg.placement === 'start' ? 'borderless' : 'outlined'"
@@ -112,7 +112,7 @@
         <div class="sender">
             <AXSender :allow-speech="true" :actions="false" v-model:value="messageValue"
                 :auto-size="{ minRows: 2, maxRows: 8 }" @submit="handleSubmit" @cancel="handleCancel">
-                <template #footer="{ info: { components: { SendButton, LoadingButton, SpeechButton } } }">
+                <template #footer="{ info: { components: { SendButton, LoadingButton } } }">
                     <a-flex justify="space-between" align="center">
                         <a-flex gap="small" align="center">
                             <a-select v-model:value="selectedModel" style="width: 120px"
@@ -127,8 +127,6 @@
                         <a-flex align="center">
                             <a-button :style="iconStyle" type="text" :icon="h(LinkOutlined)" />
                             <a-divider type="vertical" />
-                            <!-- <component :is="SpeechButton" :style="iconStyle" />
-                            <a-divider type="vertical" /> -->
                             <component :is="LoadingButton" v-if="submitLoading" type="default" />
                             <component :is="SendButton" v-else type="primary" :disabled="false" />
                         </a-flex>
@@ -142,17 +140,9 @@
 <script setup>
 import { ref, h, onMounted, nextTick, watch, onUnmounted } from 'vue'
 import { UserOutlined, RobotOutlined, CopyOutlined, SyncOutlined, LinkOutlined, UpOutlined, DownOutlined } from '@ant-design/icons-vue';
-import { message, createConversationId } from '@/utils';
-import markdownit from 'markdown-it'
-import markdownitTaskLists from 'markdown-it-task-lists'
-// import { full as emoji } from 'markdown-it-emoji'
-import markdownitSub from 'markdown-it-sub'
-import markdownitSup from 'markdown-it-sup'
-import markdownitMark from 'markdown-it-mark'
-import DOMPurify from 'dompurify'
-import hljs from 'highlight.js'
+import { message, generateUniqueId } from '@/utils';
 import { useAppStore, useUserStore } from '@/stores'
-import { theme, Typography } from 'ant-design-vue';
+import { theme } from 'ant-design-vue';
 import { chatStream, queryAllModelList, queryMessages } from '@/api'
 import { MarkdownCodeBlockNode, setCustomComponents, MarkdownRender } from 'vue-renderer-markdown'
 import 'vue-renderer-markdown/index.css'
@@ -192,19 +182,7 @@ const modelList = ref([])
 // 消息索引
 let currentAiMessageIndex = -1
 // 初始化消息
-const messages = ref([
-    {
-        placement: 'start',
-        text: {
-            thinkContent: '',
-            answerContent: '你好，我是AI助手，有什么可以帮助你的吗？'
-        },
-        loading: false,
-        thinkMode: false,
-        // think: false,
-        collapse: false,
-    }
-])
+const messages = ref([])
 // 定义选中的模型
 const selectedModel = ref('')
 const iconStyle = {
@@ -221,34 +199,6 @@ const hasThinkStarted = ref(false);
 const hasAnswerStarted = ref(false);
 const enableThinking = ref(false);
 const enableSearch = ref(false);
-
-// Markdown渲染器
-const md = markdownit({
-    html: true,
-    breaks: true,
-    linkify: true,
-    typographer: true,
-    // 启用代码高亮
-    highlight: function (str, lang) {
-        // 如果指定了语言且 highlight.js 支持，则高亮该语言
-        if (lang && hljs.getLanguage(lang)) {
-            try {
-                return `<pre class="hljs"><code>${hljs.highlight(str, { language: lang }).value}</code></pre>`
-            } catch (err) { }
-        }
-        // 未指定语言或不支持时，自动检测语言并高亮
-        return `<pre class="hljs"><code>${hljs.highlightAuto(str).value}</code></pre>`
-    }
-})
-    .use(markdownitTaskLists, {
-        enabled: true,
-        label: true,
-        labelAfter: true
-    })
-    // .use(emoji)
-    .use(markdownitSub)      // 下标 H~2~O
-    .use(markdownitSup)      // 上标 x^2^
-    .use(markdownitMark)     // 高亮 ==marked==
 
 // 头像样式
 const getAvatarStyle = (placement) => {
@@ -279,46 +229,6 @@ const getAvatarStyle = (placement) => {
     }
 };
 
-// 修改渲染函数，添加类名
-const renderMarkdown1 = (content) => {
-    // 先用 markdown-it 渲染
-    const htmlContent = md.render(content)
-
-    // 再用 DOMPurify 清理 HTML，防止 XSS 攻击
-    const safeHtml = DOMPurify.sanitize(htmlContent)
-
-    return h(Typography, null, {
-        default: () => h('div', { innerHTML: safeHtml })
-    })
-    // return h('div', { innerHTML: safeHtml })
-}
-
-const renderMarkdown2 = (content) => {
-    // 先用 markdown-it 渲染
-    const htmlContent = md.render(content)
-
-    // 再用 DOMPurify 清理 HTML，防止 XSS 攻击
-    const safeHtml = DOMPurify.sanitize(htmlContent)
-
-    return h(Typography, null, {
-        default: () => h('div', { innerHTML: safeHtml })
-    })
-    // return h('div', { innerHTML: safeHtml })
-}
-
-const renderMarkdown3 = (content) => {
-    // 先用 markdown-it 渲染
-    const htmlContent = md.render(content)
-
-    // 再用 DOMPurify 清理 HTML，防止 XSS 攻击
-    const safeHtml = DOMPurify.sanitize(htmlContent)
-
-    return h(Typography, null, {
-        default: () => h('div', { innerHTML: safeHtml })
-    })
-    // return h('div', { innerHTML: safeHtml })
-}
-
 // 滚动到底部
 const scrollToBottom = () => {
     nextTick(() => {
@@ -345,8 +255,7 @@ const handleSubmit = async (value) => {
             answerContent: value
         },
         loading: false,
-        thinkMode: enableThinking.value,
-        // think: false,
+        enableThink: enableThinking.value,
         collapse: false,
     });
 
@@ -361,8 +270,7 @@ const handleSubmit = async (value) => {
             answerContent: ''
         },
         loading: true,
-        thinkMode: enableThinking.value,
-        // think: true,
+        enableThink: enableThinking.value,
         collapse: false,
     });
 
@@ -376,7 +284,7 @@ const handleSubmit = async (value) => {
 const handleChatStream = async (value) => {
     // 初始化会话ID
     if (!conversationId.value) {
-        conversationId.value = createConversationId(userStore.userData.id)
+        conversationId.value = generateUniqueId()
     }
 
     // 更新chatDto
@@ -384,7 +292,7 @@ const handleChatStream = async (value) => {
         model: selectedModel.value,
         conversationId: conversationId.value,
         prompt: value,
-        enableThinking: enableThinking.value,
+        enableThink: enableThinking.value,
         enableSearch: enableSearch.value,
     }
 
@@ -598,6 +506,7 @@ const handleThinkingResponse = async (response) => {
     }
 }
 
+//处理流完成，更新消息状态
 const onStreamComplete = () => {
     // 确保所有内容都正确结束
     if (hasThinkStarted.value && !isThinkComplete.value) {
@@ -621,7 +530,9 @@ const handleRetry = (index) => {
     const message = messages.value[index];
     if (message.placement !== 'end') return;
 
-    handleSubmit(message.content);
+    console.log(message)
+
+    messageValue.value = message.text.answerContent
 };
 
 // 复制文本
@@ -633,24 +544,6 @@ const handleCopy = (textToCopy) => {
         message.error('Failed to copy text');
     });
 };
-
-// 根据 appStore.themeMode 动态加载高亮主题
-const loadHighlightTheme = (mode) => {
-    // 先卸载旧样式
-    const links = document.querySelectorAll('link[data-highlight-theme]')
-    links.forEach(link => link.remove())
-
-    // 按需加载新样式
-    const theme = mode === 'dark' ? 'atom-one-dark' : 'atom-one-light'
-    const link = document.createElement('link')
-    link.rel = 'stylesheet'
-    link.href = `https://cdn.jsdelivr.net/npm/highlight.js@11/styles/${theme}.css`
-    link.setAttribute('data-highlight-theme', '')
-    document.head.appendChild(link)
-}
-
-// 初始化并监听主题变化
-loadHighlightTheme(appStore.themeMode)
 
 //根据会话ID查询消息列表
 const handleQueryMsgListById = async () => {
@@ -666,19 +559,17 @@ const handleQueryMsgListById = async () => {
     scrollToBottom();
 }
 
-watch(() => appStore.themeMode, loadHighlightTheme)
-
 //监听 conversationId 变化
-watch(() => props.conversationId, (newVal, oldVal) => {
+watch(() => props.conversationId, async (newVal, oldVal) => {
     if (newVal !== oldVal) {
         conversationId.value = newVal
         loadingMsg.value = true
         // 处理 conversationId 变化后的逻辑
-        handleQueryMsgListById()
+        await handleQueryMsgListById()
     }
 })
 
-//监听 createNewChat 变化
+//监听 新建会话 变化
 watch(() => props.createNewChat, (newVal, oldVal) => {
     if (newVal !== oldVal) {
         if (newVal) {
@@ -690,8 +581,13 @@ watch(() => props.createNewChat, (newVal, oldVal) => {
             messageValue.value = ''
             messages.value = [{
                 placement: 'start',
-                content: '你好，我是AI助手，有什么可以帮助你的吗？',
-                loading: false
+                text: {
+                    thinkContent: '',
+                    answerContent: '你好，我是AI助手，有什么可以帮助你的吗？'
+                },
+                loading: false,
+                enableThink: false,
+                collapse: false,
             }]
             // 滚动到底部
             scrollToBottom();

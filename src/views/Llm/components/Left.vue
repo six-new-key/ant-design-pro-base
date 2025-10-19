@@ -13,8 +13,8 @@
 <script setup>
 import { ref, onMounted, h, computed } from 'vue'
 import { EditOutlined, StopOutlined, DeleteOutlined } from '@ant-design/icons-vue'
-import { queryHistory } from '@/api'
-import { message, createConversationId } from '@/utils'
+import { queryConversationHistory } from '@/api'
+import { message, generateUniqueId } from '@/utils'
 import { theme } from 'ant-design-vue';
 import { useAppStore, useUserStore } from '@/stores'
 
@@ -66,7 +66,7 @@ const handleActiveChange = (key) => {
 
 const handleCreateNewChat = () => {
   //新建会话ID
-  const conversationId = createConversationId(userStore.userData.id);
+  const conversationId = generateUniqueId();
   emit('createNewChat', conversationId)
   historyList.value.unshift({
     key: conversationId,
@@ -80,7 +80,7 @@ const handleCreateNewChat = () => {
 }
 
 const handleQueryHistory = () => {
-  queryHistory().then(res => {
+  queryConversationHistory().then(res => {
     console.log(res.data)
     historyList.value = res.data || []
   })
