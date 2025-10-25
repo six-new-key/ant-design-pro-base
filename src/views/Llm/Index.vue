@@ -1,10 +1,12 @@
 <template>
   <a-flex horizontal>
     <div class="left">
-      <Left @activeChange="handleActiveChange" @createNewChat="handleCreateNewChat" />
+      <Left @activeChange="handleActiveChange" @createNewChat="handleCreateNewChat"
+        :newConversation="newConversation" />
     </div>
     <div class="right">
-      <Right :conversationId="conversationId" :newConversationId="newConversationId" :createNewChat="createNewChat" @createNewChatSuccess="handleCreateNewChatSuccess" />
+      <Right :conversationId="conversationId" :createNewChat="createNewChat"
+        @createNewChatSuccess="handleCreateNewChatSuccess" />
     </div>
   </a-flex>
 </template>
@@ -17,14 +19,18 @@ import { theme } from 'ant-design-vue';
 const { token } = theme.useToken();
 
 const conversationId = ref(null)
-const newConversationId = ref(null)
+const newConversation = ref({})
 const createNewChat = ref(false)
 
-const handleCreateNewChatSuccess = () => {
-  createNewChat.value = false
+const handleCreateNewChatSuccess = (data) => {
+  if (data) {
+    //往左侧会话历史添加一条记录
+    newConversation.value = data;
+  } else {
+    createNewChat.value = false
+  }
 }
-const handleCreateNewChat = (id) => {
-  newConversationId.value = id
+const handleCreateNewChat = () => {
   createNewChat.value = true
 }
 const handleActiveChange = (key) => {
@@ -35,8 +41,9 @@ const handleActiveChange = (key) => {
 <style scoped lang="scss">
 //隐藏滚动条
 ::-webkit-scrollbar {
-    display: none;
+  display: none;
 }
+
 .left {
   width: 18%;
   min-height: 84vh;

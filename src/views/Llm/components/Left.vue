@@ -5,19 +5,26 @@
     </div>
 
     <div class="chat-history">
-      <AXConversations :activeKey="activeKey" :menu="menuConfig" :items="historyList" :style="style" @activeChange="handleActiveChange" />
+      <AXConversations :activeKey="activeKey" :menu="menuConfig" :items="historyList" :style="style"
+        @activeChange="handleActiveChange" />
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, h, computed } from 'vue'
+import { ref, onMounted, h, watch } from 'vue'
 import { EditOutlined, StopOutlined, DeleteOutlined } from '@ant-design/icons-vue'
 import { queryConversationHistory } from '@/api'
-import { message, generateUniqueId } from '@/utils'
+import { message } from '@/utils'
 import { theme } from 'ant-design-vue';
 import { useAppStore, useUserStore } from '@/stores'
 
+const props = defineProps({
+  newConversation: {
+    type: Object,
+    default: () => ({})
+  }
+})
 const emit = defineEmits(['activeChange', 'createNewChat'])
 
 const historyList = ref([])
@@ -65,27 +72,29 @@ const handleActiveChange = (key) => {
 }
 
 const handleCreateNewChat = () => {
-  //新建会话ID
-  const conversationId = generateUniqueId();
-  emit('createNewChat', conversationId)
-  historyList.value.unshift({
-    key: conversationId,
-    label: '新会话',
-    timestamp: null,
-    group: '',
-    icon: '',
-    disabled: false,
-  })
-  activeKey.value = conversationId
+  emit('createNewChat')
+  activeKey.value = ''
 }
 
 const handleQueryHistory = () => {
   queryConversationHistory().then(res => {
-    console.log(res.data)
     historyList.value = res.data || []
   })
 }
 
+watch(() => props.newConversation, (newVal) => {
+  if (newVal) {
+    historyList.value.unshift({
+      key: newVal.conversationId,
+      label: newVal.label,
+      timestamp: null,
+      group: '',
+      icon: '',
+      disabled: false,
+    })
+    activeKey.value = newVal.conversationId
+  }
+})
 
 onMounted(() => {
   handleQueryHistory()

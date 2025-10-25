@@ -54,6 +54,6 @@ export {
 export { default as request } from "./request.js";
 
 // 导出通用工具函数
-export { createConversationId } from "./common.js";
+export { createConversationLabel } from "./common.js";
 
 export { generateUniqueId } from "./generateId.js";

@@ -140,7 +140,7 @@
 <script setup>
 import { ref, h, onMounted, nextTick, watch, onUnmounted } from 'vue'
 import { UserOutlined, RobotOutlined, CopyOutlined, SyncOutlined, LinkOutlined, UpOutlined, DownOutlined } from '@ant-design/icons-vue';
-import { message, generateUniqueId } from '@/utils';
+import { message, generateUniqueId, createConversationLabel } from '@/utils';
 import { useAppStore, useUserStore } from '@/stores'
 import { theme } from 'ant-design-vue';
 import { chatStream, queryAllModelList, queryMessages } from '@/api'
@@ -160,11 +160,7 @@ const props = defineProps({
     createNewChat: {
         type: Boolean,
         default: false
-    },
-    newConversationId: {
-        type: String,
-        default: ''
-    },
+    }
 })
 
 const emit = defineEmits(['createNewChatSuccess'])
@@ -285,6 +281,11 @@ const handleChatStream = async (value) => {
     // 初始化会话ID
     if (!conversationId.value) {
         conversationId.value = generateUniqueId()
+        //往左侧会话历史添加一条记录
+        emit('createNewChatSuccess', {
+            conversationId: conversationId.value,
+            label: createConversationLabel(value),
+        })
     }
 
     // 更新chatDto
@@ -314,8 +315,6 @@ const handleChatStream = async (value) => {
         if (currentAiMessageIndex < messages.value.length) {
             messages.value.splice(currentAiMessageIndex, 1);
         }
-    } finally {
-        submitLoading.value = false;
     }
 };
 
@@ -337,6 +336,7 @@ const handleNonThinkingResponse = async (response) => {
                     messages.value[currentAiMessageIndex].text.answerContent += buffer;
                     scrollToBottom();
                 }
+                submitLoading.value = false;
                 console.log('Stream completed');
                 break;
             }
@@ -370,66 +370,104 @@ const handleThinkingResponse = async (response) => {
     let lastUpdateTime = 0;
     const updateInterval = 50;
     const maxBufferSize = 512 * 1024;
+    const minIdentifierLength = 6; // 'THINK:' 的最小长度
 
     const processBuffer = () => {
         let processed = false;
 
-        // 查找标识符
-        const thinkIndex = buffer.indexOf('THINK:');
-        const answerIndex = buffer.indexOf('ANSWER:');
+        while (true) {
+            // 查找所有标识符的位置
+            const thinkIndex = buffer.indexOf('THINK:');
+            const answerIndex = buffer.indexOf('ANSWER:');
 
-        // 处理 THINK: 标识
-        if (thinkIndex !== -1) {
-            // 如果之前有内容，先处理
-            if (thinkIndex > 0 && currentMode) {
-                const prevContent = buffer.substring(0, thinkIndex);
+            // 确定下一个要处理的标识符
+            let nextIndex = -1;
+            let nextMode = null;
+            let nextIdentifierLength = 0;
+
+            // 找到最早出现的标识符
+            if (thinkIndex !== -1 && answerIndex !== -1) {
+                if (thinkIndex < answerIndex) {
+                    nextIndex = thinkIndex;
+                    nextMode = 'think';
+                    nextIdentifierLength = 6; // 'THINK:'.length
+                } else {
+                    nextIndex = answerIndex;
+                    nextMode = 'answer';
+                    nextIdentifierLength = 7; // 'ANSWER:'.length
+                }
+            } else if (thinkIndex !== -1) {
+                nextIndex = thinkIndex;
+                nextMode = 'think';
+                nextIdentifierLength = 6;
+            } else if (answerIndex !== -1) {
+                nextIndex = answerIndex;
+                nextMode = 'answer';
+                nextIdentifierLength = 7;
+            }
+
+            // 如果没有找到标识符，退出循环
+            if (nextIndex === -1) {
+                break;
+            }
+
+            // 处理标识符之前的内容
+            if (nextIndex > 0 && currentMode) {
+                const prevContent = buffer.substring(0, nextIndex);
                 if (prevContent.trim()) {
                     updateContent(currentMode, prevContent);
                 }
             }
 
-            // 切换到思考模式
-            currentMode = 'think';
-            buffer = buffer.substring(thinkIndex + 6); // 移除 'THINK:'
+            // 切换模式并移除已处理的内容
+            currentMode = nextMode;
+            buffer = buffer.substring(nextIndex + nextIdentifierLength);
             processed = true;
-        }
 
-        // 处理 ANSWER: 标识
-        if (answerIndex !== -1) {
-            // 如果之前有内容，先处理
-            if (answerIndex > 0 && currentMode) {
-                const prevContent = buffer.substring(0, answerIndex);
-                if (prevContent.trim()) {
-                    updateContent(currentMode, prevContent);
-                }
-            }
-
-            // 切换到回答模式
-            currentMode = 'answer';
-            buffer = buffer.substring(answerIndex + 7); // 移除 'ANSWER:'
-            processed = true;
+            // 继续处理剩余的 buffer，可能还有其他标识符
         }
 
         return processed;
     };
 
     const updateContent = (mode, content) => {
-        if (mode === 'think') {
-            messages.value[currentAiMessageIndex].text.thinkContent += content;
-            if (!hasThinkStarted.value) {
-                hasThinkStarted.value = true;
-            }
-        } else if (mode === 'answer') {
-            messages.value[currentAiMessageIndex].text.answerContent += content;
-            if (!hasAnswerStarted.value) {
-                hasAnswerStarted.value = true;
-                // 标记思考完成
-                if (hasThinkStarted.value && !isThinkComplete.value) {
-                    isThinkComplete.value = true;
+        try {
+            if (mode === 'think') {
+                messages.value[currentAiMessageIndex].text.thinkContent += content;
+                if (!hasThinkStarted.value) {
+                    hasThinkStarted.value = true;
+                }
+            } else if (mode === 'answer') {
+                messages.value[currentAiMessageIndex].text.answerContent += content;
+                if (!hasAnswerStarted.value) {
+                    hasAnswerStarted.value = true;
+                    // 标记思考完成
+                    if (hasThinkStarted.value && !isThinkComplete.value) {
+                        isThinkComplete.value = true;
+                    }
                 }
             }
+            messages.value[currentAiMessageIndex].loading = false;
+        } catch (error) {
+            console.error('Error updating content:', error);
         }
-        messages.value[currentAiMessageIndex].loading = false;
+    };
+
+    const shouldKeepBuffer = () => {
+        // 检查 buffer 末尾是否可能包含不完整的标识符
+        const bufferEnd = buffer.slice(-10); // 检查最后10个字符
+        return bufferEnd.includes('T') || bufferEnd.includes('A') ||
+            bufferEnd.includes('TH') || bufferEnd.includes('THI') ||
+            bufferEnd.includes('THIN') || bufferEnd.includes('AN') ||
+            bufferEnd.includes('ANS') || bufferEnd.includes('ANSW') ||
+            bufferEnd.includes('ANSWE');
+    };
+
+    const getUpdateInterval = (bufferLength) => {
+        // 根据缓冲区大小动态调整更新频率
+        if (bufferLength > 10000) return 100; // 大量数据时降低频率
+        if (bufferLength > 1000) return 75;
+        return 50; // 默认频率
     };
 
     try {
@@ -442,6 +480,7 @@ const handleThinkingResponse = async (response) => {
                     scrollToBottom();
                 }
                 onStreamComplete();
+                submitLoading.value = false;
                 console.log('Stream completed');
                 break;
             }
@@ -453,10 +492,17 @@ const handleThinkingResponse = async (response) => {
             if (buffer.length > maxBufferSize) {
                 console.warn('Buffer size exceeded, forcing update');
                 if (currentMode && buffer.trim()) {
-                    updateContent(currentMode, buffer);
-                    scrollToBottom();
+                    // 保留可能的不完整标识符
+                    const keepLength = Math.min(20, buffer.length);
+                    const contentToUpdate = buffer.substring(0, buffer.length - keepLength);
+                    const remainingBuffer = buffer.substring(buffer.length - keepLength);
+
+                    if (contentToUpdate.trim()) {
+                        updateContent(currentMode, contentToUpdate);
+                        scrollToBottom();
+                    }
+                    buffer = remainingBuffer;
                 }
-                buffer = '';
                 lastUpdateTime = Date.now();
                 continue;
             }
@@ -464,15 +510,34 @@ const handleThinkingResponse = async (response) => {
             // 尝试处理标识符
             const hasIdentifier = processBuffer();
 
-            // 节流更新内容
+            // 动态节流更新内容
             const now = Date.now();
-            if (now - lastUpdateTime > updateInterval) {
+            const dynamicInterval = getUpdateInterval(buffer.length);
+
+            if (now - lastUpdateTime > dynamicInterval) {
                 if (currentMode && buffer.trim()) {
-                    // 如果没有找到新标识符，且当前有模式，则更新内容
+                    // 如果没有找到新标识符，且当前有模式
                     if (!hasIdentifier) {
-                        updateContent(currentMode, buffer);
-                        buffer = '';
-                        scrollToBottom();
+                        // 检查是否应该保留部分 buffer（可能包含不完整的标识符）
+                        if (shouldKeepBuffer() && buffer.length < 1000) {
+                            // 保留 buffer，等待更多数据
+                        } else {
+                            // 安全更新内容
+                            let contentToUpdate = buffer;
+                            let remainingBuffer = '';
+
+                            // 如果 buffer 很长，保留末尾可能的不完整标识符
+                            if (buffer.length > 100 && shouldKeepBuffer()) {
+                                contentToUpdate = buffer.substring(0, buffer.length - 10);
+                                remainingBuffer = buffer.substring(buffer.length - 10);
+                            }
+
+                            if (contentToUpdate.trim()) {
+                                updateContent(currentMode, contentToUpdate);
+                                scrollToBottom();
+                            }
+                            buffer = remainingBuffer;
+                        }
                     }
                 }
                 lastUpdateTime = now;
@@ -480,7 +545,7 @@ const handleThinkingResponse = async (response) => {
         }
     } catch (error) {
         console.error('Stream processing error:', error);
-
+        submitLoading.value = false;
         // 错误处理
         if (buffer.trim() && currentMode) {
             try {
@@ -491,6 +556,7 @@ const handleThinkingResponse = async (response) => {
             }
         }
 
+        // 确保状态重置
         if (currentAiMessageIndex >= 0 && currentAiMessageIndex < messages.value.length) {
             messages.value[currentAiMessageIndex].loading = false;
         }
@@ -576,8 +642,8 @@ watch(() => props.createNewChat, (newVal, oldVal) => {
             // 触发创建新会话成功事件
             emit('createNewChatSuccess')
             // 清空旧消息
+            conversationId.value = null
             messages.value = []
-            conversationId.value = props.newConversationId;
             messageValue.value = ''
             messages.value = [{
                 placement: 'start',
