@@ -156,7 +156,7 @@ const color = computed(() => {
     if (appStore.themeMode === 'dark' || (appStore.layout === 'topbar' || appStore.layout === 'mixed') && appStore.headerTheme === 'dark') {
         return '#fff'
     } else {
-        return '#555555'
+        return '#333'
     }
 })
 

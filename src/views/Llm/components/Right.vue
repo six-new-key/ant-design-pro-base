@@ -24,9 +24,17 @@
                     <!-- 非思考模式 -->
                     <template v-if="!msg.enableThink">
                         <AXBubble :placement="msg.placement" :loading="msg.loading"
-                            :avatar="getAvatarStyle(msg.placement)"
                             :variant="msg.placement === 'start' ? 'borderless' : 'outlined'"
                             :content="msg.text.answerContent" shape="corner">
+                            <template #avatar>
+                                <a-avatar v-if="msg.placement === 'start'"
+                                    src="https://mdn.alipayobjects.com/huamei_iwk9zp/afts/img/A*s5sNRo5LjfQAAAAAAAAAAAAADgCCAQ/fmt.webp" />
+                                <a-avatar v-else :style="{ backgroundColor: token.colorPrimary }">
+                                    <template #icon>
+                                        <UserOutlined />
+                                    </template>
+                                </a-avatar>
+                            </template>
                             <template #message="{ content }">
                                 <MarkdownRender :content="content" />
                             </template>
@@ -45,8 +53,11 @@
                     <template v-else>
                         <!-- 大模型 -->
                         <template v-if="msg.placement === 'start'">
-                            <AXBubble :placement="msg.placement" :loading="msg.loading"
-                                :avatar="getAvatarStyle(msg.placement)" shape="corner">
+                            <AXBubble :placement="msg.placement" :loading="msg.loading" shape="corner">
+                                <template #avatar>
+                                    <a-avatar
+                                        src="https://mdn.alipayobjects.com/huamei_iwk9zp/afts/img/A*s5sNRo5LjfQAAAAAAAAAAAAADgCCAQ/fmt.webp" />
+                                </template>
                                 <template #message>
                                     <a-space direction="vertical" :size="msg.collapse ? 5 : 10">
                                         <a-space @click="() => {
@@ -88,8 +99,15 @@
                         </template>
                         <!-- 用户 -->
                         <template v-else>
-                            <AXBubble :placement="msg.placement" :avatar="getAvatarStyle(msg.placement)"
-                                variant="outlined" :content="msg.text.answerContent" shape="corner">
+                            <AXBubble :placement="msg.placement" variant="outlined" :content="msg.text.answerContent"
+                                shape="corner">
+                                <template #avatar>
+                                    <a-avatar :style="{ backgroundColor: token.colorPrimary }">
+                                        <template #icon>
+                                            <UserOutlined />
+                                        </template>
+                                    </a-avatar>
+                                </template>
                                 <template #message="{ content }">
                                     <MarkdownRender :content="content" />
                                 </template>
@@ -115,14 +133,21 @@
                 <template #footer="{ info: { components: { SendButton, LoadingButton } } }">
                     <a-flex justify="space-between" align="center">
                         <a-flex gap="small" align="center">
-                            <a-select v-model:value="selectedModel" style="width: 120px"
-                                :options="modelList"></a-select>
-                            <a-divider type="vertical" />
-                            深度思考
-                            <a-switch v-model:checked="enableThinking" />
-                            <a-divider type="vertical" />
-                            联网搜索
-                            <a-switch v-model:checked="enableSearch" />
+                            <div>
+                                <a-select v-model:value="selectedModel" style="width: 120px"
+                                    :options="modelList"></a-select>
+                            </div>
+                            <div :class="['left-options-common', { 'think-active': enableThinking }]"
+                                @click="() => enableThinking = !enableThinking">
+                                <svg-icon name="think" width="16" height="16"
+                                    :color="enableThinking ? token.colorPrimary : '#333'" />
+                                <span style="margin-left: 4px;">深度思考</span>
+                            </div>
+                            <div :class="['left-options-common', { 'search-active': enableSearch }]"
+                                @click="() => enableSearch = !enableSearch">
+                                <GlobalOutlined />
+                                <span style="margin-left: 4px;">联网搜索</span>
+                            </div>
                         </a-flex>
                         <a-flex align="center">
                             <a-button :style="iconStyle" type="text" :icon="h(LinkOutlined)" />
@@ -311,6 +336,7 @@ const handleChatStream = async (value) => {
     } catch (err) {
         console.error('Stream error:', err);
         message.error('请求失败: ' + err.message);
+        submitLoading.value = false;
 
         if (currentAiMessageIndex < messages.value.length) {
             messages.value.splice(currentAiMessageIndex, 1);
@@ -728,6 +754,44 @@ onUnmounted(() => {
         z-index: 10;
         padding: 0 50px 20px 50px;
         background: v-bind('token.colorBgContainer');
+
+        .left-options-common {
+            margin-left: 10px;
+            // height: 32px;
+            cursor: pointer;
+            border-radius: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 8px 16px;
+            border: 1px solid v-bind('token.colorBorder');
+            background: v-bind('token.colorBgContainer');
+            font-weight: 500;
+        }
+
+        .left-options-common:hover {
+            background: v-bind('token.colorFillTertiary');
+        }
+
+        .think-active {
+            background: v-bind('token.colorPrimary + 20');
+            border: 1px solid v-bind('token.colorPrimary + 40');
+            color: v-bind('token.colorPrimary');
+        }
+
+        .search-active {
+            background: v-bind('token.colorPrimary + 20');
+            border: 1px solid v-bind('token.colorPrimary + 40');
+            color: v-bind('token.colorPrimary');
+        }
+
+        .think-active:hover {
+            background: v-bind('token.colorPrimary + 20');
+        }
+
+        .search-active:hover {
+            background: v-bind('token.colorPrimary + 20');
+        }
     }
 }
 </style>
