@@ -1,9 +1,9 @@
 <template>
-  <a-drawer :open="visible" @update:open="$emit('update:visible', $event)" title="系统配置" placement="right" :width="360"
-    class="layout-drawer">
+  <a-drawer :open="visible" @update:open="$emit('update:visible', $event)" title="系统配置" placement="right" :width="360">
     <div class="settings-content">
+      <!-- 布局风格 -->
       <div class="section">
-        <h3 class="section-title">布局风格</h3>
+        <div class="section-title">布局风格</div>
         <p class="section-desc">选择适合您的布局风格</p>
 
         <div class="layout-grid">
@@ -214,11 +214,12 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref} from 'vue'
 import { CheckOutlined } from '@ant-design/icons-vue'
 import { message } from '@/utils'
 import { useAppStore, useThemeStore } from '@/stores'
 import { PAGE_ANIMATION_CONFIG } from '@/utils'
+import { theme } from 'ant-design-vue'
 
 // Props
 const props = defineProps({
@@ -237,6 +238,7 @@ const emit = defineEmits(['update:visible', 'layout-switch'])
 
 const appStore = useAppStore()
 const themeStore = useThemeStore()
+const { token } = theme.useToken()
 
 // 自定义颜色响应式变量
 const customColor = ref(themeStore.primaryColorHex)
@@ -282,7 +284,7 @@ const handleLayoutSwitch = (layoutKey) => {
 // 处理主题模式切换
 const handleThemeModeSwitch = (mode) => {
   appStore.setThemeMode(mode)
-  handleClose()
+  // handleClose()
 }
 
 // 处理侧边栏主题切换
@@ -329,7 +331,6 @@ const handleBorderRadiusChange = (value) => {
   }
 }
 
-
 // 处理页签显示切换
 const handleTabsShowChange = (checked) => {
   appStore.setTabsShow(checked)
@@ -351,7 +352,6 @@ const handleTabShadowChange = (checked) => {
 const handleAnimationChange = (animation) => {
   appStore.setPageAnimation(animation)
 }
-
 </script>
 
 <style scoped lang="scss">
@@ -370,14 +370,12 @@ const handleAnimationChange = (animation) => {
 .section-title {
   font-size: 16px;
   font-weight: 600;
-  color: #1a1a1a;
   margin: 0 0 6px 0;
   letter-spacing: -0.02em;
 }
 
 .section-desc {
   font-size: 13px;
-  color: #666;
   margin: 0 0 20px 0;
   line-height: 1.4;
 }
@@ -395,7 +393,6 @@ const handleAnimationChange = (animation) => {
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
-  background: #fff;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 
   &:hover {
@@ -996,14 +993,6 @@ const handleAnimationChange = (animation) => {
   &:last-child {
     margin-bottom: 16px;
   }
-}
-
-.section-title {
-  font-size: 16px;
-  font-weight: 600;
-  color: #262626;
-  margin: 0 0 6px 0;
-  letter-spacing: -0.02em;
 }
 
 .section-description {
