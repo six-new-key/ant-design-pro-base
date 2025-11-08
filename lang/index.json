@@ -2014,5 +2014,49 @@
 	"fjfv03": {
 		"zh-cn": "机器人",
 		"en": "Robot"
+	},
+	"hsgw2": {
+		"zh-cn": "明亮",
+		"en": "Bright"
+	},
+	"ibkq2": {
+		"zh-cn": "暗黑",
+		"en": "\"Dark\""
+	},
+	"c76fp3": {
+		"zh-cn": "主题色",
+		"en": "Theme color"
+	},
+	"ikni2": {
+		"zh-cn": "模式",
+		"en": "\"Mode\""
+	},
+	"qka62": {
+		"zh-cn": "风格",
+		"en": "Style"
+	},
+	"192xqj6": {
+		"zh-cn": "侧边栏/顶栏",
+		"en": "Sidebar/top sidebar"
+	},
+	"fmh22": {
+		"zh-cn": "基础",
+		"en": "\"Basic\""
+	},
+	"hrqo2": {
+		"zh-cn": "文字",
+		"en": "Text"
+	},
+	"fk3w2": {
+		"zh-cn": "圆角",
+		"en": "Rounded corner"
+	},
+	"jutwww4": {
+		"zh-cn": "页面动画",
+		"en": "Page animation"
+	},
+	"ghwd2": {
+		"zh-cn": "布局",
+		"en": "Layout"
 	}
 }

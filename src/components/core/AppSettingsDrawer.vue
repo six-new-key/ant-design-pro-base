@@ -3,7 +3,7 @@
             :width="360">
     <!-- 布局风格 -->
     <div class="section">
-      <div class="section-title" :style="{color: titleColor}">布局风格</div>
+      <div class="section-title" :style="{color: titleColor}">布局</div>
 
       <div class="layout-grid">
         <div v-for="config in availableLayoutConfigs" :key="config.key" class="layout-card"
@@ -54,47 +54,46 @@
 
     <!-- 主题模式切换 -->
     <div class="section">
-      <h3 class="section-title" :style="{color: titleColor}">主题模式</h3>
+      <h3 class="section-title" :style="{color: titleColor}">模式</h3>
 
       <div class="theme-mode-grid">
-        <div class="theme-mode-card" :class="{ active: currentThemeMode === 'light' }"
-             @click="handleThemeModeSwitch('light')">
-          <div class="theme-mode-preview light-preview">
-            <div class="preview-header"></div>
-            <div class="preview-body"></div>
+        <a-tooltip title="明亮模式">
+          <div :style="{border: currentThemeMode === 'light' ? cardBorderColor : '',borderRadius: token.borderRadius + 'px'}" class="theme-mode-card"
+               @click="handleThemeModeSwitch('light')">
+            <div class="theme-mode-preview light-preview" :style="{borderRadius: token.borderRadius + 'px'}">
+              <div class="preview-header"></div>
+              <div class="preview-body"></div>
+            </div>
+            <div v-if="currentThemeMode === 'light'" class="active-badge" :style="{background: token.colorPrimary}">
+              <CheckOutlined/>
+            </div>
           </div>
-          <div class="theme-mode-info">
-            <h4 class="theme-mode-name">明亮模式</h4>
-          </div>
-          <div v-if="currentThemeMode === 'light'" class="active-badge">
-            <CheckOutlined/>
-          </div>
-        </div>
+        </a-tooltip>
 
-        <div class="theme-mode-card" :class="{ active: currentThemeMode === 'dark' }"
-             @click="handleThemeModeSwitch('dark')">
-          <div class="theme-mode-preview dark-preview">
-            <div class="preview-header"></div>
-            <div class="preview-body"></div>
+        <a-tooltip title="暗黑模式">
+          <div :style="{border: currentThemeMode === 'dark' ? cardBorderColor : '',borderRadius: token.borderRadius + 'px'}" class="theme-mode-card"
+               @click="handleThemeModeSwitch('dark')">
+            <div class="theme-mode-preview dark-preview" :style="{borderRadius: token.borderRadius + 'px'}">
+              <div class="preview-header"></div>
+              <div class="preview-body"></div>
+            </div>
+            <div v-if="currentThemeMode === 'dark'" class="active-badge" :style="{background: token.colorPrimary}">
+              <CheckOutlined/>
+            </div>
           </div>
-          <div class="theme-mode-info">
-            <h4 class="theme-mode-name">暗黑模式</h4>
-          </div>
-          <div v-if="currentThemeMode === 'dark'" class="active-badge">
-            <CheckOutlined/>
-          </div>
-        </div>
+        </a-tooltip>
+
       </div>
     </div>
 
     <!-- 侧边栏/顶栏主题切换 -->
     <div class="section">
-      <h3 class="section-title" :style="{color: titleColor}">侧边栏/顶栏主题</h3>
+      <h3 class="section-title" :style="{color: titleColor}">侧边栏/顶栏</h3>
 
       <div class="theme-switch-list">
         <div class="theme-switch-item">
           <div class="theme-switch-info">
-            <h4 class="theme-switch-name">深色侧边栏</h4>
+            <h4 class="theme-switch-name" :style="{color: titleColor}">深色侧边栏</h4>
           </div>
           <a-switch :checked="currentSidebarTheme === 'dark'"
                     @change="(checked) => handleSidebarThemeSwitch(checked ? 'dark' : 'light')"/>
@@ -102,7 +101,7 @@
 
         <div class="theme-switch-item">
           <div class="theme-switch-info">
-            <h4 class="theme-switch-name">深色顶栏</h4>
+            <h4 class="theme-switch-name" :style="{color: titleColor}">深色顶栏</h4>
           </div>
           <a-switch :checked="currentHeaderTheme === 'dark'"
                     @change="(checked) => handleHeaderThemeSwitch(checked ? 'dark' : 'light')"/>
@@ -112,43 +111,55 @@
 
     <!-- 基础配置 -->
     <div class="section">
-      <h3 class="section-title" :style="{color: titleColor}">基础配置</h3>
+      <h3 class="section-title" :style="{color: titleColor}">基础</h3>
 
       <div class="base-config-list">
         <div class="config-item">
           <div class="config-info">
-            <h4 class="config-name">文字大小</h4>
+            <h4 class="config-name" :style="{color: titleColor}">页面动画</h4>
+          </div>
+          <a-select
+              v-model:value="appStore.currentPageAnimation"
+              style="width: 100px"
+              @change="handleAnimationChange"
+          >
+            <a-select-option v-for="animation in pageAnimations" :key="animation.value" :value="animation.value">{{animation.label}}</a-select-option>
+          </a-select>
+        </div>
+
+        <div class="config-item">
+          <div class="config-info">
+            <h4 class="config-name" :style="{color: titleColor}">文字</h4>
           </div>
           <a-input-number v-model:value="currentFontSize" :min="14" :max="18" :step="1" @change="handleFontSizeChange"
-                          style="width: 80px;"/>
+                          style="width: 100px;"/>
         </div>
 
         <div class="config-item">
           <div class="config-info">
-            <h4 class="config-name">圆角设置</h4>
+            <h4 class="config-name" :style="{color: titleColor}">圆角</h4>
           </div>
           <a-input-number v-model:value="currentBorderRadius" :min="1" :max="16" :step="1"
-                          @change="handleBorderRadiusChange" style="width: 80px;"/>
+                          @change="handleBorderRadiusChange" style="width: 100px;"/>
         </div>
 
         <div class="config-item">
           <div class="config-info">
-            <h4 class="config-name">页签</h4>
+            <h4 class="config-name" :style="{color: titleColor}">页签</h4>
           </div>
           <a-switch v-model:checked="currentTabsShow" @change="handleTabsShowChange"/>
         </div>
 
         <div class="config-item">
           <div class="config-info">
-            <h4 class="config-name">线宽风格</h4>
+            <h4 class="config-name" :style="{color: titleColor}">线宽风格</h4>
           </div>
           <a-switch v-model:checked="currentWireframe" @change="handleWireframeChange"/>
         </div>
 
         <div class="config-item">
           <div class="config-info">
-            <h4 class="config-name">页签阴影</h4>
-            <p class="config-desc">启用页签的阴影效果</p>
+            <h4 class="config-name" :style="{color: titleColor}">页签阴影</h4>
           </div>
           <a-switch v-model:checked="currentTabShadow" @change="handleTabShadowChange"/>
         </div>
@@ -157,7 +168,7 @@
 
     <!-- 自定义系统主题色 -->
     <div class="setting-section">
-      <div class="section-title" :style="{color: titleColor}">系统主题色</div>
+      <div class="section-title" :style="{color: titleColor}">主题色</div>
 
       <!-- 预设主题色 -->
       <div class="theme-colors">
@@ -169,30 +180,14 @@
         </div>
 
         <!-- 自定义颜色选择器 -->
-        <div class="custom-color-container" @click="handleCustomColorClick">
-          <div class="custom-color-label">自定义</div>
-          <color-picker v-model:pureColor="customColor" @pureColorChange="handleCustomColorChange"
-                        :theme="appStore.themeMode === 'dark' ? 'black' : 'white'"/>
-          <CheckOutlined v-if="themeStore.colorMode === 'custom'" class="check-icon"/>
-        </div>
-      </div>
-    </div>
-
-    <!-- 页面动效 -->
-    <div class="setting-section">
-      <div class="section-title" :style="{color: titleColor}">页面动效</div>
-
-      <div class="animation-options">
-        <div v-for="animation in pageAnimations" :key="animation.value" class="animation-item"
-             :class="{ active: appStore.currentPageAnimation === animation.value }"
-             @click="handleAnimationChange(animation.value)">
-          <div class="animation-content">
-            <!-- <t-icon :name="animation.icon" class="animation-icon" /> -->
-            <span class="animation-label">{{ animation.label }}</span>
+        <a-tooltip title="自定义" placement="left">
+          <div class="custom-color-container" @click="handleCustomColorClick">
+            <color-picker v-model:pureColor="customColor" @pureColorChange="handleCustomColorChange"
+                          :theme="appStore.themeMode === 'dark' ? 'black' : 'white'"/>
+            <CheckOutlined v-if="themeStore.colorMode === 'custom'" :style="{color: token.colorPrimary}" class="check-icon"/>
           </div>
-          <!-- <t-icon v-if="appStore.currentPageAnimation === animation.value" name="check" class="check-icon" /> -->
-          <CheckOutlined v-if="appStore.currentPageAnimation === animation.value" class="check-icon"/>
-        </div>
+        </a-tooltip>
+
       </div>
     </div>
   </a-drawer>
@@ -229,7 +224,7 @@ const titleColor = computed(() => {
 })
 
 const cardBorderColor = computed(() => {
-  return '2px solid ' + token.value.colorPrimary
+  return '1px solid ' + token.value.colorPrimary
 })
 
 // 自定义颜色响应式变量
@@ -270,7 +265,7 @@ const handleLayoutSwitch = (layoutKey) => {
   // 触发父组件的布局切换事件（用于显示加载状态）
   emit('layout-switch', layoutKey)
 
-  handleClose()
+  // handleClose()
 }
 
 // 处理主题模式切换
@@ -341,8 +336,8 @@ const handleTabShadowChange = (checked) => {
 }
 
 // 处理动画效果切换
-const handleAnimationChange = (animation) => {
-  appStore.setPageAnimation(animation)
+const handleAnimationChange = (value) => {
+  appStore.setPageAnimation(value)
 }
 </script>
 
@@ -542,51 +537,27 @@ const handleAnimationChange = (animation) => {
 }
 
 .theme-mode-card {
-  border: 1px solid #e8e8e8;
-  border-radius: 12px;
-  padding: 16px;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   background: #fff;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-
-  &:hover {
-    border-color: #4096ff;
-    box-shadow: 0 4px 12px rgba(64, 150, 255, 0.15);
-    transform: translateY(-2px);
-  }
-
-  &.active {
-    border-color: #4096ff;
-    background: linear-gradient(135deg, #f6ffed 0%, #f0f9ff 100%);
-    box-shadow: 0 4px 16px rgba(64, 150, 255, 0.2);
-
-    .theme-mode-name {
-      color: #1890ff;
-      font-weight: 600;
-    }
-  }
 }
 
 .theme-mode-preview {
   width: 100%;
   height: 64px;
-  border: 1px solid #f0f0f0;
-  border-radius: 8px;
   overflow: hidden;
-  margin-bottom: 12px;
   display: flex;
   flex-direction: column;
   position: relative;
 }
 
 .light-preview {
-  background: #ffffff;
+  background: #eee;
 
   .preview-header {
     height: 20px;
-    background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+    background: #ddd;
     border-bottom: 1px solid #e8e8e8;
     position: relative;
 
@@ -663,17 +634,6 @@ const handleAnimationChange = (animation) => {
   }
 }
 
-.theme-mode-info {
-  text-align: center;
-}
-
-.theme-mode-name {
-  font-size: 14px;
-  font-weight: 500;
-  color: #262626;
-  margin: 0 0 4px 0;
-  transition: all 0.2s ease;
-}
 
 /* 主题切换列表样式 */
 .theme-switch-list {
@@ -687,20 +647,7 @@ const handleAnimationChange = (animation) => {
   align-items: center;
   justify-content: space-between;
   padding: 16px 0;
-  border-bottom: 1px solid #f5f5f5;
   transition: all 0.2s ease;
-
-  &:last-child {
-    border-bottom: none;
-  }
-
-  &:hover {
-    background: rgba(24, 144, 255, 0.02);
-    margin: 0 -16px;
-    padding-left: 16px;
-    padding-right: 16px;
-    border-radius: 8px;
-  }
 }
 
 .theme-switch-info {
@@ -712,6 +659,7 @@ const handleAnimationChange = (animation) => {
   font-weight: 500;
   color: #262626;
   margin: 0 0 4px 0;
+  opacity: 0.8;
 }
 
 /* 基础配置列表样式 */
@@ -726,20 +674,7 @@ const handleAnimationChange = (animation) => {
   align-items: center;
   justify-content: space-between;
   padding: 16px 0;
-  border-bottom: 1px solid #f5f5f5;
   transition: all 0.2s ease;
-
-  &:last-child {
-    border-bottom: none;
-  }
-
-  &:hover {
-    background: rgba(24, 144, 255, 0.02);
-    margin: 0 -16px;
-    padding-left: 16px;
-    padding-right: 16px;
-    border-radius: 8px;
-  }
 }
 
 .config-info {
@@ -751,13 +686,7 @@ const handleAnimationChange = (animation) => {
   font-weight: 500;
   color: #262626;
   margin: 0 0 4px 0;
-}
-
-.config-desc {
-  font-size: 12px;
-  color: #8c8c8c;
-  margin: 0;
-  line-height: 1.4;
+  opacity: 0.8;
 }
 
 /* 主题色选择器样式 */
@@ -772,12 +701,8 @@ const handleAnimationChange = (animation) => {
 .theme-colors {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
-  margin-bottom: 16px;
-  padding: 16px;
-  background: #fafafa;
+  gap: 8px;
   border-radius: 12px;
-  border: 1px solid #f0f0f0;
 }
 
 .color-item {
@@ -797,12 +722,6 @@ const handleAnimationChange = (animation) => {
     transform: scale(1.1);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   }
-
-  &.active {
-    border-color: #fff;
-    box-shadow: 0 0 0 3px #1890ff, 0 4px 12px rgba(0, 0, 0, 0.2);
-    transform: scale(1.05);
-  }
 }
 
 .check-icon {
@@ -814,104 +733,6 @@ const handleAnimationChange = (animation) => {
 
 /* 自定义颜色选择器样式 */
 .custom-color-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  position: relative;
-}
-
-.custom-color-label {
-  font-size: 12px;
-  color: #8c8c8c;
-  font-weight: 500;
-  text-align: center;
-  transition: all 0.2s ease;
-}
-
-.custom-color-container:hover .custom-color-label {
-  color: #1890ff;
-}
-
-/* 动画选项样式 */
-.animation-options {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-  padding: 16px;
-  background: #fafafa;
-  border-radius: 12px;
-  border: 1px solid #f0f0f0;
-}
-
-.animation-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 16px 12px;
-  border: 1px solid #e8e8e8;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  background: #fff;
-  position: relative;
-  min-height: 60px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-
-  &:hover {
-    border-color: #4096ff;
-    background: #f0f9ff;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(64, 150, 255, 0.15);
-  }
-
-  &.active {
-    border-color: #4096ff;
-    background: linear-gradient(135deg, #f6ffed 0%, #f0f9ff 100%);
-    box-shadow: 0 4px 16px rgba(64, 150, 255, 0.2);
-
-    .animation-label {
-      color: #1890ff;
-      font-weight: 600;
-    }
-  }
-}
-
-.animation-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  flex: 1;
-}
-
-.animation-item.active .animation-icon {
-  color: #1890ff;
-}
-
-.animation-label {
-  font-size: 12px;
-  color: #262626;
-  text-align: center;
-  line-height: 1.2;
-  transition: all 0.2s ease;
-}
-
-.animation-item .check-icon {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  font-size: 12px;
-  color: #1890ff;
-  background: #fff;
-  border-radius: 50%;
-  width: 16px;
-  height: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 1px 3px rgba(24, 144, 255, 0.3);
+  margin-top: 6px;
 }
 </style>
