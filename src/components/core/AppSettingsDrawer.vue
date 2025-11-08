@@ -7,46 +7,44 @@
 
       <div class="layout-grid">
         <div v-for="config in availableLayoutConfigs" :key="config.key" class="layout-card"
-             :class="{ active: currentLayout === config.key }" @click="handleLayoutSwitch(config.key)">
+             :style="{border: currentLayout === config.key ? cardBorderColor : '',borderRadius: token.borderRadius + 'px'}" @click="handleLayoutSwitch(config.key)">
           <a-tooltip :title="config.name">
-            <div class="layout-preview">
-              <div class="preview-container">
-                <!-- 根据布局类型显示不同的预览图 -->
-                <div v-if="config.key === 'sidebar'" class="preview-sidebar">
-                  <div class="sidebar">
-                  </div>
-                  <div class="content">
-                  </div>
+            <div class="preview-container" :style="{borderRadius: token.borderRadius + 'px'}">
+              <!-- 根据布局类型显示不同的预览图 -->
+              <div v-if="config.key === 'sidebar'" class="preview-sidebar">
+                <div class="sidebar">
                 </div>
-                <div v-else-if="config.key === 'topbar'" class="preview-topbar">
-                  <div class="topbar"></div>
+                <div class="content">
+                </div>
+              </div>
+              <div v-else-if="config.key === 'topbar'" class="preview-topbar">
+                <div class="topbar"></div>
+                <div class="content"></div>
+              </div>
+              <div v-else-if="config.key === 'mixed'" class="preview-mixed">
+                <div class="topbar"></div>
+                <div class="main">
+                  <div class="sidebar"></div>
                   <div class="content"></div>
                 </div>
-                <div v-else-if="config.key === 'mixed'" class="preview-mixed">
-                  <div class="topbar"></div>
-                  <div class="main">
-                    <div class="sidebar"></div>
-                    <div class="content"></div>
-                  </div>
-                </div>
-                <div v-else-if="config.key === 'doublecolumn'" class="preview-doublecolumn">
-                  <div class="first-column"></div>
-                  <div class="second-column"></div>
-                  <div class="content"></div>
-                </div>
-                <div v-else-if="config.key === 'fullscreen'" class="preview-fullscreen">
-                  <div class="fullscreen-content">
-                    <div class="floating-actions-preview">
-                      <div class="floating-btn-preview"></div>
-                      <div class="floating-btn-preview"></div>
-                      <div class="floating-btn-preview"></div>
-                    </div>
+              </div>
+              <div v-else-if="config.key === 'doublecolumn'" class="preview-doublecolumn">
+                <div class="first-column"></div>
+                <div class="second-column"></div>
+                <div class="content"></div>
+              </div>
+              <div v-else-if="config.key === 'fullscreen'" class="preview-fullscreen">
+                <div class="fullscreen-content">
+                  <div class="floating-actions-preview">
+                    <div class="floating-btn-preview"></div>
+                    <div class="floating-btn-preview"></div>
+                    <div class="floating-btn-preview"></div>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div v-if="currentLayout === config.key" class="active-badge">
+            <div v-if="currentLayout === config.key" class="active-badge" :style="{background: token.colorPrimary}">
               <CheckOutlined/>
             </div>
           </a-tooltip>
@@ -230,6 +228,10 @@ const titleColor = computed(() => {
   return appStore.themeMode === 'dark' ? '#ffffff' : '#000000'
 })
 
+const cardBorderColor = computed(() => {
+  return '2px solid ' + token.value.colorPrimary
+})
+
 // 自定义颜色响应式变量
 const customColor = ref(themeStore.primaryColorHex)
 
@@ -362,21 +364,18 @@ const handleAnimationChange = (animation) => {
 
 .layout-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 16px;
 }
 
 .layout-card {
-  border: 1px solid #e8e8e8;
   cursor: pointer;
-  border-radius: 8px;
   position: relative;
 }
 
 .preview-container {
   width: 100%;
   height: 64px;
-  border-radius: 8px;
   overflow: hidden;
   position: relative;
 }
@@ -385,20 +384,18 @@ const handleAnimationChange = (animation) => {
 .preview-sidebar {
   display: flex;
   height: 100%;
-  background: #ddd;
+  background: #eee;
 
   .sidebar {
     width: 22px;
-    position: relative;
-    background: #aaa;
+    background: #ccc;
   }
 
   .content {
     flex: 1;
     margin: 6px;
     border-radius: 4px;
-    position: relative;
-    background: #ccc;
+    background: #ddd;
   }
 }
 
@@ -407,17 +404,17 @@ const handleAnimationChange = (animation) => {
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: #ddd;
+  background: #eee;
 
   .topbar {
     height: 14px;
-    background: #aaa;
+    background: #ccc;
     position: relative;
   }
 
   .content {
     flex: 1;
-    background: #ccc;
+    background: #ddd;
     margin: 6px;
     border-radius: 4px;
     position: relative;
@@ -429,11 +426,11 @@ const handleAnimationChange = (animation) => {
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: #ddd;
+  background: #eee;
 
   .topbar {
     height: 12px;
-    background: #aaa;
+    background: #ccc;
   }
 
   .main {
@@ -442,12 +439,12 @@ const handleAnimationChange = (animation) => {
 
     .sidebar {
       width: 18px;
-      background: #bbb;
+      background: #ddd;
     }
 
     .content {
       flex: 1;
-      background: #ccc;
+      background: #ddd;
       margin: 4px;
       border-radius: 3px;
     }
@@ -458,13 +455,13 @@ const handleAnimationChange = (animation) => {
 .preview-fullscreen {
   display: flex;
   height: 100%;
-  background: #ddd;
+  background: #eee;
   position: relative;
 
   .fullscreen-content {
     width: 100%;
     height: 100%;
-    background: #ddd;
+    background: #eee;
     border-radius: 4px;
     margin: 2px;
     position: relative;
@@ -500,29 +497,28 @@ const handleAnimationChange = (animation) => {
 .preview-doublecolumn {
   display: flex;
   height: 100%;
-  background: #ddd;
+  background: #eee;
 
   .first-column {
     width: 12px;
     position: relative;
-    background: #aaa;
+    background: #ccc;
   }
 
   .second-column {
     width: 16px;
-    background: #bbb;
+    background: #ddd;
     position: relative;
   }
 
   .content {
     flex: 1;
-    background: #ccc;
+    background: #ddd;
     margin: 6px;
     border-radius: 4px;
     position: relative;
   }
 }
-
 
 .active-badge {
   position: absolute;
@@ -530,7 +526,6 @@ const handleAnimationChange = (animation) => {
   right: 10px;
   width: 16px;
   height: 16px;
-  background: linear-gradient(135deg, #52c41a 0%, #389e0d 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
