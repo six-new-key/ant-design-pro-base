@@ -1,20 +1,22 @@
 <template>
-  <a-drawer :open="visible" @update:open="$emit('update:visible', $event)" title="系统配置" placement="right" :width="360">
-    <div class="settings-content">
-      <!-- 布局风格 -->
-      <div class="section">
-        <div class="section-title">布局风格</div>
-        <p class="section-desc">选择适合您的布局风格</p>
+  <a-drawer :open="visible" @update:open="$emit('update:visible', $event)" title="系统配置" placement="right"
+            :width="360">
+    <!-- 布局风格 -->
+    <div class="section">
+      <div class="section-title" :style="{color: titleColor}">布局风格</div>
 
-        <div class="layout-grid">
-          <div v-for="config in availableLayoutConfigs" :key="config.key" class="layout-card"
-            :class="{ active: currentLayout === config.key }" @click="handleLayoutSwitch(config.key)">
+      <div class="layout-grid">
+        <div v-for="config in availableLayoutConfigs" :key="config.key" class="layout-card"
+             :class="{ active: currentLayout === config.key }" @click="handleLayoutSwitch(config.key)">
+          <a-tooltip :title="config.name">
             <div class="layout-preview">
               <div class="preview-container">
                 <!-- 根据布局类型显示不同的预览图 -->
                 <div v-if="config.key === 'sidebar'" class="preview-sidebar">
-                  <div class="sidebar"></div>
-                  <div class="content"></div>
+                  <div class="sidebar">
+                  </div>
+                  <div class="content">
+                  </div>
                 </div>
                 <div v-else-if="config.key === 'topbar'" class="preview-topbar">
                   <div class="topbar"></div>
@@ -27,13 +29,10 @@
                     <div class="content"></div>
                   </div>
                 </div>
-                <div v-else-if="config.key === 'minimal'" class="preview-minimal">
-                  <div class="content full"></div>
-                </div>
-                <div v-else-if="config.key === 'card'" class="preview-card">
-                  <div class="card-container">
-                    <div class="card"></div>
-                  </div>
+                <div v-else-if="config.key === 'doublecolumn'" class="preview-doublecolumn">
+                  <div class="first-column"></div>
+                  <div class="second-column"></div>
+                  <div class="content"></div>
                 </div>
                 <div v-else-if="config.key === 'fullscreen'" class="preview-fullscreen">
                   <div class="fullscreen-content">
@@ -44,169 +43,157 @@
                     </div>
                   </div>
                 </div>
-                <div v-else-if="config.key === 'doublecolumn'" class="preview-doublecolumn">
-                  <div class="first-column"></div>
-                  <div class="second-column"></div>
-                  <div class="content"></div>
-                </div>
               </div>
             </div>
 
-            <div class="layout-info">
-              <h4 class="layout-name">{{ config.name }}</h4>
-            </div>
-
             <div v-if="currentLayout === config.key" class="active-badge">
-              <CheckOutlined />
+              <CheckOutlined/>
             </div>
+          </a-tooltip>
+        </div>
+      </div>
+    </div>
+
+    <!-- 主题模式切换 -->
+    <div class="section">
+      <h3 class="section-title" :style="{color: titleColor}">主题模式</h3>
+
+      <div class="theme-mode-grid">
+        <div class="theme-mode-card" :class="{ active: currentThemeMode === 'light' }"
+             @click="handleThemeModeSwitch('light')">
+          <div class="theme-mode-preview light-preview">
+            <div class="preview-header"></div>
+            <div class="preview-body"></div>
+          </div>
+          <div class="theme-mode-info">
+            <h4 class="theme-mode-name">明亮模式</h4>
+          </div>
+          <div v-if="currentThemeMode === 'light'" class="active-badge">
+            <CheckOutlined/>
+          </div>
+        </div>
+
+        <div class="theme-mode-card" :class="{ active: currentThemeMode === 'dark' }"
+             @click="handleThemeModeSwitch('dark')">
+          <div class="theme-mode-preview dark-preview">
+            <div class="preview-header"></div>
+            <div class="preview-body"></div>
+          </div>
+          <div class="theme-mode-info">
+            <h4 class="theme-mode-name">暗黑模式</h4>
+          </div>
+          <div v-if="currentThemeMode === 'dark'" class="active-badge">
+            <CheckOutlined/>
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- 主题模式切换 -->
-      <div class="section">
-        <h3 class="section-title">主题模式</h3>
-        <p class="section-desc">选择明亮或暗黑主题模式</p>
+    <!-- 侧边栏/顶栏主题切换 -->
+    <div class="section">
+      <h3 class="section-title" :style="{color: titleColor}">侧边栏/顶栏主题</h3>
 
-        <div class="theme-mode-grid">
-          <div class="theme-mode-card" :class="{ active: currentThemeMode === 'light' }"
-            @click="handleThemeModeSwitch('light')">
-            <div class="theme-mode-preview light-preview">
-              <div class="preview-header"></div>
-              <div class="preview-body"></div>
-            </div>
-            <div class="theme-mode-info">
-              <h4 class="theme-mode-name">明亮模式</h4>
-            </div>
-            <div v-if="currentThemeMode === 'light'" class="active-badge">
-              <CheckOutlined />
-            </div>
+      <div class="theme-switch-list">
+        <div class="theme-switch-item">
+          <div class="theme-switch-info">
+            <h4 class="theme-switch-name">深色侧边栏</h4>
           </div>
+          <a-switch :checked="currentSidebarTheme === 'dark'"
+                    @change="(checked) => handleSidebarThemeSwitch(checked ? 'dark' : 'light')"/>
+        </div>
 
-          <div class="theme-mode-card" :class="{ active: currentThemeMode === 'dark' }"
-            @click="handleThemeModeSwitch('dark')">
-            <div class="theme-mode-preview dark-preview">
-              <div class="preview-header"></div>
-              <div class="preview-body"></div>
-            </div>
-            <div class="theme-mode-info">
-              <h4 class="theme-mode-name">暗黑模式</h4>
-            </div>
-            <div v-if="currentThemeMode === 'dark'" class="active-badge">
-              <CheckOutlined />
-            </div>
+        <div class="theme-switch-item">
+          <div class="theme-switch-info">
+            <h4 class="theme-switch-name">深色顶栏</h4>
           </div>
+          <a-switch :checked="currentHeaderTheme === 'dark'"
+                    @change="(checked) => handleHeaderThemeSwitch(checked ? 'dark' : 'light')"/>
         </div>
       </div>
+    </div>
 
-      <!-- 侧边栏/顶栏主题切换 -->
-      <div class="section">
-        <h3 class="section-title">侧边栏/顶栏主题</h3>
+    <!-- 基础配置 -->
+    <div class="section">
+      <h3 class="section-title" :style="{color: titleColor}">基础配置</h3>
 
-        <div class="theme-switch-list">
-          <div class="theme-switch-item">
-            <div class="theme-switch-info">
-              <h4 class="theme-switch-name">深色侧边栏</h4>
-            </div>
-            <a-switch :checked="currentSidebarTheme === 'dark'"
-              @change="(checked) => handleSidebarThemeSwitch(checked ? 'dark' : 'light')" />
+      <div class="base-config-list">
+        <div class="config-item">
+          <div class="config-info">
+            <h4 class="config-name">文字大小</h4>
           </div>
+          <a-input-number v-model:value="currentFontSize" :min="14" :max="18" :step="1" @change="handleFontSizeChange"
+                          style="width: 80px;"/>
+        </div>
 
-          <div class="theme-switch-item">
-            <div class="theme-switch-info">
-              <h4 class="theme-switch-name">深色顶栏</h4>
-            </div>
-            <a-switch :checked="currentHeaderTheme === 'dark'"
-              @change="(checked) => handleHeaderThemeSwitch(checked ? 'dark' : 'light')" />
+        <div class="config-item">
+          <div class="config-info">
+            <h4 class="config-name">圆角设置</h4>
           </div>
+          <a-input-number v-model:value="currentBorderRadius" :min="1" :max="16" :step="1"
+                          @change="handleBorderRadiusChange" style="width: 80px;"/>
+        </div>
+
+        <div class="config-item">
+          <div class="config-info">
+            <h4 class="config-name">页签</h4>
+          </div>
+          <a-switch v-model:checked="currentTabsShow" @change="handleTabsShowChange"/>
+        </div>
+
+        <div class="config-item">
+          <div class="config-info">
+            <h4 class="config-name">线宽风格</h4>
+          </div>
+          <a-switch v-model:checked="currentWireframe" @change="handleWireframeChange"/>
+        </div>
+
+        <div class="config-item">
+          <div class="config-info">
+            <h4 class="config-name">页签阴影</h4>
+            <p class="config-desc">启用页签的阴影效果</p>
+          </div>
+          <a-switch v-model:checked="currentTabShadow" @change="handleTabShadowChange"/>
         </div>
       </div>
+    </div>
 
-      <!-- 基础配置 -->
-      <div class="section">
-        <h3 class="section-title">基础配置</h3>
+    <!-- 自定义系统主题色 -->
+    <div class="setting-section">
+      <div class="section-title" :style="{color: titleColor}">系统主题色</div>
 
-        <div class="base-config-list">
-          <div class="config-item">
-            <div class="config-info">
-              <h4 class="config-name">文字大小</h4>
-            </div>
-            <a-input-number v-model:value="currentFontSize" :min="14" :max="18" :step="1" @change="handleFontSizeChange"
-              style="width: 80px;" />
-          </div>
+      <!-- 预设主题色 -->
+      <div class="theme-colors">
+        <div v-for="(preset, index) in themeStore.colorPresets" :key="index" class="color-item"
+             :class="{ active: themeStore.selectedPresetIndex === index && themeStore.colorMode === 'preset' }"
+             :style="{ backgroundColor: preset.color }" @click="handlePresetColorSelect(index)" :title="preset.name">
+          <CheckOutlined v-if="themeStore.selectedPresetIndex === index && themeStore.colorMode === 'preset'"
+                         class="check-icon"/>
+        </div>
 
-          <div class="config-item">
-            <div class="config-info">
-              <h4 class="config-name">圆角设置</h4>
-            </div>
-            <a-input-number v-model:value="currentBorderRadius" :min="1" :max="16" :step="1"
-              @change="handleBorderRadiusChange" style="width: 80px;" />
-          </div>
-
-          <div class="config-item">
-            <div class="config-info">
-              <h4 class="config-name">页签</h4>
-            </div>
-            <a-switch v-model:checked="currentTabsShow" @change="handleTabsShowChange" />
-          </div>
-
-          <div class="config-item">
-            <div class="config-info">
-              <h4 class="config-name">线宽风格</h4>
-            </div>
-            <a-switch v-model:checked="currentWireframe" @change="handleWireframeChange" />
-          </div>
-
-          <div class="config-item">
-            <div class="config-info">
-              <h4 class="config-name">页签阴影</h4>
-              <p class="config-desc">启用页签的阴影效果</p>
-            </div>
-            <a-switch v-model:checked="currentTabShadow" @change="handleTabShadowChange" />
-          </div>
+        <!-- 自定义颜色选择器 -->
+        <div class="custom-color-container" @click="handleCustomColorClick">
+          <div class="custom-color-label">自定义</div>
+          <color-picker v-model:pureColor="customColor" @pureColorChange="handleCustomColorChange"
+                        :theme="appStore.themeMode === 'dark' ? 'black' : 'white'"/>
+          <CheckOutlined v-if="themeStore.colorMode === 'custom'" class="check-icon"/>
         </div>
       </div>
+    </div>
 
-      <!-- 自定义系统主题色 -->
-      <div class="setting-section">
-        <div class="section-title">系统主题色</div>
-        <div class="section-description">选择系统主题色，支持预设颜色和自定义颜色</div>
+    <!-- 页面动效 -->
+    <div class="setting-section">
+      <div class="section-title" :style="{color: titleColor}">页面动效</div>
 
-        <!-- 预设主题色 -->
-        <div class="theme-colors">
-          <div v-for="(preset, index) in themeStore.colorPresets" :key="index" class="color-item"
-            :class="{ active: themeStore.selectedPresetIndex === index && themeStore.colorMode === 'preset' }"
-            :style="{ backgroundColor: preset.color }" @click="handlePresetColorSelect(index)" :title="preset.name">
-            <CheckOutlined v-if="themeStore.selectedPresetIndex === index && themeStore.colorMode === 'preset'"
-              class="check-icon" />
+      <div class="animation-options">
+        <div v-for="animation in pageAnimations" :key="animation.value" class="animation-item"
+             :class="{ active: appStore.currentPageAnimation === animation.value }"
+             @click="handleAnimationChange(animation.value)">
+          <div class="animation-content">
+            <!-- <t-icon :name="animation.icon" class="animation-icon" /> -->
+            <span class="animation-label">{{ animation.label }}</span>
           </div>
-
-          <!-- 自定义颜色选择器 -->
-          <div class="custom-color-container" @click="handleCustomColorClick">
-            <div class="custom-color-label">自定义</div>
-            <color-picker v-model:pureColor="customColor" @pureColorChange="handleCustomColorChange"
-              :theme="appStore.themeMode === 'dark' ? 'black' : 'white'" />
-            <CheckOutlined v-if="themeStore.colorMode === 'custom'" class="check-icon" />
-          </div>
-        </div>
-      </div>
-
-      <!-- 页面动效 -->
-      <div class="setting-section">
-        <div class="section-title">页面动效</div>
-        <div class="section-description">选择好看有趣的页面动效</div>
-
-        <div class="animation-options">
-          <div v-for="animation in pageAnimations" :key="animation.value" class="animation-item"
-            :class="{ active: appStore.currentPageAnimation === animation.value }"
-            @click="handleAnimationChange(animation.value)">
-            <div class="animation-content">
-              <!-- <t-icon :name="animation.icon" class="animation-icon" /> -->
-              <span class="animation-label">{{ animation.label }}</span>
-            </div>
-            <!-- <t-icon v-if="appStore.currentPageAnimation === animation.value" name="check" class="check-icon" /> -->
-            <CheckOutlined v-if="appStore.currentPageAnimation === animation.value" class="check-icon" />
-          </div>
+          <!-- <t-icon v-if="appStore.currentPageAnimation === animation.value" name="check" class="check-icon" /> -->
+          <CheckOutlined v-if="appStore.currentPageAnimation === animation.value" class="check-icon"/>
         </div>
       </div>
     </div>
@@ -214,12 +201,11 @@
 </template>
 
 <script setup>
-import { computed, ref} from 'vue'
-import { CheckOutlined } from '@ant-design/icons-vue'
-import { message } from '@/utils'
-import { useAppStore, useThemeStore } from '@/stores'
-import { PAGE_ANIMATION_CONFIG } from '@/utils'
-import { theme } from 'ant-design-vue'
+import {computed, ref} from 'vue'
+import {CheckOutlined} from '@ant-design/icons-vue'
+import {useAppStore, useThemeStore} from '@/stores'
+import {PAGE_ANIMATION_CONFIG} from '@/utils'
+import {theme} from "ant-design-vue";
 
 // Props
 const props = defineProps({
@@ -238,7 +224,11 @@ const emit = defineEmits(['update:visible', 'layout-switch'])
 
 const appStore = useAppStore()
 const themeStore = useThemeStore()
-const { token } = theme.useToken()
+const {token} = theme.useToken()
+
+const titleColor = computed(() => {
+  return appStore.themeMode === 'dark' ? '#ffffff' : '#000000'
+})
 
 // 自定义颜色响应式变量
 const customColor = ref(themeStore.primaryColorHex)
@@ -355,10 +345,6 @@ const handleAnimationChange = (animation) => {
 </script>
 
 <style scoped lang="scss">
-.settings-content {
-  padding: 8px 0;
-}
-
 .section {
   margin-bottom: 32px;
 
@@ -370,14 +356,8 @@ const handleAnimationChange = (animation) => {
 .section-title {
   font-size: 16px;
   font-weight: 600;
-  margin: 0 0 6px 0;
+  margin: 0 0 12px 0;
   letter-spacing: -0.02em;
-}
-
-.section-desc {
-  font-size: 13px;
-  margin: 0 0 20px 0;
-  line-height: 1.4;
 }
 
 .layout-grid {
@@ -388,94 +368,37 @@ const handleAnimationChange = (animation) => {
 
 .layout-card {
   border: 1px solid #e8e8e8;
-  border-radius: 12px;
-  padding: 16px;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 8px;
   position: relative;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-
-  &:hover {
-    border-color: #4096ff;
-    box-shadow: 0 4px 12px rgba(64, 150, 255, 0.15);
-    transform: translateY(-2px);
-  }
-
-  &.active {
-    border-color: #4096ff;
-    background: linear-gradient(135deg, #f6ffed 0%, #f0f9ff 100%);
-    box-shadow: 0 4px 16px rgba(64, 150, 255, 0.2);
-
-    .layout-name {
-      color: #1890ff;
-      font-weight: 600;
-    }
-  }
-}
-
-.layout-preview {
-  margin-bottom: 12px;
 }
 
 .preview-container {
   width: 100%;
   height: 64px;
-  border: 1px solid #f0f0f0;
   border-radius: 8px;
   overflow: hidden;
-  background: #fafafa;
   position: relative;
-
-  &::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.2) 100%);
-    pointer-events: none;
-  }
 }
 
 /* 侧边栏布局预览 */
 .preview-sidebar {
   display: flex;
   height: 100%;
+  background: #ddd;
 
   .sidebar {
     width: 22px;
-    background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
     position: relative;
-
-    &::after {
-      content: '';
-      position: absolute;
-      top: 8px;
-      left: 6px;
-      right: 6px;
-      height: 2px;
-      background: rgba(255, 255, 255, 0.6);
-      border-radius: 1px;
-    }
+    background: #aaa;
   }
 
   .content {
     flex: 1;
-    background: #fff;
     margin: 6px;
     border-radius: 4px;
     position: relative;
-
-    &::before {
-      content: '';
-      position: absolute;
-      top: 6px;
-      left: 6px;
-      right: 6px;
-      height: 1px;
-      background: #f0f0f0;
-    }
+    background: #ccc;
   }
 }
 
@@ -484,41 +407,20 @@ const handleAnimationChange = (animation) => {
   display: flex;
   flex-direction: column;
   height: 100%;
+  background: #ddd;
 
   .topbar {
     height: 14px;
-    background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+    background: #aaa;
     position: relative;
-
-    &::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 8px;
-      transform: translateY(-50%);
-      width: 20px;
-      height: 2px;
-      background: rgba(255, 255, 255, 0.6);
-      border-radius: 1px;
-    }
   }
 
   .content {
     flex: 1;
-    background: #fff;
+    background: #ccc;
     margin: 6px;
     border-radius: 4px;
     position: relative;
-
-    &::before {
-      content: '';
-      position: absolute;
-      top: 6px;
-      left: 6px;
-      right: 6px;
-      height: 1px;
-      background: #f0f0f0;
-    }
   }
 }
 
@@ -527,10 +429,11 @@ const handleAnimationChange = (animation) => {
   display: flex;
   flex-direction: column;
   height: 100%;
+  background: #ddd;
 
   .topbar {
     height: 12px;
-    background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+    background: #aaa;
   }
 
   .main {
@@ -539,58 +442,14 @@ const handleAnimationChange = (animation) => {
 
     .sidebar {
       width: 18px;
-      background: linear-gradient(135deg, #52c41a 0%, #389e0d 100%);
+      background: #bbb;
     }
 
     .content {
       flex: 1;
-      background: #fff;
+      background: #ccc;
       margin: 4px;
       border-radius: 3px;
-    }
-  }
-}
-
-/* 极简布局预览 */
-.preview-minimal .content.full {
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
-  border-radius: 4px;
-  position: relative;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 24px;
-    height: 2px;
-    background: #d9d9d9;
-    border-radius: 1px;
-  }
-}
-
-/* 卡片布局预览 */
-.preview-card {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-
-  .card-container {
-    width: 80%;
-    height: 70%;
-
-    .card {
-      width: 100%;
-      height: 100%;
-      background: rgba(255, 255, 255, 0.95);
-      border-radius: 6px;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
   }
 }
@@ -599,28 +458,16 @@ const handleAnimationChange = (animation) => {
 .preview-fullscreen {
   display: flex;
   height: 100%;
-  background: linear-gradient(135deg, #000 0%, #1a1a1a 100%);
+  background: #ddd;
   position: relative;
 
   .fullscreen-content {
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, #f0f2f5 0%, #ffffff 100%);
+    background: #ddd;
     border-radius: 4px;
     margin: 2px;
     position: relative;
-
-    &::before {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 30px;
-      height: 2px;
-      background: #d9d9d9;
-      border-radius: 1px;
-    }
   }
 
   .floating-actions-preview {
@@ -653,97 +500,43 @@ const handleAnimationChange = (animation) => {
 .preview-doublecolumn {
   display: flex;
   height: 100%;
+  background: #ddd;
 
   .first-column {
     width: 12px;
-    background: linear-gradient(135deg, #722ed1 0%, #531dab 100%);
     position: relative;
-
-    &::after {
-      content: '';
-      position: absolute;
-      top: 6px;
-      left: 3px;
-      right: 3px;
-      height: 1px;
-      background: rgba(255, 255, 255, 0.6);
-      border-radius: 0.5px;
-    }
+    background: #aaa;
   }
 
   .second-column {
     width: 16px;
-    background: linear-gradient(135deg, #13c2c2 0%, #08979c 100%);
+    background: #bbb;
     position: relative;
-
-    &::after {
-      content: '';
-      position: absolute;
-      top: 6px;
-      left: 3px;
-      right: 3px;
-      height: 1px;
-      background: rgba(255, 255, 255, 0.6);
-      border-radius: 0.5px;
-    }
   }
 
   .content {
     flex: 1;
-    background: #fff;
+    background: #ccc;
     margin: 6px;
     border-radius: 4px;
     position: relative;
-
-    &::before {
-      content: '';
-      position: absolute;
-      top: 6px;
-      left: 6px;
-      right: 6px;
-      height: 1px;
-      background: #f0f0f0;
-    }
   }
 }
 
-.layout-info {
-  text-align: center;
-}
-
-.layout-name {
-  font-size: 14px;
-  font-weight: 500;
-  color: #262626;
-  margin: 0 0 4px 0;
-  transition: all 0.2s ease;
-}
-
-.layout-desc {
-  font-size: 12px;
-  color: #8c8c8c;
-  margin: 0;
-  line-height: 1.4;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
 
 .active-badge {
   position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 20px;
-  height: 20px;
+  bottom: 10px;
+  right: 10px;
+  width: 16px;
+  height: 16px;
   background: linear-gradient(135deg, #52c41a 0%, #389e0d 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #fff;
-  font-size: 12px;
-  box-shadow: 0 2px 6px rgba(82, 196, 26, 0.3);
+  font-size: 10px;
 }
 
 /* 主题模式切换样式 */
@@ -887,13 +680,6 @@ const handleAnimationChange = (animation) => {
   transition: all 0.2s ease;
 }
 
-.theme-mode-desc {
-  font-size: 12px;
-  color: #8c8c8c;
-  margin: 0;
-  line-height: 1.4;
-}
-
 /* 主题切换列表样式 */
 .theme-switch-list {
   display: flex;
@@ -931,13 +717,6 @@ const handleAnimationChange = (animation) => {
   font-weight: 500;
   color: #262626;
   margin: 0 0 4px 0;
-}
-
-.theme-switch-desc {
-  font-size: 12px;
-  color: #8c8c8c;
-  margin: 0;
-  line-height: 1.4;
 }
 
 /* 基础配置列表样式 */
@@ -993,13 +772,6 @@ const handleAnimationChange = (animation) => {
   &:last-child {
     margin-bottom: 16px;
   }
-}
-
-.section-description {
-  font-size: 13px;
-  color: #666;
-  margin: 0 0 20px 0;
-  line-height: 1.4;
 }
 
 .theme-colors {
@@ -1120,12 +892,6 @@ const handleAnimationChange = (animation) => {
   flex: 1;
 }
 
-.animation-icon {
-  font-size: 18px;
-  color: #8c8c8c;
-  transition: all 0.2s ease;
-}
-
 .animation-item.active .animation-icon {
   color: #1890ff;
 }
@@ -1152,49 +918,5 @@ const handleAnimationChange = (animation) => {
   align-items: center;
   justify-content: center;
   box-shadow: 0 1px 3px rgba(24, 144, 255, 0.3);
-}
-
-/* 抽屉整体样式优化 */
-:deep(.ant-drawer-header) {
-  border-bottom: 1px solid #f0f0f0;
-  padding: 16px 24px;
-
-  .ant-drawer-title {
-    font-size: 16px;
-    font-weight: 600;
-    color: #1a1a1a;
-  }
-}
-
-:deep(.ant-drawer-body) {
-  padding: 24px;
-  background: #fafafa;
-}
-
-:deep(.ant-drawer-content) {
-  border-radius: 0;
-}
-
-/* 开关组件样式优化 */
-:deep(.ant-switch) {
-  &.ant-switch-checked {
-    background-color: #1890ff;
-  }
-}
-
-/* 数字输入框样式优化 */
-:deep(.ant-input-number) {
-  border-radius: 6px;
-  border-color: #d9d9d9;
-
-  &:hover {
-    border-color: #4096ff;
-  }
-
-  &:focus,
-  &.ant-input-number-focused {
-    border-color: #4096ff;
-    box-shadow: 0 0 0 2px rgba(64, 150, 255, 0.2);
-  }
 }
 </style>
