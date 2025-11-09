@@ -108,10 +108,7 @@ import {
     UserOutlined,
     SettingOutlined,
     LogoutOutlined,
-    FullscreenOutlined,
-    FullscreenExitOutlined,
     SyncOutlined,
-    GlobalOutlined,
     SearchOutlined,
     LockOutlined
 } from '@ant-design/icons-vue'

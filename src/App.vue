@@ -51,6 +51,7 @@ onMounted(() => {
   //设置进度条背景色
   setNProgressStyle(themeStore.primaryColorHex)
 })
+
 </script>
 
 <style>
@@ -65,7 +66,6 @@ onMounted(() => {
 :where(.topbar-header.theme-mode-header) {
   background: v-bind('appStore.themeMode === "dark" || appStore.headerTheme === "dark" ? settings.componentBgColor : "#fff"') !important;
 }
-
 
 :where(.ant-menu.ant-menu-horizontal > .ant-menu-item),
 :where(.ant-menu.ant-menu-horizontal > .ant-menu-submenu) {

@@ -1,5 +1,5 @@
 <template>
-    <a-modal v-model:open="visible" :footer="null" title="锁定屏幕" :width="400" :centered="true" :destroy-on-close="true">
+    <a-modal v-model:open="visible" :footer="null" title="锁定屏幕" :width="400" :centered="true" :destroy-on-close="true" :maskClosable="themeStore.baseConfig.maskMode">
 
         <div class="lock-dialog-content">
             <!-- 用户头像和信息 -->
@@ -31,7 +31,7 @@
 
 <script setup>
 import { ref, watch, reactive, nextTick } from 'vue'
-import { useAppStore } from '@/stores'
+import { useAppStore ,useThemeStore} from '@/stores'
 
 // Props
 const props = defineProps({
@@ -46,6 +46,7 @@ const emit = defineEmits(['update:modelValue'])
 
 // Store
 const appStore = useAppStore()
+const themeStore = useThemeStore()
 
 // 响应式数据
 const visible = ref(props.modelValue)

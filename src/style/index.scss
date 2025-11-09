@@ -57,3 +57,11 @@
 :where(.ant-menu-dark.ant-menu-submenu > .ant-menu) {
   background: $component-bg-color !important;
 }
+
+:where(.ant-modal-root .ant-modal-mask){
+  backdrop-filter: blur(4px);
+}
+
+:where(.ant-drawer .ant-drawer-mask){
+    backdrop-filter: blur(4px);
+}

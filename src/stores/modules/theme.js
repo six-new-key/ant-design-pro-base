@@ -17,7 +17,8 @@ export const useThemeStore = defineStore('theme', () => {
     fontSize: 14,
     wireframe: false,
     borderRadius: 4,
-    tabShadow: false
+    tabShadow: false,
+    maskMode: true, //分为点击蒙层自动关闭和不关闭两种模式，true为点击蒙层自动关闭
   })
 
   // 计算属性
@@ -100,8 +101,8 @@ export const useThemeStore = defineStore('theme', () => {
     baseConfig.value.fontSize = Math.max(14, Math.min(20, size))
   }
   
-  const setWireframe = (enabled) => {
-    baseConfig.value.wireframe = enabled
+  const setWireframe = (value) => {
+    baseConfig.value.wireframe = value
   }
   
   const setBorderRadius = (radius) => {
@@ -109,8 +110,12 @@ export const useThemeStore = defineStore('theme', () => {
   }
 
   // 处理页签阴影效果切换
-  const setTabShadow = (enabled) => {
-    baseConfig.value.tabShadow = enabled
+  const setTabShadow = (value) => {
+    baseConfig.value.tabShadow = value
+  }
+
+  const setMaskMode = (value) => {
+    baseConfig.value.maskMode = value
   }
 
   return {
@@ -137,7 +142,8 @@ export const useThemeStore = defineStore('theme', () => {
     setFontSize,
     setTabShadow,
     setWireframe,
-    setBorderRadius
+    setBorderRadius,
+    setMaskMode,
   }
 }, {
   // 持久化配置

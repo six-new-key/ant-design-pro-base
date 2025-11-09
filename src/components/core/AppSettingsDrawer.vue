@@ -1,9 +1,20 @@
 <template>
-  <a-drawer :open="visible" @update:open="$emit('update:visible', $event)" title="系统配置" placement="right"
-            :width="360">
+  <a-drawer :open="visible" :closable="false" :title="null" @update:open="$emit('update:visible', $event)" placement="right"
+            :width="360" :maskClosable="currentMaskMode">
+
+    <!--  头部  -->
+    <div style="display: flex; align-items: center; justify-content: space-between;">
+      <div :style="{fontSize: token.fontSize + 2 + 'px',fontWeight: 'bold',color: titleColor}">系统配置</div>
+      <a-button shape="circle" type="text" >
+        <template #icon>
+          <CloseOutlined @click="handleClose" style="opacity: 0.6"/>
+        </template>
+      </a-button>
+    </div>
+
     <!-- 布局风格 -->
     <div class="section">
-      <div class="section-title" :style="{color: titleColor}">布局</div>
+      <a-divider>布局</a-divider>
 
       <div class="layout-grid">
         <div v-for="config in availableLayoutConfigs" :key="config.key" class="layout-card"
@@ -54,7 +65,7 @@
 
     <!-- 主题模式切换 -->
     <div class="section">
-      <h3 class="section-title" :style="{color: titleColor}">模式</h3>
+      <a-divider>模式</a-divider>
 
       <div class="theme-mode-grid">
         <a-tooltip title="明亮模式">
@@ -86,16 +97,41 @@
       </div>
     </div>
 
+    <!-- 自定义系统主题色 -->
+    <div class="setting-section">
+      <a-divider>主题</a-divider>
+
+      <!-- 预设主题色 -->
+      <div class="theme-colors">
+        <div v-for="(preset, index) in themeStore.colorPresets" :key="index" class="color-item"
+             :class="{ active: themeStore.selectedPresetIndex === index && themeStore.colorMode === 'preset' }"
+             :style="{ backgroundColor: preset.color }" @click="handlePresetColorSelect(index)" :title="preset.name">
+          <CheckOutlined v-if="themeStore.selectedPresetIndex === index && themeStore.colorMode === 'preset'"
+                         class="check-icon"/>
+        </div>
+
+        <!-- 自定义颜色选择器 -->
+        <a-tooltip title="自定义" placement="left">
+          <div class="custom-color-container" @click="handleCustomColorClick">
+            <color-picker v-model:pureColor="customColor" @pureColorChange="handleCustomColorChange"
+                          :theme="appStore.themeMode === 'dark' ? 'black' : 'white'"/>
+            <CheckOutlined v-if="themeStore.colorMode === 'custom'" :style="{color: token.colorPrimary}" class="check-icon"/>
+          </div>
+        </a-tooltip>
+
+      </div>
+    </div>
+
     <!-- 侧边栏/顶栏主题切换 -->
     <div class="section">
-      <h3 class="section-title" :style="{color: titleColor}">侧边栏/顶栏</h3>
+      <a-divider>侧边栏/顶栏</a-divider>
 
       <div class="theme-switch-list">
         <div class="theme-switch-item">
           <div class="theme-switch-info">
             <h4 class="theme-switch-name" :style="{color: titleColor}">深色侧边栏</h4>
           </div>
-          <a-switch :checked="currentSidebarTheme === 'dark'"
+          <a-switch :checked="currentSidebarTheme === 'dark'" :disabled="currentLayout === 'topbar'"
                     @change="(checked) => handleSidebarThemeSwitch(checked ? 'dark' : 'light')"/>
         </div>
 
@@ -103,7 +139,7 @@
           <div class="theme-switch-info">
             <h4 class="theme-switch-name" :style="{color: titleColor}">深色顶栏</h4>
           </div>
-          <a-switch :checked="currentHeaderTheme === 'dark'"
+          <a-switch :checked="currentHeaderTheme === 'dark'" :disabled="currentLayout === 'sidebar' || currentLayout === 'doublecolumn'"
                     @change="(checked) => handleHeaderThemeSwitch(checked ? 'dark' : 'light')"/>
         </div>
       </div>
@@ -111,7 +147,7 @@
 
     <!-- 基础配置 -->
     <div class="section">
-      <h3 class="section-title" :style="{color: titleColor}">基础</h3>
+      <a-divider>基础</a-divider>
 
       <div class="base-config-list">
         <div class="config-item">
@@ -163,39 +199,21 @@
           </div>
           <a-switch v-model:checked="currentTabShadow" @change="handleTabShadowChange"/>
         </div>
-      </div>
-    </div>
 
-    <!-- 自定义系统主题色 -->
-    <div class="setting-section">
-      <div class="section-title" :style="{color: titleColor}">主题色</div>
-
-      <!-- 预设主题色 -->
-      <div class="theme-colors">
-        <div v-for="(preset, index) in themeStore.colorPresets" :key="index" class="color-item"
-             :class="{ active: themeStore.selectedPresetIndex === index && themeStore.colorMode === 'preset' }"
-             :style="{ backgroundColor: preset.color }" @click="handlePresetColorSelect(index)" :title="preset.name">
-          <CheckOutlined v-if="themeStore.selectedPresetIndex === index && themeStore.colorMode === 'preset'"
-                         class="check-icon"/>
-        </div>
-
-        <!-- 自定义颜色选择器 -->
-        <a-tooltip title="自定义" placement="left">
-          <div class="custom-color-container" @click="handleCustomColorClick">
-            <color-picker v-model:pureColor="customColor" @pureColorChange="handleCustomColorChange"
-                          :theme="appStore.themeMode === 'dark' ? 'black' : 'white'"/>
-            <CheckOutlined v-if="themeStore.colorMode === 'custom'" :style="{color: token.colorPrimary}" class="check-icon"/>
+        <div class="config-item">
+          <div class="config-info">
+            <h4 class="config-name" :style="{color: titleColor}">点击蒙层关闭</h4>
           </div>
-        </a-tooltip>
-
+          <a-switch v-model:checked="currentMaskMode" @change="handleMaskModeChange"/>
+        </div>
       </div>
     </div>
   </a-drawer>
 </template>
 
 <script setup>
-import {computed, ref} from 'vue'
-import {CheckOutlined} from '@ant-design/icons-vue'
+import {computed, ref,h} from 'vue'
+import {CheckOutlined,CloseOutlined} from '@ant-design/icons-vue'
 import {useAppStore, useThemeStore} from '@/stores'
 import {PAGE_ANIMATION_CONFIG} from '@/utils'
 import {theme} from "ant-design-vue";
@@ -235,6 +253,7 @@ const currentFontSize = ref(themeStore.baseConfig.fontSize)
 const currentBorderRadius = ref(themeStore.baseConfig.borderRadius)
 const currentWireframe = ref(themeStore.baseConfig.wireframe)
 const currentTabShadow = ref(themeStore.baseConfig.tabShadow)
+const currentMaskMode = ref(themeStore.baseConfig.maskMode)
 const currentTabsShow = ref(appStore.tabsShow)
 
 // 当前布局
@@ -307,38 +326,38 @@ const handleCustomColorChange = (color) => {
 const handleFontSizeChange = (value) => {
   if (value !== null && value !== undefined) {
     themeStore.setFontSize(value)
-    currentFontSize.value = value
   }
 }
 
 const handleBorderRadiusChange = (value) => {
   if (value !== null && value !== undefined) {
     themeStore.setBorderRadius(value)
-    currentBorderRadius.value = value
   }
 }
 
 // 处理页签显示切换
 const handleTabsShowChange = (checked) => {
   appStore.setTabsShow(checked)
-  currentTabsShow.value = checked
 }
 
 const handleWireframeChange = (checked) => {
   themeStore.setWireframe(checked)
-  currentWireframe.value = checked
 }
 
 // 处理页签阴影效果切换
 const handleTabShadowChange = (checked) => {
   themeStore.setTabShadow(checked)
-  currentTabShadow.value = checked
 }
 
 // 处理动画效果切换
 const handleAnimationChange = (value) => {
   appStore.setPageAnimation(value)
 }
+
+const handleMaskModeChange = (checked) => {
+  themeStore.setMaskMode(checked)
+}
+
 </script>
 
 <style scoped lang="scss">
@@ -348,13 +367,6 @@ const handleAnimationChange = (value) => {
   &:last-child {
     margin-bottom: 16px;
   }
-}
-
-.section-title {
-  font-size: 16px;
-  font-weight: 600;
-  margin: 0 0 12px 0;
-  letter-spacing: -0.02em;
 }
 
 .layout-grid {
@@ -701,14 +713,14 @@ const handleAnimationChange = (value) => {
 .theme-colors {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 18px;
   border-radius: 12px;
 }
 
 .color-item {
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
   cursor: pointer;
   position: relative;
   border: 2px solid transparent;

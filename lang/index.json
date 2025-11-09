@@ -2058,5 +2058,41 @@
 	"ghwd2": {
 		"zh-cn": "布局",
 		"en": "Layout"
+	},
+	"e56l2": {
+		"zh-cn": "主题",
+		"en": "Theme"
+	},
+	"gar1ro4": {
+		"zh-cn": "系统设置",
+		"en": "System Settings"
+	},
+	"n6y1n06": {
+		"zh-cn": " 系统设置 ",
+		"en": "System Settings"
+	},
+	"h3zv4z4": {
+		"zh-cn": "蒙层关闭",
+		"en": "Mask closure"
+	},
+	"h44vb54": {
+		"zh-cn": "蒙层滤镜",
+		"en": "Mask filter"
+	},
+	"7lj2yt6": {
+		"zh-cn": "点击蒙层关闭",
+		"en": "Click to close the mask"
+	},
+	"n7rct76": {
+		"zh-cn": " 系统配置 ",
+		"en": "System configuration"
+	},
+	"b67do8": {
+		"zh-cn": "搜索全局菜单页面",
+		"en": "Search the global menu page"
+	},
+	"9du5916": {
+		"zh-cn": "搜索全局页面",
+		"en": "Search the global page"
 	}
 }

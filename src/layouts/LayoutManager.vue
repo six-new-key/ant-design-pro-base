@@ -182,7 +182,7 @@ defineExpose({
   position: fixed;
   right: 0;
   top: 50%;
-  z-index: 9999;
+  z-index: 9;
 
   .ant-btn {
     border-top-right-radius: 0;
