@@ -4,13 +4,30 @@
 
 // 预设主题色（用户指定的7个颜色）
 export const COLOR_PRESETS = [
-  { name: '明青', color: 'rgb(29, 132, 255)' },
-  { name: '拂晓蓝', color: 'rgb(93, 135, 255)' },
-  { name: '薄暮紫', color: 'rgb(180, 141, 243)' },
-  { name: '极光绿', color: 'rgb(96, 192, 65)' },
-  { name: '拂晓青', color: 'rgb(56, 192, 252)' },
-  { name: '日暮橙', color: 'rgb(249, 144, 31)' },
-  { name: '法式洋红', color: 'rgb(255, 128, 200)' }
+  { name: '科技蓝', color: '#1E40AF' },
+  { name: '奢华金', color: '#B45309' },
+  { name: '星巴克绿', color: '#00704A' },
+  { name: '时尚粉', color: '#BE185D' },
+  { name: '专业灰', color: '#374151' },
+  { name: '理想银', color: '#9E9E9E' },
+  { name: '阿里橙', color: '#FF6A00' },
+  { name: '华润红', color: '#B71C1C' },
+  { name: '支付宝蓝', color: '#1677FF' },
+  { name: '耐克黑', color: '#212121' },
+  { name: '宜家黄', color: '#FFDA00' },
+  { name: 'OPPO绿', color: '#1AAD19' },
+  { name: '阳光橙', color: '#F57C00' },
+  { name: '华为红', color: '#FF0000' },
+  { name: '零跑蓝', color: '#3F51B5' },
+  { name: '水晶紫', color: '#A855F7' },
+  { name: '月光银', color: '#94A3B8' },
+  { name: '淡青柠', color: '#A3E635' },
+  { name: '浅湖蓝', color: '#22D3EE' },
+  { name: '浅杏色', color: '#EA580C' },
+  { name: '柔和粉', color: '#EC4899' },
+  { name: '柔蜜桃', color: '#E53E3E' },
+  { name: '淡水仙', color: '#FACC15' },
+  { name: '建军绿', color: '#6B8E23' },
 ]
 
 /**
