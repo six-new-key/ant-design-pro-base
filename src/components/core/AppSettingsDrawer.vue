@@ -304,13 +304,14 @@ const handleLayoutSwitch = (layoutKey) => {
   // 触发父组件的布局切换事件（用于显示加载状态）
   emit("layout-switch", layoutKey);
 
-  // handleClose()
+  handleClose()
 };
 
 // 处理主题模式切换
 const handleThemeModeSwitch = (mode) => {
   appStore.setThemeMode(mode);
-  // handleClose()
+  
+  handleClose()
 };
 
 // 处理侧边栏主题切换

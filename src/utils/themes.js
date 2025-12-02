@@ -2,7 +2,7 @@
  * 有关主题切换、主题切换动画工具函数
  */
 
-// 预设主题色（用户指定的7个颜色）
+// 预设主题色
 export const COLOR_PRESETS = [
   { name: '科技蓝', color: '#1E40AF' },
   { name: '奢华金', color: '#B45309' },
